@@ -32,7 +32,6 @@ Er2>Er6>Er1>Lo=Hi=Er3=Er4£¬ÕâĞ©´íÎó¿ÉÄÜ»áÍ¬Ê±²úÉú£¬µ«Í¬Ê±Ö»»áÏÔÊ¾ÓÅÏÈÈ¨¸ßµÄ´íÎó£
 
 void App_ReadyMode(void)
 {
-	APP_CleanProcess();	//Çå½àÄ£Ê½°´¼ü²Ù×÷
 	APP_Enter_Blackbodymode();	//½øÈëºÚÌåÄ£Ê½µÄ°´¼ü²Ù×÷
 	#if Func_Probecover
 		App_PCKeyProcess();	//¶úÌ×°´¼ü²Ù×÷
@@ -42,7 +41,7 @@ void App_ReadyMode(void)
 	App_MemKeyProcess();	//¼ÇÒä¼ü
 	App_VoiceKeyProcess();	//¾²Òô¼ü
 	Cal_Inspect_Detect();       //°ó¶¨¼ì²âÄ£Ê½¡¢Ğ£×¼Ä£Ê½ÅĞ¶Ï
-	Disp_VoiceSign(uSetFlag.bits.VoiceEnable);
+	Disp_VoiceSign();
 	Disp_Unit();	//ÏÔÊ¾µ¥Î»
 	switch( eReadyTask_Sta )
 	{
@@ -51,6 +50,7 @@ void App_ReadyMode(void)
 			#if !Second_LVD
 				lcd_bat_clr();
 			#endif
+			lcd_clean_clr();	//Çå³ıÇå½à·ûºÅ
 			HalKey_KeyClr();               //Çå³ıËùÓĞ°´¼üĞÅÏ¢
 			g_50ms_Count = DispTime_Init;	//Ñ­»·ÏÔÊ¾Ê±¼ä¡¢ÈÕÆÚ¡¢ntc¼ÆÊ±Æ÷¸³³õÖµ
 			#if Func_Ble
@@ -72,7 +72,6 @@ void App_ReadyMode(void)
 				{
 					if(uErrFlag.g_ErrFlag)
 					{
-						
 						eReadyTask_Sta = Ready_Refresh;      //µÈ´ıÊ±¼äµ½ºó²»ĞèÒª¸üĞÂÏÔÊ¾
 					}
 					else	
@@ -84,16 +83,6 @@ void App_ReadyMode(void)
 			else
 			{
 				eReadyTask_Sta = Ready_NoRefresh;
-			}
-
-			if(g_Random == g_TestNum)
-			{
-				F_Disp_Clean = Enable;
-				g_Random = g_10ms_Count%4 + 4; // ²úÉú4-7µÄËæ»úÊı
-				// #if Have_Voice_Func
-				// 	PlayStatueParam(2 , 0 , 0);
-				// 	PlayStatueParam(1 , Play_Clean,0);
-				// #endif
 			}
 			break;
 		//ÕâÁ½¸öÎªÈËÎªÔö¼ÓµÄ¹ı¶É×´Ì¬
@@ -169,7 +158,7 @@ void App_ReadyMode(void)
 					#if Have_Motor
 						if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
 						{
-							g_MotorSystick = 25;
+							g_MotorSystick = Vibration_time;
 						}
 					#endif
 				}
@@ -206,11 +195,7 @@ void App_ReadyMode(void)
 		
 		case Ready_DisAir:	//ÏÔÊ¾»·ÎÂ
 			Clr_Disp888();
-			Disp_Temp(1,1,uSetFlag.bits.Unit,g_NtcStep);
-		break;
-		case Ready_DisClean:	//ÏÔÊ¾Çå½à
-			//lcd_unit_f_en();
-			F_Disp_Clean = Enable;
+			Disp_Temp(1,0,uSetFlag.bits.Unit,g_NtcStep);
 		break;
 		//ÒÑ¾ÍĞ÷×´Ì¬
 		case Ready_ReadyOk:

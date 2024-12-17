@@ -182,7 +182,7 @@ void App_InitMode(void)
 			}
 			else
 			{
-				HalKey_Set_KeyMode(Func_Long, &sModeKey);	//设置键为长按
+				//HalKey_Set_KeyMode(Func_Long, &sModeKey);	//设置键为长按
 				HalKey_Set_KeyMode(Func_Long, &sVoiceKey);	//声音键为短长按
 				HalKey_KeyClr();	//清除所有按键信息
 				eInitTask_Sta = Init_Set;		//任务切换必须将当前任务状态设定为初始状态

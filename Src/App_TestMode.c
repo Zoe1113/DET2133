@@ -24,7 +24,6 @@ enum eTestmode_Status
 eTestmode eTestmode_num;
 
 bit F_Disp_Dash;	//额温滚屏标志位
-bit F_Disp_Clean;
 static int16 g_TpStep_max;	//额温最大值暂存区
 static int16 g_TpStep_Disp;  //目标温度0.1分辨率
 
@@ -145,7 +144,8 @@ void App_TestingMode(void)
 					Get_Forehead_Tp( g_AdcData );
 					if( g_AdcCount == Forehead_Num )
 					{
-						g_AdcCount = Adc_Filter(Forehead_array, Forehead_Num);
+						g_AdcCount = Remove_Tp_Max_Min( Forehead_array, g_AdcCount );//去除最大值
+						g_AdcCount = Adc_Filter(Forehead_array, g_AdcCount);
 						g_TpCount = Get_Forehead_Tp_Max_Avg(g_AdcCount);	//计算最大值平均值
 						g_AdcCount = 0;		//清0保证下次可以继续循环
 						eTestTask_Sta = Test_Calculate;		//额温不采集测量后ntc
@@ -319,10 +319,6 @@ void App_TestingMode(void)
 
 		//显示处理
 		case Test_Disp:
-			if(eTestmode_num !=Insptectmode)
-			{
-				g_TestNum++;//测量次数加一
-			}
 			Clr_Disp888();
 			if(eTestmode_num == Foreheadmode || eTestmode_num == Objectmode)
 			{
@@ -400,7 +396,7 @@ void App_TestingMode(void)
             {
                 #if Have_Motor
                     if( eTestmode_num != Earmode && eTestmode_num != Blackbodymode )
-                        g_MotorSystick = 25;
+                        g_MotorSystick = Vibration_time;
                 #endif
             }
                  
@@ -422,4 +418,10 @@ void App_TestingMode(void)
 			break;
 	}
 
+}
+
+//测量任务复位
+void TestTask_Reset(void)
+{
+	eTestTask_Sta = Test_Init;		//当前任务状态初始化
 }

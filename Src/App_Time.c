@@ -130,6 +130,7 @@ void Auto_TurnOff(void)
 
 	if (g_AutoTurnOff_Count == 0)
 	{
+		OFF_Flag = 1;
 		eMain_Task = Task_Sleepmode;
 	}
 }
@@ -320,7 +321,7 @@ void Disp_Dash(void)
 	//总计4轮，-/-/-/消失共4次，故1s/4=250ms，250/50=5；
 	if( g_300ms_Count == 1 )	//50ms
 	{
-		lcd6 |= lcd_dash;
+		lcd11 |= lcd_dash;
 		if(eTestmode_num == Earmode)
 		{
 			lcd_ear_en();
@@ -332,21 +333,21 @@ void Disp_Dash(void)
 	}
 	if( g_300ms_Count == 7 )	//350ms
 	{
-		lcd4 |= lcd_dash;
+		lcd13 |= lcd_dash;
 		lcd_ear_clr();
 		lcd_obj_clr();
 	}
 	if( g_300ms_Count == 13 )	//650ms
 	{
-		lcd2 |= lcd_dash;
+		lcd15 |= lcd_dash;
 		lcd_ear_clr();
 		lcd_obj_clr();
 	}
 	if( g_300ms_Count == 19 )	//950ms
 	{
-		lcd2 &= ~lcd_dash;
-		lcd4 &= ~lcd_dash;
-		lcd6 &= ~lcd_dash;
+		lcd11 &= ~lcd_dash;
+		lcd13 &= ~lcd_dash;
+		lcd15 &= ~lcd_dash;
 		if(eTestmode_num == Earmode)
 		{
 			lcd_ear_en();

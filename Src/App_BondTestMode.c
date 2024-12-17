@@ -40,6 +40,7 @@ void App_BondTestMode(void)
 
 		//显示测试画面1
 		case BondTest_Disp1:
+			LED_CloseAll();
 			Disp_Debug1();
 			LED_Green_En();
 			Delay10ms(30);
@@ -70,7 +71,7 @@ void App_BondTestMode(void)
 				WDTR = 0x5A;
 			}
 			#if Have_Motor
-				g_MotorSystick = 25;
+				g_MotorSystick = Vibration_time;
 			#endif
 
 			while( Port_On )
@@ -99,13 +100,25 @@ void App_BondTestMode(void)
 				}
 
 				//将无法测试的IO口全部放这里测试（IO口配置要正确），显示内容与绑定文件统一
-				if(!Port_Mode && !Port_Mem)
+				if(!Port_Mode )
 				{
-					
-					lcd_am_en();	//显示AM符号
-					lcd_pm_en();	//显示PM符号
-					lcd_bat_en();	//显示bat符号
-					lcd_smileface_en();
+					lcd_obj_en(); 	//显示物温符号
+				}
+				if(!Port_Mem)
+				{
+					lcd_mem_en();	//显示记忆符号
+				}
+				if(!Port_Voice)
+				{
+					lcd_voice_en();	//显示语音符号
+				}
+				if(!Port_Rod) 		//检测杆
+				{
+					lcd_pc_en();	//显示耳套符号
+				}
+				if(!Port_Hall) 		//检测杆
+				{
+					lcd_forehead_en();	//显示额温符号
 				}
 			}
 			else
@@ -137,7 +150,7 @@ void App_BondTestMode(void)
 				//喂狗
 				WDTR = 0x5A;
 				// 耳套检测项
-				if( Port_Mode )
+				if( Port_Rod )
 				{
 					lcd_pc_clr();
 				}
@@ -147,36 +160,38 @@ void App_BondTestMode(void)
 				}
 
 				// 设定绑定厂无法进入
-			//	if( !Port_Cal )
-				// {
-				// 	Clr_Disp();
-				// 	//显示传感器参数循环显示
-				// 	Disp_Temp(0,1,0,g_AdcDoff);
-				// 	Delay10ms(100);
-				// 	Disp_Temp(0,1,0,g_OpDoff);
-				// 	Delay10ms(100);
-				// 	Disp_Temp(0,1,0,g_Cali25TP);
-				// 	Delay10ms(100);
-				// 	Disp_Temp(0,1,0,g_Cali37Data);
-				// 	Delay10ms(100);
-				// 	Disp_Temp(0,1,0,g_Cali41Data);
-				// 	Delay10ms(100);
-				// 	//产线检测
-				// 	NtcTable_Check();
+				#if Check_Parameter
+					if( !Port_Debug && Port_Mode)	//防止受入检进入
+					{
+						Clr_Disp();
+						//显示传感器参数循环显示
+						Disp_Temp(0,1,0,g_AdcDoff);
+						Delay10ms(100);
+						Disp_Temp(0,1,0,g_OpDoff);
+						Delay10ms(100);
+						Disp_Temp(0,1,0,g_Cali25TP);
+						Delay10ms(100);
+						Disp_Temp(0,1,0,g_Cali37Data);
+						Delay10ms(100);
+						Disp_Temp(0,1,0,g_Cali41Data);
+						Delay10ms(100);
+						//产线检测
+						NtcTable_Check();
 
-				// 	Clr_Disp();
-				// 	if( uErrFlag.bits.Er2 )
-				// 	{
-				// 		Disp_ErN(2);
-				// 	}
-				// 	else
-				// 	{
-				// 		Disp_Code(Soft_Code);
-				// 		Disp_Version(Soft_Internal_Version);
-				// 	}
+						Clr_Disp();
+						if( uErrFlag.bits.Er2 )
+						{
+							Disp_ErN(2);
+						}
+						else
+						{
+							Disp_Code(Soft_Code);
+							Disp_Version(Soft_Internal_Version);
+						}
 
-				// 	Delay10ms(50);
-				// }
+						Delay10ms(50);
+					}
+				#endif
 			}
 			eBondTestTask = BondTest_Tp;
 			break;
@@ -185,6 +200,7 @@ void App_BondTestMode(void)
 		case BondTest_Tp:
 			Clr_Disp();
 			LED_CloseAll();
+			LED_White_En();
 			//需要一个热源进行判定，但不可以超过150度以排除断线的Adc count
 			if( g_TpCount > 0x014C && g_TpCount < 4000 )
 			{

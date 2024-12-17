@@ -14,7 +14,6 @@ typedef enum
     Ready_DisEr1,       //显示Er1
     Ready_DisEr2,       //显示Er1
     Ready_DisAir,       //显示环温
-    Ready_DisClean,     //显示清洁符号
 }eReadyModeTask;
 
 extern eReadyModeTask eReadyTask_Sta;

@@ -11,8 +11,8 @@
 
 #if Have_Voice_Func
 
-#define MISO(X)  (X?(FP11=1):(FP11=0))
-#define MOSI(X)  (X?(FP12=1):(FP12=0))
+#define MISO(X)  (X?(FP12=1):(FP12=0))
+#define MOSI(X)  (X?(FP11=1):(FP11=0))
 #define SCK(X)   (X?(FP13=1):(FP13=0))
 
 uint8 g_LLCode;		//÷∏¡Ó∂Œ
@@ -260,8 +260,8 @@ void App_PlayVoice3(void)
 **************************************************************************/
 void AM5BA_SPI_Init(void)
 {
-    FP11M = 0;  //miso input mode£¨high level
-    FP12M = 1;  //mosi output mode£¨low level
+    FP11M = 1;  //miso input mode£¨high level
+    FP12M = 0;  //mosi output mode£¨low level
     FP13M = 1;  //SCK output mode£¨low level
     FP16M = 1;  //ce output mode, high level
     P1 |= 0x42;   //01000010

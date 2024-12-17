@@ -9,14 +9,7 @@
 #include "Include.h"
 
 //只在本文件内使用的宏定义
-#define	SA	256			//0000000000000001B
-#define	SB	2			//0000000000000010B
-#define	SC	8			//0000000000000100B
-#define	SD	2048		//0000000000001000B
-#define	SE	1024		//0000010000000000B
-#define	SF	512			//0000000100000000B
-#define	SG	4			//0000001000000000B
-#define	P	1			//0000100000000000B
+
 
 
 // #define	P	1			//0000000000000001B
@@ -113,32 +106,30 @@ void Disp_Time( bit F_time, bit F_Format, uint8 left, uint8 right)
 	R_LCD3 = right / 10;
 	//取个位
 	R_LCD4 = right % 10;
-    if(eMain_Task == Task_Memorymode)  //2023-02-22
-        lcd15 &= 0x01;  
-    else
-        lcd15 = 0x00;
+    // if(eMain_Task == Task_Memorymode)  //2023-02-22
+    //     lcd2 &= 0x01;  
+    // else
+    //     lcd2 = 0x00;
     
-	lcd15 |= DispTable[ R_LCD1 ] ;
-    lcd14 = DispTable[ R_LCD1 ] >> 8;
-    if(lcd13&0x01)
-        lcd13 = DispTable[ R_LCD2 ] | 0x01 ;   
-    else
-	    lcd13 = DispTable[ R_LCD2 ] ;
-
-    lcd12 = DispTable[ R_LCD2 ] >> 8;
-	lcd11 = DispTable[ R_LCD3 ];
-    lcd10 = DispTable[ R_LCD3 ] >> 8;
-	lcd9 = DispTable[ R_LCD4 ];
+	lcd3 = DispTable[ R_LCD1 ] ;
+    lcd2 = DispTable[ R_LCD1 ] >> 8;
+	lcd5 = DispTable[ R_LCD2 ] ;
+    lcd4 = DispTable[ R_LCD2 ] >> 8;
+	lcd7 = DispTable[ R_LCD3 ] | (lcd7 & 0x01);
+    lcd6 = DispTable[ R_LCD3 ] >> 8;
+	lcd9 = DispTable[ R_LCD4 ] | (lcd9 & 0x01);
 	lcd8 = DispTable[ R_LCD4 ] >> 8;
 
 	if(F_time)
     {
         lcd_colon_en();	//点亮:
+		lcd_timedash_clr();	//点亮-
     }	
 	else
 	{
 		lcd_pm_clr();
 		lcd_am_clr();	//清除AM PM
+		lcd_colon_clr();	//清除:
 		lcd_timedash_en();	//点亮-
 	}
 }
@@ -163,15 +154,15 @@ void Disp_Year(uint16 L_buf)
 	//取个位
 	R_LCD2 = L_buf % 10;
 
-	lcd15 = DispTable[ 2 ];
-    lcd14 = DispTable[ 2 ]>> 8;
-	lcd13 = DispTable[ 0 ];
-    lcd12 = DispTable[ 0 ]>> 8;
-	lcd11 = DispTable[ R_LCD1 ];
-    lcd10 = DispTable[ R_LCD1 ]>> 8;
+	lcd3 = DispTable[ 2 ];
+    lcd2 = DispTable[ 2 ]>> 8;
+	lcd5 = DispTable[ 0 ];
+    lcd4 = DispTable[ 0 ]>> 8;
+	lcd7 = DispTable[ R_LCD1 ];
+    lcd6 = DispTable[ R_LCD1 ]>> 8;
 	lcd9 = DispTable[ R_LCD2 ];
 	lcd8 = DispTable[ R_LCD2 ]>> 8;
-	lcd7 = 0;
+	//lcd7 = 0;
 }
 
 /**************************************************************************
@@ -188,17 +179,17 @@ void Clr_SetTime( uint8 L_Blink )
 {
 	if( L_Blink )
 	{
-		lcd11 &= 0x01;
-		lcd10 = 0x00;
+		lcd7 &= 0x01;
+		lcd6 = 0x00;
 		lcd9 &= 0x01;
 		lcd8 = 0x00;
 	}
 	else
 	{
-		lcd15 = 0x00;
-		lcd14 = 0x00;
-		lcd13 = 0x00;
-		lcd12 = 0x00;
+		lcd2 = 0x00;
+		lcd3 = 0x00;
+		lcd4 = 0x00;
+		lcd5 = 0x00;
 	}
 }
 
@@ -317,8 +308,8 @@ void Disp_Temp(bit Point, bit High, bit Unit, int16 Temp)
 	}
 
 	//对于温度来说8.8一定会显示的（当然要考虑校准态AD显示另算）
-    lcd4 &= 0x01;
-	lcd13 |= DispTable[ R_LCD3 ];
+    //lcd4 &= 0x01;
+	lcd13 = DispTable[ R_LCD3 ];
     lcd12 = DispTable[ R_LCD3 ] >> 8;
 	lcd15 = DispTable[ R_LCD4 ];
     lcd14 = DispTable[ R_LCD4 ] >> 8;
@@ -383,12 +374,12 @@ void Disp_Code(uint16 num)
 	R_LCD3 = num % 10;
 
 	//对于程序编码888一定会显示的
-	lcd6 = DispTable[ R_LCD1 ];
-    lcd5 = DispTable[ R_LCD1 ] >> 8;
-	lcd4 = DispTable[ R_LCD2 ];
-    lcd3 = DispTable[ R_LCD2 ] >> 8;
-	lcd2 = DispTable[ R_LCD3 ];
-    lcd1 = DispTable[ R_LCD3 ] >> 8;
+	lcd10 = DispTable[ R_LCD1 ] >> 8;
+    lcd11 = DispTable[ R_LCD1 ];
+	lcd12 = DispTable[ R_LCD2 ] >> 8;
+    lcd13 = DispTable[ R_LCD2 ];
+	lcd14 = DispTable[ R_LCD3 ] >> 8;
+    lcd15 = DispTable[ R_LCD3 ];
 }
 
 /**************************************************************************
@@ -409,12 +400,12 @@ void Disp_Version(uint16 num)
 	//取个位
 	R_LCD2 = num % 10;
 
-	lcd15 = 0x0A;
-    lcd14 = 0x07;
-	lcd13 = DispTable[ R_LCD1 ];
-    lcd12 = DispTable[ R_LCD1 ] >> 8;
-	lcd9 = DispTable[ R_LCD2 ];
-    lcd8 = DispTable[ R_LCD2 ] >> 8;
+	lcd2 = S_U >> 8;
+    lcd3 = S_U;
+	lcd4 = DispTable[ R_LCD1 ] >> 8;
+    lcd5 = DispTable[ R_LCD1 ];
+	lcd6 = DispTable[ R_LCD2 ] >> 8;
+    lcd7 = DispTable[ R_LCD2 ];
 }
 
 /**************************************************************************
@@ -500,8 +491,11 @@ void Disp_All(void)
 	{
 		Disp_Unit();
 	}
+	#if !Func_Probecover
+		lcd_pc_clr();
+	#endif
 
-	//lcd_pc_clr();
+	lcd_clean_clr();
 	
 	#if !Func_Obj
 		lcd_obj_clr();
@@ -581,6 +575,7 @@ void Disp_ModeSign(void)
 	lcd_ear_clr();		//清除耳温标志
 	lcd_forehead_clr();	//清除额温标志
 	lcd_obj_clr();		//清除物温标志
+	lcd_ntc_clr();		//清除环温标志
 	switch ( eTestmode_num )
 	{
 		case Earmode:
@@ -730,15 +725,18 @@ void Disp_Ready(void)
 占用空间：	TBD
 备    注：	无
 **************************************************************************/
-void Disp_VoiceSign(bit temp)
+void Disp_VoiceSign()
 {
-    if( temp ) 
+    if( uSetFlag.bits.VoiceEnable ) 
     {
-        lcd_voice_en();
+        
+		lcd_voice_clr();
+		lcd_sound_off_clr();
     }
     else
     {
-        lcd_voice_clr();
+		lcd_voice_en();
+		lcd_sound_off_en();
     }
 }
 
@@ -951,32 +949,33 @@ void Disp_Err(void)
 **************************************************************************/
 void Disp_Debug1(void)
 {
-    lcd0 = 0x06;
+    lcd0 = 0x04;
 
-    lcd1 = 0x0A;
-    lcd2 = 0x06;
+    lcd1 = 0x0B;
+    lcd2 = 0x05;
 
-    lcd3 = 0x0A;
-    lcd4 = 0x07;
+    lcd3 = 0x0C;
+    lcd4 = 0x05;
 
-    lcd5 = 0x0A;
-    lcd6 = 0x06;
+    lcd5 = 0x0D;
+    lcd6 = 0x05;
 
-    lcd7 = 0x0B;
+    lcd7 = 0x0D;
 
-    lcd8 = 0x0A;
-    lcd9 = 0x07;
+    lcd8 = 0x05;
+    lcd9 = 0x0C;
 
-    lcd10 = 0x0A;
-    lcd11 = 0x06;
+    lcd10 = 0x05;
+    lcd11 = 0x0C;
 
-    lcd12 = 0x0A;
-    lcd13 = 0x06;
+    lcd12 = 0x05;
+    lcd13 = 0x0C;
 
-    lcd14 = 0x0A;
-    lcd15 = 0x07;
+    lcd14 = 0x05;
+    lcd15 = 0x0D;
 
-    lcd16 = 0x0A;
+    lcd16 = 0x0E;
+	lcd17 = 0x0A;
 }
 
 /**************************************************************************
@@ -990,32 +989,33 @@ void Disp_Debug1(void)
 **************************************************************************/
 void Disp_Debug2(void)
 {
-	lcd0 = 0x09;
+	lcd0 = 0x0B;
 
-    lcd1 = 0x05;
-    lcd2 = 0x09;
+    lcd1 = 0x04;
+    lcd2 = 0x0A;
 
-    lcd3 = 0x05;
-    lcd4 = 0x08;
+    lcd3 = 0x03;
+    lcd4 = 0x0A;
 
-    lcd5 = 0x05;
-    lcd6 = 0x09;
+    lcd5 = 0x02;
+    lcd6 = 0x0A;
 
-    lcd7 = 0x04;
+    lcd7 = 0x02;
 
-    lcd8 = 0x05;
-    lcd9 = 0x08;
+    lcd8 = 0x0A;
+    lcd9 = 0x03;
 
-    lcd10 = 0x05;
-    lcd11 = 0x09;
+    lcd10 = 0x0A;
+    lcd11 = 0x03;
 
-    lcd12 = 0x05;
-    lcd13 = 0x09;
+    lcd12 = 0x0A;
+    lcd13 = 0x03;
 
-    lcd14 = 0x05;
-    lcd15 = 0x08;
+    lcd14 = 0x0A;
+    lcd15 = 0x02;
 
-    lcd16 = 0x07;
+    lcd16 = 0x03;
+	lcd17 = 0x05;
 }
 
 /**************************************************************************
@@ -1051,12 +1051,12 @@ void Disp_Debug2(void)
 void Disp_12H(void)
 {
 	Clr_Disp();
-    lcd15 = 0x00;
-    lcd14 = 0x06;
-    lcd13 = 0x06;
-    lcd12 = 0x0D;
-    lcd11 = 0x0E;
-    lcd10 = 0x06;
+    lcd2 = 0x00;
+    lcd3 = 0x0A;
+    lcd4 = 0x0D;
+    lcd5 = 0x06;
+    lcd6 = S_H >> 8;
+    lcd7 = S_H;
 }
 
 /**************************************************************************
@@ -1071,12 +1071,12 @@ void Disp_12H(void)
 void Disp_24H(void)
 {
 	Clr_Disp();
-    lcd15 = 0x06;
-    lcd14 = 0x0D;
-    lcd13 = 0x0C;
-    lcd12 = 0x06;
-    lcd11 = 0x0E;
-    lcd10 = 0x06;
+    lcd2 = 0x0D;
+    lcd3 = 0x06;
+    lcd4 = 0x02;
+    lcd5 = 0x0E;
+    lcd6 = S_H >> 8;
+    lcd7 = S_H;
 }
 
 /**************************************************************************
@@ -1158,3 +1158,26 @@ void Disp_Table2(void)
     lcd15 = 0x06;
 }
 #endif
+
+
+/**************************************************************************
+函数名称：	void LVD_Display(void)
+函数功能：	低电时显示
+输入参数：	void
+输出参数：	void
+返回值  ：	无
+**************************************************************************/
+void LVD_Display(void)
+{
+	if( uStaFlag.bits.midBat == 0 )
+	{
+		//正常电压
+		lcd_bat_full_en();
+		lcd_bat_en();
+	}
+	else if( uStaFlag.bits.LowBat != 1 && uStaFlag.bits.midBat == 1 )
+	{
+		lcd_bat_full_clr();
+		lcd_bat_xor();
+	}
+}

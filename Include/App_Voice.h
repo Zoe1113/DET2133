@@ -1,8 +1,8 @@
 #ifndef _App_Voice_H
 #define _App_Voice_H
 
-#define Port_MISO FP11   //spi miso
-#define Port_MOSI FP12   //spi mosi
+#define Port_MISO FP12   //spi miso
+#define Port_MOSI FP11   //spi mosi
 #define Port_SCK  FP13   //spi sck
 #define Port_Power  FP16   //spi ce£¨powerÊ¹ÄÜ½Å£©
 

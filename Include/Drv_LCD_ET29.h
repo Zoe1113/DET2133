@@ -21,6 +21,14 @@ sfr	lcd15 = 0xf0f ;
 sfr lcd16 = 0xf10 ;
 sfr lcd17 = 0xf11 ;
 
+#define	SA	256			//0000000000000001B
+#define	SB	2			//0000000000000010B
+#define	SC	8			//0000000000000100B
+#define	SD	2048		//0000000000001000B
+#define	SE	1024		//0000010000000000B
+#define	SF	512			//0000000100000000B
+#define	SG	4			//0000001000000000B
+#define	P	1			//0000100000000000B
 
 #define S_A (SA+SB+SC+SE+SF+SG)
 #define S_C (SA+SF+SE+SD)
@@ -30,7 +38,7 @@ sfr lcd17 = 0xf11 ;
 #define S_F (SA+SF+SE+SG)
 #define S_H (SB+SF+SE+SG+SC)
 #define S_r (SE+SG)
-#define S_t (SE+SG+SF+SD)
+#define S_T (SE+SG+SF+SD)
 #define S_P (SE+SG+SF+SA+SB)
 #define S_S (SA+SF+SG+SC+SD)
 #define S_b (SE+SF+SG+SC+SD)
@@ -141,7 +149,7 @@ void Disp_OFF(void);
 void Disp_Lo(void);
 void Disp_Hi(void);
 void Disp_Ready(void);
-void Disp_VoiceSign(bit temp);
+void Disp_VoiceSign(void);
 void Disp_Null(void);
 void Disp_ErN(uint8 num);
 void Disp_ErrMsg(void);
@@ -164,6 +172,7 @@ void Disp_Temp(bit Point, bit High, bit Unit, int16 Temp);
 void Disp_Time( bit F_time, bit F_Format, uint8 left, uint8 right);
 void Disp_Year(uint16 L_buf);
 void Clr_SetTime(uint8 L_Blink);
+void LVD_Display(void);
 // void Disp_CAP(void);
 
 #endif

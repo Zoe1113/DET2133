@@ -26,6 +26,8 @@ void LED_CloseAll( void )
 		LED_Red_Dis();
 		LED_Yellow_Dis();
 		LED_Green_Dis();
-		LED_White_Dis();
+		#if Func_White
+			LED_White_Dis();
+		#endif
 	#endif
 }

@@ -77,8 +77,7 @@ void main(void)
 		// 不是则不管
 		uSetFlag.bits.PowerFirst = 1;
 	#endif
-	g_TestNum = 0;
-	g_Random = 5;
+	OFF_Flag = 1;
 	//低电压检测
 	#if Second_LVD == 1
 		LBD_Chk();
@@ -94,7 +93,13 @@ void main(void)
 		eMain_Task = Task_InitMode;
 		eInitTask_Sta = Init_Err;
 		eSleepTask_Sta = Sleep_false;
+		
 		uSetFlag.bits.PowerFirst = 1;
+		while ( !Port_On )
+		{
+			//喂狗
+			WDTR = 0x5A;
+		}
 	}
 
 	Parm_AutoCheck();//程序参数校验
@@ -219,17 +224,7 @@ void main(void)
 				}
 				else
 				{
-					if( uStaFlag.bits.midBat == 0 )
-					{
-                        //正常电压
-						lcd_bat_full_en();
-						lcd_bat_en();
-					}
-					else if( uStaFlag.bits.LowBat != 1 && uStaFlag.bits.midBat == 1 )
-					{
-						lcd_bat_full_clr();
-						lcd_bat_xor();
-					}
+					LVD_Display();
 				}
 			#endif
 				
@@ -247,18 +242,7 @@ void main(void)
 					Ble_Waittostart++;
 				}				
 			#endif
-			if(F_Disp_Clean)
-			{
-				lcd_clean_xor();
-				
-				if(eReadyTask_Sta  == Ready_ReadyOk)
-				{
-					#if !Have_Voice_Func
-						BZ_Beep50();
-					#endif
-				}
-				
-			}
+
 		}
 
 		#if Have_Voice_Func
@@ -272,7 +256,7 @@ void main(void)
 		#if Func_Ble
 			if( uSetFlag.bits.BleEnable == Enable )
 			{
-                if( eMain_Task != Task_BondTestmode && ( eTestmode_num != Blackbodymode && eTestmode_num != Insptectmode ) )
+                if( eMain_Task != Task_BondTestmode &&  eTestmode_num != Insptectmode )
 				{
 					App_BleMode();
 				}

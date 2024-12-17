@@ -9,6 +9,7 @@
 #include "Include.h"
 
 eSleep_Status eSleepTask_Sta;
+bit  OFF_Flag ;
 
 void App_Sleep(void)
 {
@@ -85,48 +86,7 @@ void App_Sleep(void)
 			//如果关机时一直长按则进入黑体模式(此处与原汇编不一样)
 			if(uKeyPress.bits.OKeyPress && !uStaFlag.bits.LowBat)
 			{
-                // L_ModePressTime++;
-                //  if(uKeyHold.bits.OKeyHold)
-				// {
-				// 	Port_Ble_En = 0;
-				// 	lcd_point_en();	//显示小数点
-				// 	#if Func_Reverse_Disp
-				// 		LED_Reverse_Disp_En();
-				// 	#endif
-                //     if( uSetFlag.bits.VoiceEnable )
-                //     {
-                //         #if Have_Voice_Func
-				// 			AM5BA_Send_Cmd(LL_Broadcast, SS_Di, 0x00);
-                //         #else
-                //             BZ_Beep400();
-                //             BZ_Beep400();
-                //             BZ_Beep400();
-                //         #endif
-                //     }
 
-				// 	while( !Port_On )//等待释放进入
-				// 	{
-				// 		//喂狗
-		        //         WDTR = 0x5A;
-				// 	}	
-				// 	Disp_CAL();	//显示CAL表示进入黑体模式
-				// 	Delay10ms(100);
-				// 	Disp_Code(Soft_Code);	//显示程序编码
-				// 	Disp_Version(Soft_External_Version);	//显示对外程序版本
-				// 	Delay10ms(100);
-				// 	HalKey_KeyClr();
-				// 	Adc_Channel_Init(TPTONTC);	//某些模式会只采集tp故必须切回ntc采集，ADC初始化和通道切换
-                //     Er2_Display_Sound(RESET);//复位Er2错误
-				// 	#if Func_Ble
-                //     	eBle_Sta = Ble_Disable;	
-                //     	F_Ble_En = Disable;
-			    //     	F_Ble_Blink = Disable;	//关闪烁
-                //     #endif
-				// 	eTestmode_num = Blackbodymode;	//代表进入黑体模式
-				// 	eSleepTask_Sta = Sleep_false;	//设置当前任务状态为初始状态
-				// 	eMain_Task = Task_ReadyMode;
-				// 	eReadyTask_Sta = Ready_Init;	//进入ready模式
-				// }
 			}
 			else
 			{
@@ -177,8 +137,12 @@ void App_Sleep(void)
 			l_buf = 1;
 			while(l_buf)
 			{
-				 while( Port_On && Port_Mode )
+				 while( Port_On && Port_Mode && (!Port_Hall || OFF_Flag) )
 				 {
+					if(!Port_Hall)
+					{
+						OFF_Flag = 0;
+					}
 					//喂狗
 		            WDTR = 0x5A;
 					if( FT0IRQ )
@@ -190,7 +154,7 @@ void App_Sleep(void)
 					}
 				 }
 				 Delay50us(4);	//green mode fcpu=32768/4=8k，是normal模式的250分之一，故实际延迟去抖为50ms
-				 if( !Port_On || !Port_Mode )
+				 if( !Port_On || !Port_Mode || Port_Hall)
 				 {
 					l_buf = 0;
 				 }
@@ -219,9 +183,9 @@ void App_Sleep(void)
 			if( l_buf > 8 )
 			{
 				//设置键长按3s进设置态（设置不全显的机型适用，一般独立按键，非开机键）
-				if( uKeyPress.bits.VoiceKeyPress )
+				if( uKeyPress.bits.ModeKeyPress )
 				{
-					if( uKeyHold.bits.VoiceKeyHold )
+					if( uKeyHold.bits.ModeKeyHold )
 					{
 						//进入设置态和快进为同一按键适用（当然非同一个按键也适用这样的写法）
 						if( uStaFlag.bits.LowBat )
@@ -254,7 +218,7 @@ void App_Sleep(void)
 				else
 				{
 					eSleepTask_Sta = Sleep_true;	//默认关机
-					if( uKeyPress.bits.OKeyPress )
+					if( uKeyPress.bits.OKeyPress || Port_Hall)
 					{
 						eSleepTask_Sta = Sleep_End;	//只有开机键运行开机
 					}
@@ -265,7 +229,6 @@ void App_Sleep(void)
 		//结束睡眠
 		case Sleep_End:
 			Port_Ble_En = 0; //蓝牙使能准备
-			//F_Disp_Clean = Disable;
 			eSleepTask_Sta = Sleep_false;
 			eMain_Task = Task_InitMode;
 			#if Func_Hall
@@ -284,7 +247,7 @@ void App_Sleep(void)
 			HalKey_Set_KeyMode(Func_Long, &sOnKey);   //开机&测量键设为短长按
 			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//记忆键为短长按
 			HalKey_Set_KeyMode(Func_Short_Long, &sModeKey);	//模式键为长按
-			HalKey_Set_KeyMode(Func_Long, &sVoiceKey);	//声音键为短长按
+			HalKey_Set_KeyMode(Func_Short_Long, &sVoiceKey);	//声音键为短长按
 			#if Have_Voice_Func
 				// AM5BA_SPI_Init();
 				// AM5BA_Power_Enable();

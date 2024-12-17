@@ -21,10 +21,10 @@ enum eKeyStatus
 //按键键值eKeyVal
 enum eKeyValue
 {
-	MemKey = 0x01,		 //Mode Key value
+	ModeKey = 0x01,		 //Mode Key value
     OnKey   = 0x02,		 //On Key value
-	VoiceKey  = 0x10,		 //Set Key value
-    ModeKey  = 0x20,
+	VoiceKey  = 0x10,	 //Set Key value
+    MemKey  = 0x20,
 	KeyMask = 0x33		 //按键掩码（p00 p01 p04 p05）
 }eKeyVal;
 
@@ -32,8 +32,8 @@ enum eKeyValue
 enum ModeStatus
 {
 	Mode_Human = 0,		//人体模式
-	Mode_Object = 1,	//物温模式
-	Mode_Air = 2		//环境温度
+	Mode_Air = 1,		//环境温度
+	Mode_Object = 2	//物温模式	
 };
 
 uKey1 uKeyPress;
@@ -41,7 +41,7 @@ uKey2 uKeyHold;
 uKey3 uKeyRelease;
 uKey4 uKeyContinue;
 
-strKey sMemKey, sOnKey, sVoiceKey, sModeKey ;
+strKey sModeKey, sOnKey, sVoiceKey, sMemKey ;
 bit VoiceKeyHoldFlag= 0;
 uint8 ModeFlag = 0;
 uint16 L_OnPressTime = 0;
@@ -65,7 +65,8 @@ void Voice_Show_Init(void)
         #else
             BZ_Beep125();
         #endif
-        lcd_voice_en();				//显示喇叭
+        lcd_voice_clr();			//显示喇叭
+		lcd_sound_off_clr();
     }
     else                                //语音功能关闭
     {
@@ -73,14 +74,15 @@ void Voice_Show_Init(void)
 			PlayStatueParam(2 , 0 , 0);
 			AM5BA_Send_Cmd(LL_Stop, SS_Stop, Nodata);
 		#endif
-		lcd_voice_clr();
+		lcd_voice_en();
+		lcd_sound_off_en();
     }  
 	#if Have_Motor
 		// 如果语音功能关闭且不是在耳温模式下
 		if( (uSetFlag.bits.VoiceEnable == 0) && eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
 		{
 			// 打开震动
-			g_MotorSystick = 25;
+			g_MotorSystick = Vibration_time;
 		}
 		else
 		{
@@ -149,7 +151,7 @@ void eTestmode_change(void)
 		#if Have_Motor
 			if( (uSetFlag.bits.VoiceEnable == 0) && (eTestmode_num != Earmode))
 			{
-				g_MotorSystick = 25;
+				g_MotorSystick = Vibration_time;
 			}			 	
 			else
 			{
@@ -180,29 +182,10 @@ void eTestmode_change(void)
 9、长按开机、两次按下测量进入生产态；ok；
 **************************************************************************/
 
-//清洁模式的按键操作，短按任意键解除清洁模式
-void APP_CleanProcess(void)
-{
-	if(F_Disp_Clean && eReadyTask_Sta == Ready_ReadyOk)
-	{
-		if(uKeyRelease.bits.OKeyRelease || uKeyRelease.bits.VoiceKeyRelease || uKeyRelease.bits.MemKeyRelease || uKeyRelease.bits.ModeKeyRelease)
-		{
-			lcd_am_clr();
-			F_Disp_Clean = Disable;
-			g_TestNum = 0;
-			HalKey_KeyClr();               //清除所有按键信息
-			uKeyRelease.bits.OKeyRelease = 0;
-			uKeyRelease.bits.VoiceKeyRelease = 0;
-			uKeyRelease.bits.MemKeyRelease = 0;
-			uKeyRelease.bits.ModeKeyRelease = 0;
-		}
-	}
-}
-
 //长按测量键8s进入黑体
 void APP_Enter_Blackbodymode(void)
 {
-	if(!F_Disp_Clean && eReadyTask_Sta == Ready_ReadyOk)
+	if(eReadyTask_Sta == Ready_ReadyOk)
 	{
 		if(uKeyPress.bits.OKeyPress)
 		{
@@ -240,10 +223,16 @@ void APP_Enter_Blackbodymode(void)
 			HalKey_KeyClr();
 			Adc_Channel_Init(TPTONTC);	//某些模式会只采集tp故必须切回ntc采集，ADC初始化和通道切换
 			Er2_Display_Sound(RESET);//复位Er2错误
+			// #if Func_Ble
+			// 	eBle_Sta = Ble_Disable;	
+			// 	F_Ble_En = Disable;
+			// 	F_Ble_Blink = Disable;	//关闪烁
+			// #endif
 			#if Func_Ble
-				eBle_Sta = Ble_Disable;	
-				F_Ble_En = Disable;
-				F_Ble_Blink = Disable;	//关闪烁
+				if( !Port_Ble_Link )
+				{
+					lcd_ble_en();
+				}
 			#endif
 			eTestmode_num = Blackbodymode;	//代表进入黑体模式
 			eSleepTask_Sta = Sleep_false;	//设置当前任务状态为初始状态
@@ -258,37 +247,28 @@ void APP_Enter_Blackbodymode(void)
 void App_OnKeyProcess(void)
 {
 
-	if(!F_Disp_Clean)
+
+	if(uKeyRelease.bits.OKeyRelease && eReadyTask_Sta == Ready_ReadyOk) //ready模式准备完成，测量键按下并抬起开始测量
 	{
-		if(uKeyRelease.bits.OKeyRelease && eReadyTask_Sta == Ready_ReadyOk) //ready模式准备完成，测量键按下并抬起开始测量
-		{
-			Auto_TurnOff_Time_Sel();
-			eMain_Task = Task_Testingmode;	//准备进入测量模式
-		}
-		if(eReadyTask_Sta == Ready_Timeout && eTestmode_num != Foreheadmode && eTestmode_num != Objectmode && uKeyRelease.bits.OKeyRelease && !F_Disp_Clean)//耳温、黑体、生产模式测温完成有5s等待。如何在等待中按下测量键就报er1
-		{
-			eReadyTask_Sta = Ready_DisEr1;
-		}
-		
+		Auto_TurnOff_Time_Sel();
+		eMain_Task = Task_Testingmode;	//准备进入测量模式
+		TestTask_Reset();				//测量任务复位
 	}
-	
-
-
-
-
-	//ready模式下长按3s测量键关机
-	// if(uKeyHold.bits.OKeyHold)
-	// {
-	// 	eMain_Task = Task_Sleepmode;
-	// 	eSleepTask_Sta = Sleep_false;
-	// 	uKeyHold.bits.OKeyHold = 0;
-	// 	sOnKey.g_Key_Hold_cnt = 0;
-	// }
+	if(eReadyTask_Sta == Ready_Timeout && eTestmode_num != Foreheadmode && eTestmode_num != Objectmode && uKeyRelease.bits.OKeyRelease)//耳温、黑体、生产模式测温完成有5s等待。如何在等待中按下测量键就报er1
+	{
+		eReadyTask_Sta = Ready_DisEr1;
+		if(eTestmode_num == Insptectmode)
+		{
+			lcd8 = 0x00;
+			lcd9 = 0x00;
+		}
+	}
 
 
 	if( !uKeyPress.bits.OKeyPress )
 	{
 		uKeyRelease.bits.OKeyRelease = 0;
+		L_OnPressTime = 0;
 	}
 
 
@@ -297,38 +277,39 @@ void App_OnKeyProcess(void)
 //静音键
 void App_VoiceKeyProcess(void)
 {
-	if(!F_Disp_Clean)
+
+	if(uKeyPress.bits.VoiceKeyPress && !uErrFlag.bits.Er2)//er2不能进行声音开关
 	{
-		if(uKeyPress.bits.VoiceKeyPress && !uErrFlag.bits.Er2)//er2不能进行声音开关
-		{
-			#if Func_Obj
-				
-				if(uKeyHold.bits.VoiceKeyHold && !VoiceKeyHoldFlag && !uErrFlag.bits.Er2)
+		#if Func_Change_CF
+			if(uKeyHold.bits.VoiceKeyHold && !VoiceKeyHoldFlag && !uErrFlag.bits.Er2)
+			{
+				VoiceKeyHoldFlag = 1;
+				if(eMain_Task != Task_Memorymode && eTestmode_num != Insptectmode)
 				{
-					VoiceKeyHoldFlag = 1;
-					if(eMain_Task != Task_Memorymode)
-					{
-						eMain_Task = Task_Unitmode;	//进入单位设置模式
-						eSetTask = Set_Unit;
-					}
+					Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
+					Er1_Display_Sound(RESET);		//清除Er1相关标志位
+					eReadyTask_Sta = Ready_NoRefresh;
+					eMain_Task = Task_Unitmode;	//进入单位设置模式
+					eSetTask = Set_Unit;
 				}
-			#endif
+			}
+		#endif
+	}
+	else
+	{
+
+		if(uKeyRelease.bits.VoiceKeyRelease && !VoiceKeyHoldFlag && !uErrFlag.bits.Er2)
+		{
+			Auto_TurnOff_Time_Sel();
+			uSetFlag.bits.VoiceEnable =	~uSetFlag.bits.VoiceEnable;
+			Voice_Show_Init();	//声音开关
 		}
 		else
 		{
-
-			if(uKeyRelease.bits.VoiceKeyRelease && !VoiceKeyHoldFlag && !uErrFlag.bits.Er2)
-			{
-				Auto_TurnOff_Time_Sel();
-				uSetFlag.bits.VoiceEnable =	~uSetFlag.bits.VoiceEnable;
-				Voice_Show_Init();	//声音开关
-			}
-			else
-			{
-				VoiceKeyHoldFlag = 0;
-			}
+			VoiceKeyHoldFlag = 0;
 		}
 	}
+	
 
 	if( !uKeyPress.bits.VoiceKeyPress )
 	{
@@ -356,21 +337,6 @@ void App_MemorymodeKeyProcess(void)
 		eMain_Task = Task_Testingmode;	//准备进入测量模式   
 	}
 
-	// //测量键长按3s关机
-	// if(uKeyHold.bits.OKeyHold)
-	// {
-	// 	eMain_Task = Task_Sleepmode;
-	// 	eSleepTask_Sta = Sleep_false;
-	// 	uKeyHold.bits.OKeyHold = 0;
-	// 	sOnKey.g_Key_Hold_cnt = 0;
-	// }
-
-	//记忆键长按三秒关机
-	// if(uKeyHold.bits.MemKeyHold)//长按关机
-	// {
-	// 	eMain_Task = Task_Sleepmode;
-	// 	eSleepTask_Sta = Sleep_false;
-	// }
 
 	if( !uKeyPress.bits.OKeyPress )
 	{
@@ -383,78 +349,60 @@ void App_MemorymodeKeyProcess(void)
 //模式键，切换不同模式
 void App_ModeKeyProcess(void)
 {
-	if(!F_Disp_Clean)
+	//er2,生产和黑体不能切换模式
+	if(uKeyPress.bits.ModeKeyPress && !uKeyRelease.bits.ModeKeyRelease && !uErrFlag.bits.Er2 && eTestmode_num != Insptectmode && eTestmode_num != Blackbodymode)
 	{
-		if(uKeyPress.bits.ModeKeyPress && !uKeyRelease.bits.ModeKeyRelease && !uErrFlag.bits.Er2)//er2不能进行声音开关
+		uKeyRelease.bits.ModeKeyRelease = 1;
+		ModeFlag ++;
+		if(ModeFlag > 2)
 		{
-			uKeyRelease.bits.ModeKeyRelease = 1;
-			ModeFlag ++;
-			if(ModeFlag > 2)
-			{
-				ModeFlag = 0;
-			}
-			Adc_Channel_Init(TPTONTC);	//切换模式重新采集NTC,耳温在wait时切换TP通道
-			Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
-			Er1_Display_Sound(RESET);		//清除Er1相关标志位
-			Auto_TurnOff_Time_Sel();//自动关机
-			uSetFlag.bits.Ready_First = 1;
-			eMain_Task = Task_ReadyMode;
-			eReadyTask_Sta = Ready_Refresh;
-
-			switch (ModeFlag)
-			{
-				case Mode_Human:	//人体温度
-					#if Func_Hall
-						if(Port_Hall)	//霍尔检测
-					#else
-						if(Port_Rod)	//检测杆检测
-					#endif
-					{
-						eTestmode_num = Earmode;
-					}
-					else
-					{
-						eTestmode_num = Foreheadmode;	//额温模式	
-					}	
-					break;
-				case Mode_Object:	//物体温度
-					eTestmode_num = Objectmode;	
-					Clr_Disp888();
-					Disp_Ready();	//首次开机必须显示_ _._
-		
-					break;
-				case Mode_Air:		//环境温度
-					//eReadyTask_Sta = Ready_DisAir;
-					eTestmode_num = Airmode;		
-					// LED_CloseAll();
-					//LED_Green_En();		//开启绿光
-					//g_3s_Count = CountDown_3s;	//开启背光3s倒计时
-					Clr_Disp888();
-					Disp_Temp(1,1,uSetFlag.bits.Unit,g_NtcStep);
-					eReadyTask_Sta = Ready_NoRefresh;
-					break;
-				default:
-					ModeFlag = 0;
-					break;
-			}
+			ModeFlag = 0;
 		}
-
-		// Disp_ModeSign();	//显示模式符号
-		// if( uSetFlag.bits.VoiceEnable == 1 )
-		// {
-		// 	#if Have_Voice_Func
-		// 		PlayStatueParam(2 , 0 , 0);
-		// 		PlayStatueParam(1 , Play_Stop,0);
-		// 		PlayStatueParam(1 , Play_Di,0);
-		// 	#else
-		// 		if(eTestmode_num != Earmode)
-		// 		{
-		// 			BZ_Beep50();
-		// 			BZ_Beep50();		//蜂鸣2声
-		// 		}
-		// 	#endif
-		// }
-
+		Adc_Channel_Init(TPTONTC);	//切换模式重新采集NTC,耳温在wait时切换TP通道
+		Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
+		Er1_Display_Sound(RESET);		//清除Er1相关标志位
+		Auto_TurnOff_Time_Sel();//自动关机
+		uSetFlag.bits.Ready_First = 1;
+		eMain_Task = Task_ReadyMode;
+		eReadyTask_Sta = Ready_Refresh;
+		#if Have_Voice_Func
+			PlayStatueParam(2 , 0 , 0);
+			PlayStatueParam(1 , Play_Stop,0);
+		#endif
+		switch (ModeFlag)
+		{
+			case Mode_Human:	//人体温度
+				#if Func_Hall
+					if(Port_Hall)	//霍尔检测
+				#else
+					if(Port_Rod)	//检测杆检测
+				#endif
+				{
+					eTestmode_num = Earmode;
+				}
+				else
+				{
+					eTestmode_num = Foreheadmode;	//额温模式	
+				}	
+				break;
+			case Mode_Air:		//环境温度
+				eTestmode_num = Airmode;		
+				Clr_Disp888();
+				lcd_badface_clr();		//清除哭脸
+				lcd_smileface_clr();	//清除笑脸
+				Disp_Temp(1,0,uSetFlag.bits.Unit,g_NtcStep);	//显示NTC的温度值
+				eReadyTask_Sta = Ready_NoRefresh;
+				break;
+			case Mode_Object:	//物体温度
+				eTestmode_num = Objectmode;	
+				Clr_Disp888();
+				Disp_Ready();	
+				break;
+			default:
+				ModeFlag = 0;
+				break;
+		}
+		
 	}
 	//没按键则清抬起标志
 	if( !uKeyPress.bits.ModeKeyPress )
@@ -467,28 +415,27 @@ void App_ModeKeyProcess(void)
 //记忆键功能
 void App_MemKeyProcess(void)
 {	
-	if(!F_Disp_Clean)
+
+	//ready模式下进记忆模式
+	if(eMain_Task == Task_ReadyMode && (eReadyTask_Sta== Ready_ReadyOk || eReadyTask_Sta == Ready_Timeout || eReadyTask_Sta == Ready_DisEr1))
 	{
-		//ready模式下进记忆模式
-		if(eMain_Task == Task_ReadyMode && (eReadyTask_Sta== Ready_ReadyOk || eReadyTask_Sta == Ready_Timeout || eReadyTask_Sta == Ready_DisEr1))
+		if(uKeyPress.bits.MemKeyPress && !uErrFlag.bits.Er2)//短按进入记忆模式
 		{
-			if(uKeyPress.bits.MemKeyPress && !uErrFlag.bits.Er2)//短按进入记忆模式
+			//进入记忆可能会打断5s计时等待后er1错误，在这里清除其标志位
+			Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
+			Er1_Display_Sound(RESET);		//清除Er1相关标志位，
+			Auto_TurnOff_Time_Sel();	//按下关机时间清0
+			F_Mem_FirstEnter = 0;
+			eMain_Task = Task_Memorymode;
+			eReadyTask_Sta = Ready_ReadyOk;
+			//耳温切换到tp通道采集
+			if (eTestmode_num == Earmode)
 			{
-				//进入记忆可能会打断5s计时等待后er1错误，在这里清除其标志位
-				Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
-				Er1_Display_Sound(RESET);		//清除Er1相关标志位，
-				Auto_TurnOff_Time_Sel();	//按下关机时间清0
-				F_Mem_FirstEnter = 0;
-				eMain_Task = Task_Memorymode;
-				eReadyTask_Sta = Ready_ReadyOk;
-				//耳温切换到tp通道采集
-				if (eTestmode_num == Earmode)
-				{
-					Adc_Channel_Init(NTCTOTP);
-				}
+				Adc_Channel_Init(NTCTOTP);
 			}
 		}
 	}
+	
 	//没按键则清抬起标志
 	if( !uKeyPress.bits.MemKeyPress )
 	{
@@ -501,27 +448,31 @@ void App_MemKeyProcess(void)
 void App_PCKeyProcess(void)
 {
 	//耳温/黑体/生产模式耳套按下则表示带耳套，反之无耳套
-    if( eTestmode_num != Objectmode)
-    {
-        if( !Port_Mode )
-        {
-			if(!uStaFlag.bits.ProbeCover && !uErrFlag.bits.Er2)
-			{
-				Auto_TurnOff_Time_Sel();//自动关机
-			}
-            lcd_pc_en();	//显示耳套符号
-            uStaFlag.bits.ProbeCover = 1;
-        }
-        else
-        {
-			if(uStaFlag.bits.ProbeCover && !uErrFlag.bits.Er2)
-			{
-				Auto_TurnOff_Time_Sel();//自动关机
-			}
-            lcd_pc_clr();	//消隐耳套符号
-            uStaFlag.bits.ProbeCover = 0;
-        }
-    }
+
+	if( !Port_Rod )
+	{
+		if(!uStaFlag.bits.ProbeCover && !uErrFlag.bits.Er2)
+		{
+			Auto_TurnOff_Time_Sel();//自动关机
+		}
+		lcd_pc_en();	//显示耳套符号
+		uStaFlag.bits.ProbeCover = 1;
+		if(eTestmode_num == Foreheadmode || eTestmode_num == Objectmode || eTestmode_num == Airmode)
+		{
+			lcd_pc_clr();	//消隐耳套符号
+		}
+	}
+	else
+	{
+		if(uStaFlag.bits.ProbeCover && !uErrFlag.bits.Er2)
+		{
+			Auto_TurnOff_Time_Sel();//自动关机
+		}
+		lcd_pc_clr();	//消隐耳套符号
+		uStaFlag.bits.ProbeCover = 0;
+	}
+
+	
 }
 #endif
 

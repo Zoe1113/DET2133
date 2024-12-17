@@ -27,8 +27,8 @@
 #define Port_Tx FP14	//mcu TX pin
 // #define Port_Ble_Power FP16	//蓝牙供电脚（低电平有效，输出使能口）
 #define Port_Ble_En FP20	//蓝牙使能脚（低电平有效，输出使能口）
-#define Port_Ble_Link FP21	//蓝牙连接成功脚（低电平有效，输入检测口）
-#define Port_Ble_Busy FP17	//蓝牙忙闲脚（低电平有效，输入检测口）
+#define Port_Ble_Link FP17	//蓝牙连接成功脚（低电平有效，输入检测口）
+#define Port_Ble_Busy FP21	//蓝牙忙闲脚（低电平有效，输入检测口）
 //#define Port_Power  FP16   //（power使能脚）
 
 //功能码

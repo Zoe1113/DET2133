@@ -14,8 +14,8 @@ typedef enum
 
 extern eTestmode eTestmode_num;
 extern bit F_Disp_Dash;
-extern bit F_Disp_Clean;
 
 void App_TestingMode(void);
+void TestTask_Reset(void);
 
 #endif

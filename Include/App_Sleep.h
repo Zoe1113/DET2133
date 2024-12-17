@@ -11,7 +11,7 @@ typedef enum
 }eSleep_Status;
 
 extern eSleep_Status eSleepTask_Sta;
-
+extern bit OFF_Flag;
 void App_Sleep(void);
 
 #endif

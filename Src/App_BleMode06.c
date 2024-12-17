@@ -80,7 +80,7 @@ void App_BleMode(void)
 				lcd_ble_en();
 				g_ble_timeout = 0;
 				g_ble_ack_timeout = 0;
-				g_AutoTurnOff_Count = CountDown_1min;   //此处可能为OTA时候造成的断线，然他保持至少一分钟在线的时间完成OTA
+				g_AutoTurnOff_Count = CountDown_30s; 
 				eBle_Sta = BLE_UpdateTime;
 			}
 			break;

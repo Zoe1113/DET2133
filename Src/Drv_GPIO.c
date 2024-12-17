@@ -104,9 +104,12 @@ void Forehead_Ear_Check(void)
 				Frist_Earmode = 1;
 				Frist_Mode = 1;
 				Frist_Foreheadmode = 0;
+				#if !Func_White
+				LED_White_En();
+				#endif
 			}
 
-   
+
 		}              
         else
         {
@@ -117,6 +120,9 @@ void Forehead_Ear_Check(void)
 				Frist_Mode = 1;
 				Frist_Earmode = 0;	
 			}
+			#if !Func_White
+				LED_White_Dis();
+			#endif
             
         }
 
@@ -146,25 +152,22 @@ void Forehead_Ear_Check(void)
 			Er1_Display_Sound(RESET);		//清除Er1相关标志位
 			Adc_Channel_Init(TPTONTC);
 			Auto_TurnOff_Time_Sel();
+			uSetFlag.bits.Ready_First = 1;
 			if( uSetFlag.bits.VoiceEnable == 1)// && ET_mode_buf
 			{
 				
 				#if Have_Voice_Func
+				if(eTestmode_num == Earmode)
+				{
 					PlayStatueParam(2 , 0 , 0);
 					PlayStatueParam(1 , Play_Stop,0);
-					PlayStatueParam(1 , Play_Di,0);
-				#else
-					if(eTestmode_num == Foreheadmode)
-					{
-						BZ_Beep50();
-						BZ_Beep50();		//蜂鸣2声
-					}
+				}
 				#endif
 			}
 			#if Have_Motor
 				if( (uSetFlag.bits.VoiceEnable == 0) &&(eTestmode_num != Earmode))
 				{
-					g_MotorSystick = 25;
+					g_MotorSystick = Vibration_time;
 				}			 	
 				else
 				{
@@ -220,7 +223,7 @@ void GPIO_Init(void)
 	//0: low level, 1: hFFigh level
 	P1 = 0xBF;			//0b1011 1111
 #else
-	//白灯输出不上拉高电平,MOSI输出不上拉高电平,MISO输入不上拉高电平,SCK输出不上拉高电平,TX输入不上拉高电平（防止向BLE供电）,RX输入不上拉,VOC_EN,BLE_LINK输入不上拉
+	//白灯输出不上拉高电平,MOSI输出不上拉高电平,MISO输入不上拉高电平,SCK输出不上拉高电平,TX输入不上拉高电平（防止向BLE供电）,RX输入不上拉,VOC_EN,BLE_LINK输入不上拉1
 	//0: input mode, 1: output mode
 	P1M = 0x4F;			//0b0100 1111
 	//0: LCD functon pin, 1: IO pin
@@ -284,16 +287,16 @@ void GPIO_PowerDown( void )
 {
 	//按键输入上拉高电平,XIN/XOUT输入不上拉0,E2供电口输出上拉搞
 	//0: input mode, 1: output mode
-	P0M = 0x3C;			//0b0011 1100
+	P0M = 0x0C;			//0b0000 1100
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P0UR = 0x33;		//0b0011 0011
+	P0UR = 0x32;		//0b0011 0010
 	//0: low level, 1: high level
 	P0 = 0x3F;			//0b0011 1111
 
 #if !Func_Ble
-	//白灯输入上拉高电平、MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输入不上拉0
+	//白灯输入上拉高电平、MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输出不上拉0
 	//0: input mode, 1: output mode
-	P1M = 0xFE;			//0b1111 1110
+	P1M = 0x5E;			//0b1101 1110
 	//0: LCD functon pin, 1: IO pin
 	P1SEG = 0xFF;		//均为普通IO口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
@@ -303,15 +306,15 @@ void GPIO_PowerDown( void )
 
 	//P23-P27为seg口，BLE_Link、BLE_EN、额温盖检测脚输出 上拉 高,其他均为输入上拉高电平
 	//0: input mode, 1: output mode
-	P2M = 0x07;			//0b 0000 0111
+	P2M = 0x01;			//0b 0000 0001
 	//0: LCD functon pin, 1: IO pin
-	P2SEG = 0x07;		//0b00000111,P23-P27均为LCD口
+	P2SEG = 0x03;		//0b00000011,P23-P27均为LCD口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
 	P2UR = 0x00;		//0b 0000 0000
 	//0: low level, 1: high level
 	P2 = 0x00;			//0b 0000 0000
 #else
-	//BLE_BUSY输出0,BZ不上拉输出0,MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输入不上拉0
+	//白灯输入上拉1,BZ不上拉输出0,MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输入不上拉0
 	//0: input mode, 1: output mode
 	P1M = 0xFE;			//0b 1111 1110
 	//0: LCD functon pin, 1: IO pin
@@ -319,28 +322,28 @@ void GPIO_PowerDown( void )
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
 	P1UR = 0x41;		//0b 0100 0001
 	//0: low level, 1: high level
-	P1 = 0x01;			//0b 0000 0001
+	P1 = 0x41;			//0b 0100 0001
 
 	//P23-P27为seg口，BLE_Link、BLE_EN、额温盖检测脚输出 上拉 高,其他均为输入上拉高电平
 	//0: input mode, 1: output mode
-	P2M = 0x07;			//0b 0000 0111
+	P2M = 0x00;			//0b 0000 0011
 	//0: LCD functon pin, 1: IO pin
-	P2SEG = 0x07;		//0b00000111,P23-P27均为LCD口
+	P2SEG = 0x03;		//0b00000011,P23-P27均为LCD口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
 	P2UR = 0x00;		//0b 0000 0000
 	//0: low level, 1: high level
 	P2 = 0x00;			//0b 0000 0000
 #endif
 
-    //MOTOR输出不上拉低,CF/C/F输出不上拉0，CAL/Debug输入上拉高电平,RGB输入上拉高
+    //MOTOR输出不上拉低，G320_EN输出不上拉高,CF/C/F输出不上拉0，CAL/Debug输入上拉高电平,RGB输入上拉高
     //0: input mode, 1: output mode
-    P5M = 0x05;			//0b0000 0101
+    P5M = 0x07;			//0b0000 0111
     //0: LCD functon pin, 1: IO pin
-    P5SEG = 0xFF;		//0b11111111
+    P5SEG = 0xFF;		//0b1111 1111
     //0: disable pullup, 1: enable pullup, pull resistor = 200k
-    P5UR = 0xFA;		//0b1111 1010
+    P5UR = 0xF8;		//0b1111 1000
     //0: low level, 1: high level
-    P5 = 0xFA;			//0b1111 1010
+    P5 = 0xF1;			//0b1111 0000
 
 
 	//0: input mode, 1: output mode

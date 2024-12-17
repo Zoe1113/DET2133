@@ -26,12 +26,12 @@ typedef union
 	uint8 g_KeyPress_Flag;		//表示按键按下标志位，抬起自动清0
 	struct
 	{
-		unsigned MemKeyPress:1;
+		unsigned ModeKeyPress:1;
         unsigned OKeyPress:1;
 		unsigned TKeyPress:1;
 		unsigned AKeyPress:1;
         unsigned VoiceKeyPress:1;
-		unsigned ModeKeyPress:1;
+		unsigned MemKeyPress:1;
 		unsigned CKeyPress:1;
 		unsigned DKeyPress:1;
 	}bits;
@@ -43,12 +43,12 @@ typedef union
 	uint8 g_KeyHold_Flag;		//表示按键保持长按标志位，抬起自动清0
 	struct
 	{
-        unsigned MemKeyHold:1;
+        unsigned ModeKeyHold:1;
 		unsigned OKeyHold:1;
 		unsigned TKeyHold:1;
 		unsigned AKeyHold:1;
         unsigned VoiceKeyHold:1;
-		unsigned ModeKeyHold:1;
+		unsigned MemKeyHold:1;
 		unsigned CKeyHold:1;
 		unsigned DKeyHold:1;
 	}bits;
@@ -60,12 +60,12 @@ typedef union
 	uint8 g_KeyRelease_Flag;	//表示按键抬起标志位，必须手动清0
 	struct
 	{
-        unsigned MemKeyRelease:1;
+        unsigned ModeKeyRelease:1;
 		unsigned OKeyRelease:1;
 		unsigned TKeyRelease:1;
 		unsigned KeyRelease:1;
         unsigned VoiceKeyRelease:1;
-		unsigned ModeKeyRelease:1;
+		unsigned MemKeyRelease:1;
 		unsigned CKeyRelease:1;
 		unsigned DKeyRelease:1;
 	}bits;
@@ -77,12 +77,12 @@ typedef union
 	uint8 g_KeyContinue_Flag;	//表示按键加速按标志位，抬起自动清0（实际未使用）
 	struct
 	{
-        unsigned MemKeyContinue:1;
+        unsigned ModeKeyContinue:1;
 		unsigned OKeyContinue:1;
 		unsigned TKeyContinue:1;
 		unsigned AKeyContinue:1;
         unsigned VoiceKeyContinue:1;
-		unsigned ModeKeyContinue:1;
+		unsigned MemKeyContinue:1;
 		unsigned CKeyContinue:1;
 		unsigned DKeyContinue:1;
 	}bits;

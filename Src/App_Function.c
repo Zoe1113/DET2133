@@ -46,8 +46,8 @@ void Tone_Init(void)
     else
     {
         #if Have_Motor
-            if( eTestmode_num != Earmode )
-                g_MotorSystick = 25;
+            //if( eTestmode_num != Earmode )
+                g_MotorSystick = Vibration_time;
         #endif
     }
         

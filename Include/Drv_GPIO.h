@@ -2,10 +2,10 @@
 #define _Drv_GPIO_H
 
 
-#define Port_Mem   	    FP00    //记忆键
+#define Port_Mode   	FP00    //模式键
 #define Port_On     	FP01    //开机键&测量键
 #define Port_Voice    	FP04    //声音键
-#define Port_Mode    	FP05    //模式键
+#define Port_Mem   	    FP05    //记忆键
 
 #define Port_Rod        FP52    //检测杆
 #define Port_Hall       FP53    //霍尔

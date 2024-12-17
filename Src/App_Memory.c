@@ -44,9 +44,10 @@ uint8 g_MonthMem_momeory;  //记忆更新下的模式记忆
 **************************************************************************/
 void App_Memory(void)
 {
-	App_PCKeyProcess();
+	App_PCKeyProcess();		//耳套检测
 	App_MemorymodeKeyProcess();
 	App_ModeKeyProcess();
+	App_VoiceKeyProcess();	//静音键
 	int16 L_Temp;
 
 	//首次进入吗？
@@ -170,7 +171,6 @@ static void Disp_MemNo(void)
     }
     else
     {
-        lcd_unit_c_clr();
         if( g_MemCount == 0 )
         {
             g_MemCount = g_MemTotalNo;
@@ -181,34 +181,28 @@ static void Disp_MemNo(void)
 		//显示记忆序号
 		F_DispNtc_Time_Date_En = Disable;
 		Clr_Disp();
+		Disp_VoiceSign();
         #if Func_Ble
-            if( !Port_Ble_Link && (eTestmode_num != Blackbodymode && eTestmode_num != Insptectmode))
+            if( !Port_Ble_Link &&  eTestmode_num != Insptectmode)
                 lcd_ble_en();//防止连接上之后进入记忆模式蓝牙符号丢失
         #endif
         
 		#if Second_LVD
-			if(uStaFlag.bits.midBat!=1)
-	        {
-                //正常电压
-	            lcd_bat_full_en();
-	            lcd_bat_en();
-	        }
+			LVD_Display();
 		#endif
 		j = i/10;
 		if( j )
 		{
-			lcd14 = DispTable[ j ] >> 8;
-		    lcd15 = DispTable[ j ];
+			lcd12 = DispTable[ j ] >> 8;
+		    lcd13 = DispTable[ j ];
 		}
 		j = i%10;
-        lcd12 = DispTable[ j ] >> 8;
-		lcd13 = DispTable[ j ];
+        lcd14 = DispTable[ j ] >> 8;
+		lcd15 = DispTable[ j ];
 		lcd_mem_en();	//M点亮
-		Disp_Unit();
 
         if(  uSetFlag.bits.VoiceEnable ==1 )
         {
-            lcd_voice_en();			//显示喇叭
             #if Have_Voice_Func 
                 PlayStatueParam(2 , 0 , 0);
                 PlayStatueParam(1 , Play_Stop,0);
@@ -218,10 +212,7 @@ static void Disp_MemNo(void)
 				BZ_Beep125();
             #endif	
         }
-        else
-        {
-            lcd_voice_clr();
-        }
+
 
     }
 }
@@ -308,18 +299,13 @@ static int16 Disp_Mem(void)
 			Disp_Temp(1,0,uSetFlag.bits.Unit,L_Temp);	//显示温度
 		}
 		lcd_mem_en();	//M点亮
-
+		Disp_Unit();
         if(  uSetFlag.bits.VoiceEnable ==1 )
         {
-            lcd_voice_en();			//显示喇叭
             #if Have_Voice_Func
 				g_DiDo = (uint16)L_Temp;
 				PlayStatueParam(1 , Play_MemTemp,0);
             #endif
-        }
-        else
-        {
-			lcd_voice_clr();        
         }
 
 		//计算下个查询地址

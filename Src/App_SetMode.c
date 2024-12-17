@@ -75,85 +75,103 @@ void App_SetMode(void)
 
 	#endif
 			{
-				if(uSetFlag.bits.Unit_Change == Unit_Change_En)
-				{
-					eSetTask = Set_Unit;
-				}
-				else
-				{
+
 					eSetTask = Set_TimeFormate;
-				}
+
+					if( uSetFlag.bits.TimeFormat )
+						Disp_12H();
+					else
+						Disp_24H();
+			
 			}
-			if(eMain_Task == Task_Unitmode)
+			if(eMain_Task == Task_Unitmode && uSetFlag.bits.Unit_Change == Unit_Change_En)
 			{
+				eSetTask = Set_Unit;
                 Clr_Disp();
 				Disp_Unit();
-				while (!Port_Voice)
-				{
-					//喂狗
-					WDTR = 0x5A;
-				}			
+				LVD_Display();
+		
 			}
 
-
-		
-	
+			while (!Port_Voice)
+			{
+				//喂狗
+				WDTR = 0x5A;
+			}	
 
 		//绑定检测判断，放这里的作用(只允许绑定厂在设置态进入，逼员工必须开机全显后进入)
 		// Cal_Inspect_Detect();
 	}
 
 	//开机键按下并抬起后才触发切换设置项并更新显示(ET05/ETH)
-	if( uKeyPress.bits.VoiceKeyPress )
+	if( uKeyPress.bits.VoiceKeyPress && eMain_Task == Task_Unitmode)
 	{
 		uKeyPress.bits.VoiceKeyPress = 0;
 		Auto_TurnOff_Time_Sel();	//按下关机时间清0
 		F_UpdateMenu = 1;
 		eSetTask ++;
+		if (eSetTask > Set_Unit)
+		{
+			eSetTask = Set_End;
+		}
+	
+	}
+
+	if( uKeyPress.bits.ModeKeyPress && eMain_Task == Task_Setmode)
+	{
+		uKeyPress.bits.ModeKeyPress = 0;
+		Auto_TurnOff_Time_Sel();	//按下关机时间清0
+		F_UpdateMenu = 1;
+		eSetTask ++;
 		//注意不同模式结束任务号不同
-		if(eMain_Task == Task_Unitmode)
-		{
-			if (eSetTask > Set_Unit)
-			{
-				eSetTask = Set_End;
-			}
-		}
-		else if (eMain_Task == Task_Setmode)
-		{
-			#if Have_Voice_Func
-				#if Have_VoiceLang_Change
-					if (eSetTask > Set_VoiceLang)
-					{
-						eSetTask = Set_End;
-					}
-				#else
-					if (eSetTask > Set_Day)
-					{
-						eSetTask = Set_End;
-					}
-				#endif
+		
+		#if Have_Voice_Func
+			#if Have_VoiceLang_Change
+				if (eSetTask > Set_VoiceLang)
+				{
+					eSetTask = Set_End;
+				}
 			#else
-
-					if (eSetTask > Set_Day)
-					{
-						eSetTask = Set_End;
-					}
-
-
+				if (eSetTask > Set_Day)
+				{
+					eSetTask = Set_End;
+				}
 			#endif
-		}
-		else
+		#else
+
+				if (eSetTask > Set_Day)
+				{
+					eSetTask = Set_End;
+				}
+
+
+		#endif
+	}
+
+#if ParamModif
+	if( uKeyPress.bits.ModeKeyPress && eMain_Task == Task_ParamModifymode)
+	{
+		uKeyPress.bits.ModeKeyPress = 0;
+		Auto_TurnOff_Time_Sel();	//按下关机时间清0
+		F_UpdateMenu = 1;
+		eSetTask ++;
+		//注意不同模式结束任务号不同
+		if (eSetTask > Set_TableNum)
 		{
-			if (eSetTask > Set_TableNum)
-			{
-				eSetTask = Set_End;
-			}
+			eSetTask = Set_End;
 		}
 	}
+#endif
 
 	if( uKeyPress.bits.OKeyPress )
 	{
 		uKeyRelease.bits.OKeyRelease = 0;
+		Auto_TurnOff_Time_Sel();	//按下关机时间清0
+	}
+
+	if( uKeyPress.bits.ModeKeyPress )
+	{
+		uKeyRelease.bits.ModeKeyRelease = 0;
 		Auto_TurnOff_Time_Sel();	//按下关机时间清0
 	}
 
@@ -324,6 +342,7 @@ void App_SetMode(void)
 			case Set_Unit:
                 Clr_Disp();
 				Disp_Unit();
+				LVD_Display();
 				break;
 
   			//语种
@@ -401,6 +420,7 @@ void App_SetMode(void)
 
 				//进入关机
 				eMain_Task = Task_Sleepmode;
+				OFF_Flag = 1;
 				break;
 		}
 	}

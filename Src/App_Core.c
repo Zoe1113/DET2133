@@ -242,6 +242,36 @@ uint8 Adc_Filter( int16 *ptr, uint8 length )
 }
 #endif
 
+/**************************************************************************
+函数名称：	uint8 Remove_Tp_Max_Min( int16 *ptr, uint8 length )
+函数功能：	获取额温tp count
+输入参数：	g_AdcData
+输出参数：	Forehead_array[]
+返回值  ：	无
+占用空间：	TBD
+备    注：	保密
+**************************************************************************/
+uint8 Remove_Tp_Max_Min( int16 *ptr, uint8 length )
+{
+	uint8 i=0, j;
+	uint8 Maxi, Mini;
+	Maxi = 0;
+	Mini = 0;
+	for( i = 1; i < length; i++)
+	{
+        if(ptr[Maxi]<ptr[i])
+			Maxi=i;
+        else if(ptr[Mini]>ptr[i])
+			Mini=i;
+	}
+	j = 0;
+    for( i = 0; i< length; i++ )
+	{
+        if(i!=Maxi && i!=Mini)
+            ptr[j++]=ptr[i];
+	}
+	return j;
+}
 
 
 /**************************************************************************
