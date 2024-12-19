@@ -289,7 +289,7 @@ void GPIO_PowerDown( void )
 	//0: input mode, 1: output mode
 	P0M = 0x0C;			//0b0000 1100
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P0UR = 0x32;		//0b0011 0010
+	P0UR = 0x33;		//0b0011 0011
 	//0: low level, 1: high level
 	P0 = 0x3F;			//0b0011 1111
 
@@ -326,7 +326,7 @@ void GPIO_PowerDown( void )
 
 	//P23-P27为seg口，BLE_Link、BLE_EN、额温盖检测脚输出 上拉 高,其他均为输入上拉高电平
 	//0: input mode, 1: output mode
-	P2M = 0x00;			//0b 0000 0011
+	P2M = 0x03;			//0b 0000 0011
 	//0: LCD functon pin, 1: IO pin
 	P2SEG = 0x03;		//0b00000011,P23-P27均为LCD口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
@@ -341,9 +341,9 @@ void GPIO_PowerDown( void )
     //0: LCD functon pin, 1: IO pin
     P5SEG = 0xFF;		//0b1111 1111
     //0: disable pullup, 1: enable pullup, pull resistor = 200k
-    P5UR = 0xF8;		//0b1111 1000
+    P5UR = 0xF0;		//0b1111 0000
     //0: low level, 1: high level
-    P5 = 0xF1;			//0b1111 0000
+    P5 = 0xF0;			//0b1111 0000
 
 
 	//0: input mode, 1: output mode
