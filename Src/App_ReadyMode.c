@@ -134,15 +134,24 @@ void App_ReadyMode(void)
 			//if(eTestmode_num == Insptectmode ||  eTestmode_num == Foreheadmode)
 			if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
 			{
+				#if Func_White	//额温的白色背光只有切换到额温的第一次会亮
+				if(uSetFlag.bits.Ready_First)
+				{
+					LED_CloseAll();
+					LED_White_En();
+					g_3s_Count = CountDown_3s;	//开启背光3s倒计时
+				}
+				#endif
+
 				if( uSetFlag.bits.VoiceEnable == 1)//开机第一次时的语音/蜂鸣声
 				{
 					if(uSetFlag.bits.Ready_First)
 					{
-						#if Func_White	//额温的白色背光只有切换到额温的第一次会亮
-							LED_CloseAll();
-							LED_White_En();
-							g_3s_Count = CountDown_3s;	//开启背光3s倒计时
-						#endif
+						// #if Func_White	//额温的白色背光只有切换到额温的第一次会亮
+						// 	LED_CloseAll();
+						// 	LED_White_En();
+						// 	g_3s_Count = CountDown_3s;	//开启背光3s倒计时
+						// #endif
 						#if Have_Voice_Func
 							PlayStatueParam(2 , 0 , 0);
 							PlayStatueParam(1 , Play_Stop,0);

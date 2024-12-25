@@ -297,13 +297,13 @@ void GPIO_PowerDown( void )
 #if !Func_Ble
 	//白灯输入上拉高电平、MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输出不上拉0
 	//0: input mode, 1: output mode
-	P1M = 0x5E;			//0b1101 1110
+	P1M = 0xDE;			//0b1101 1110
 	//0: LCD functon pin, 1: IO pin
 	P1SEG = 0xFF;		//均为普通IO口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
 	P1UR = 0x41;		//0b0100 0001
 	//0: low level, 1: high level
-	P1 = 0x01;			//0b0000 0001
+	P1 = 0x41;			//0b0100 0001
 
 	//P23-P27为seg口，BLE_Link、BLE_EN、额温盖检测脚输出 上拉 高,其他均为输入上拉高电平
 	//0: input mode, 1: output mode
