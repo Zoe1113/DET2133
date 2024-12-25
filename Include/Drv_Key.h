@@ -104,7 +104,7 @@ extern uKey3 uKeyRelease;
 extern uKey4 uKeyContinue;
 
 extern strKey sMemKey, sOnKey, sModeKey ,sVoiceKey;
-
+extern uint8 ModeFlag;
 // void App_KeyProcess(void);
 
 uint8 HalKey_ReadKeyVal(void);

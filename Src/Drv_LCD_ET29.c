@@ -311,7 +311,7 @@ void Disp_Temp(bit Point, bit High, bit Unit, int16 Temp)
     //lcd4 &= 0x01;
 	lcd13 = DispTable[ R_LCD3 ];
     lcd12 = DispTable[ R_LCD3 ] >> 8;
-	lcd15 = DispTable[ R_LCD4 ];
+	lcd15 = DispTable[ R_LCD4 ] | (lcd15 & 0x01);
     lcd14 = DispTable[ R_LCD4 ] >> 8;
 
 	//×î¸ßÎ»ÖÃ1

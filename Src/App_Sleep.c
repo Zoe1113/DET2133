@@ -9,7 +9,7 @@
 #include "Include.h"
 
 eSleep_Status eSleepTask_Sta;
-bit  OFF_Flag ;
+uint8  OFF_Flag ;
 
 void App_Sleep(void)
 {
@@ -139,7 +139,7 @@ void App_Sleep(void)
 			{
 				 while( Port_On && Port_Mode && (!Port_Hall || OFF_Flag) )
 				 {
-					if(!Port_Hall)
+					if(!Port_Hall || !Port_On)
 					{
 						OFF_Flag = 0;
 					}
@@ -154,7 +154,7 @@ void App_Sleep(void)
 					}
 				 }
 				 Delay50us(4);	//green mode fcpu=32768/4=8k，是normal模式的250分之一，故实际延迟去抖为50ms
-				 if( !Port_On || !Port_Mode || Port_Hall)
+				 if( !Port_On || !Port_Mode || (Port_Hall && OFF_Flag == 0))
 				 {
 					l_buf = 0;
 				 }
@@ -229,6 +229,7 @@ void App_Sleep(void)
 		//结束睡眠
 		case Sleep_End:
 			Port_Ble_En = 0; //蓝牙使能准备
+			ModeFlag = 0;
 			eSleepTask_Sta = Sleep_false;
 			eMain_Task = Task_InitMode;
 			#if Func_Hall

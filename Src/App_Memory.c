@@ -46,7 +46,7 @@ void App_Memory(void)
 {
 	App_PCKeyProcess();		//¶úÌ×¼ì²â
 	App_MemorymodeKeyProcess();
-	App_ModeKeyProcess();
+	//App_ModeKeyProcess();
 	App_VoiceKeyProcess();	//¾²Òô¼ü
 	int16 L_Temp;
 
