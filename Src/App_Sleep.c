@@ -218,7 +218,7 @@ void App_Sleep(void)
 				else
 				{
 					eSleepTask_Sta = Sleep_true;	//默认关机
-					if( uKeyPress.bits.OKeyPress || Port_Hall)
+					if( uKeyPress.bits.OKeyPress || (Port_Hall && OFF_Flag == 0))
 					{
 						eSleepTask_Sta = Sleep_End;	//只有开机键运行开机
 					}
@@ -232,29 +232,13 @@ void App_Sleep(void)
 			ModeFlag = 0;
 			eSleepTask_Sta = Sleep_false;
 			eMain_Task = Task_InitMode;
-			#if Func_Hall
-			if(Port_Hall)	//霍尔检测
-			#else
-			if(Port_Rod)	//检测杆检测
-			#endif
-			{
-				eTestmode_num = Earmode;
-			}
-			else
-			{
-				eTestmode_num = Foreheadmode;	//默认额温模式
-			}	
+			Forehead_Ear_Check(RESET);	
             uSetFlag.bits.Ready_First = 1;	//默认开启已就绪提示
 			HalKey_Set_KeyMode(Func_Long, &sOnKey);   //开机&测量键设为短长按
 			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//记忆键为短长按
 			HalKey_Set_KeyMode(Func_Short_Long, &sModeKey);	//模式键为长按
 			HalKey_Set_KeyMode(Func_Short_Long, &sVoiceKey);	//声音键为短长按
-			#if Have_Voice_Func
-				// AM5BA_SPI_Init();
-				// AM5BA_Power_Enable();
-				// PlayStatueParam(2 , 0 , 0);
-                // PlayStatueParam(1 , Play_Stop,0);
-			#endif
+			
 			break;
 		default:
 			break;

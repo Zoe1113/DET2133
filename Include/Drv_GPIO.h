@@ -23,9 +23,9 @@ extern uint8 g_MotorSystick;		//振动马达的剩余时间
 
 void Cal_Inspect_Detect(void);
 void CF_Check(void);
-void Forehead_Ear_Check(void);
 void Voice_Change(void);
 void GPIO_Init(void);
 void GPIO_PowerDown( void );
+void Forehead_Ear_Check(bit cmd);
 
 #endif

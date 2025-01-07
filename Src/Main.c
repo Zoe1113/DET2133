@@ -151,12 +151,12 @@ void main(void)
 				Light_RGB();
 			}
 
-			if( eMain_Task == Task_ReadyMode || eMain_Task == Task_Testingmode || eMain_Task == Task_Memorymode)
+			if( (eMain_Task == Task_ReadyMode && eReadyTask_Sta != Ready_Init) || eMain_Task == Task_Testingmode || eMain_Task == Task_Memorymode)
 			{
 				//3s背光倒计时
 				Led_CountDown_3s();
 				
-                Forehead_Ear_Check();
+                Forehead_Ear_Check(RUN);
 			}
 
 			//自动关机

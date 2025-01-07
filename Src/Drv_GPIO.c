@@ -84,12 +84,21 @@ void CF_Check(void)
 占用空间：	TBD
 备    注：	无
 **************************************************************************/
-void Forehead_Ear_Check(void)
+void Forehead_Ear_Check(bit cmd)
 {
 
 	static bit Frist_Earmode = 0;
 	static bit Frist_Foreheadmode = 0;
 	static bit Frist_Mode = 0;
+
+	if(cmd) // 状态复位
+	{
+		Frist_Earmode = 0;
+		Frist_Foreheadmode = 0;
+		Frist_Mode = 0;
+		return;
+	}
+
     if( eTestmode_num != Insptectmode && eTestmode_num != Blackbodymode && !uErrFlag.bits.Er2 ) 
     {
 		#if Func_Hall
@@ -126,10 +135,10 @@ void Forehead_Ear_Check(void)
             
         }
 
-		if(uSetFlag.bits.Ready_First)
-		{
-			Frist_Mode = 0;
-		}
+		// if(uSetFlag.bits.Ready_First)
+		// {
+		// 	Frist_Mode = 0;
+		// }
 
 		if(Frist_Mode)
 		{
