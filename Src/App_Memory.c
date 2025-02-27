@@ -44,7 +44,9 @@ uint8 g_MonthMem_momeory;  //记忆更新下的模式记忆
 **************************************************************************/
 void App_Memory(void)
 {
-	App_PCKeyProcess();		//耳套检测
+	#if Func_Probecover
+		App_PCKeyProcess();		//耳套检测
+	#endif
 	App_MemorymodeKeyProcess();
 	//App_ModeKeyProcess();
 	App_VoiceKeyProcess();	//静音键
@@ -69,7 +71,11 @@ void App_Memory(void)
 		#if Func_White
 			LED_White_En();
 		#else
-			LED_Green_En();		//开启绿光
+			#if Func_3color
+				LED_Green_En();
+			#else
+				LED_White_En();
+			#endif
 		#endif
 		g_3s_Count = CountDown_3s;		//开启背光3s倒计时
 		Disp_MemNo();
@@ -89,26 +95,24 @@ void App_Memory(void)
 		{
 			if( g_MonthMem_momeory & 0x40 || g_MonthMem_momeory & 0x20 ) 
             {
-               Fever_alarm(L_Temp); 
-			     g_3s_Count = CountDown_3s;	//开启背光3s倒计时
+                Fever_alarm(L_Temp); 
             }
 			else
 			{
 				LED_CloseAll();
                 #if Func_3color
-                    	#if Func_White
-							LED_White_En();
-						#else
-							LED_Green_En();		//开启绿光
-						#endif
-                    g_3s_Count = CountDown_3s;	//开启背光3s倒计时
-                #else
-					#if !Func_Reverse_Disp
-                    	LED_Green_Dis();
+					#if Func_White
+						LED_White_En();
+					#else
+						LED_Green_En();		//开启绿光
 					#endif
+                #else
+					LED_White_En();
+					
                 #endif
 			}
-			//g_3s_Count = CountDown_3s;		//开启背光3s倒计时
+			g_3s_Count = CountDown_3s;		//开启背光3s倒计时
+			
 		}
 	}
 }

@@ -115,7 +115,7 @@ void Fever_alarm(int16 Temp)
 		}
 	}
 #else
-	LED_Green_En();
+	LED_White_En();
 	if (uSetFlag.bits.Unit)
 	{
 		//нб╤х>=37.8отй╬©чаЁ

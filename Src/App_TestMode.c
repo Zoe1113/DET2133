@@ -59,6 +59,9 @@ void App_TestingMode(void)
 
 			//关背光
 			LED_CloseAll();
+			#if !Func_White //环形灯
+				LED_White_Dis();
+			#endif
 
 			#if Have_Voice_Func
 				PlayStatueParam(2 , 0 , 0);
@@ -294,7 +297,11 @@ void App_TestingMode(void)
 					#if Func_White
 						LED_White_En();
 					#else
-						LED_Green_En();		//开启绿光
+						#if Func_3color
+							LED_Green_En();
+						#else
+							LED_White_En();
+						#endif
 					#endif
 					break;
 				case Blackbodymode:
@@ -319,6 +326,10 @@ void App_TestingMode(void)
 
 		//显示处理
 		case Test_Disp:
+			#if !Func_White //环形灯
+				if(eTestmode_num == Earmode)
+					LED_White_En();
+			#endif
 			Clr_Disp888();
 			if(eTestmode_num == Foreheadmode || eTestmode_num == Objectmode)
 			{

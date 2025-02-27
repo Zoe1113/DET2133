@@ -32,8 +32,8 @@ enum eKeyValue
 enum ModeStatus
 {
 	Mode_Human = 0,		//人体模式
-	Mode_Air = 1,		//环境温度
-	Mode_Object = 2	//物温模式	
+	Mode_Object = 1,	//物温模式	
+	Mode_Air = 2		//环境温度
 };
 
 uKey1 uKeyPress;
@@ -385,6 +385,11 @@ void App_ModeKeyProcess(void)
 					eTestmode_num = Foreheadmode;	//额温模式	
 				}	
 				break;
+			case Mode_Object:	//物体温度
+				eTestmode_num = Objectmode;	
+				Clr_Disp888();
+				Disp_Ready();	
+				break;
 			case Mode_Air:		//环境温度
 				eTestmode_num = Airmode;		
 				Clr_Disp888();
@@ -392,11 +397,6 @@ void App_ModeKeyProcess(void)
 				lcd_smileface_clr();	//清除笑脸
 				Disp_Temp(1,0,uSetFlag.bits.Unit,g_NtcStep);	//显示NTC的温度值
 				eReadyTask_Sta = Ready_NoRefresh;
-				break;
-			case Mode_Object:	//物体温度
-				eTestmode_num = Objectmode;	
-				Clr_Disp888();
-				Disp_Ready();	
 				break;
 			default:
 				ModeFlag = 0;

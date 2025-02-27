@@ -388,32 +388,43 @@ void App_SetMode(void)
   			//关机保存参数，并还原当前任务变量
 			default:
 			#if ParamModif
+				
+				
 				I2C_masterInit();
-				#if OffsetTable2open
-					L_Buf = (uStaFlag.g_StatusFlag >> 2) & 0x01;
-					I2C_Byte_W(I2C_Add_Table, L_Buf);				//保存黑体修正表格
-					Delay1ms(5);
-				#endif
+				if(eMain_Task == Task_ParamModifymode)
+				{
+					#if OffsetTable2open
+						L_Buf = (uStaFlag.g_StatusFlag >> 2) & 0x01;
+						I2C_Byte_W(I2C_Add_Table, L_Buf);				//保存黑体修正表格
+						Delay1ms(5);
+					#endif
 
+					I2C_Byte_W(I2C_Add_Emission, g_Emission);		//保存人体发射率
+					Delay1ms(5);
+					I2C_Byte_W(I2C_Add_HumanRatio, g_HumanRatio);	//保存人体系数
+					Delay1ms(5);
+					#if Func_Probecover
+						I2C_Byte_W(I2C_Add_PcRatio, g_PcRatio);			//保存耳套系数
+						Delay1ms(5);
+					#endif
+				}
+				I2C_Disable();
+			#endif
 				//语种
 				#if Have_Voice_Func & Have_VoiceLang_Change
+					I2C_masterInit();
 					if( g_LLCode == lang_En)
 						I2C_Byte_W(I2C_Add_Voice, lang_En);		//保存当前语音语言
 					else
 						I2C_Byte_W(I2C_Add_Voice, lang_Ch);		//保存当前语音语言
 					Delay1ms(5);
 					AM5BA_Power_Disable();
+					I2C_Disable();
 				#endif
 
-				I2C_Byte_W(I2C_Add_Emission, g_Emission);		//保存人体发射率
-				Delay1ms(5);
-				I2C_Byte_W(I2C_Add_HumanRatio, g_HumanRatio);	//保存人体系数
-				Delay1ms(5);
-				#if Func_Probecover
-					I2C_Byte_W(I2C_Add_PcRatio, g_PcRatio);			//保存耳套系数
-				#endif
-				I2C_Disable();
-			#endif
+
+				
+			
 
 				//还原变量，保证下次进入首先初始化起始设置项
 				F_FirstEnter_SetMode = 0;

@@ -185,7 +185,8 @@ void Ear_Compensate(void)
 占用空间：	TBD
 备    注：	最终温度=(目标温度-环境温度)*补偿系数/1000+目标温度
 **************************************************************************/
-void Probecover_compensate(void)	//2126没有耳套补偿
+#if Func_Probecover
+void Probecover_compensate(void)	
 {
 	int16 a;
 
@@ -193,6 +194,9 @@ void Probecover_compensate(void)	//2126没有耳套补偿
 	a = (int32)a * g_PcRatio /1000;
 	g_TpStep += a;
 }
+#endif
+
+
 #endif
 
 #if ET_FT

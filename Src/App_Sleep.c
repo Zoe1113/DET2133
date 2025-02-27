@@ -63,6 +63,9 @@ void App_Sleep(void)
 			    Drv_BZ_Disable();
             #endif
 			LED_CloseAll();	//关背光
+			#if !Func_White //环形灯
+				LED_White_Dis();
+			#endif
 
 			// 判断是否为上电关机，为上电关机则不显示OFF
             if(uSetFlag.bits.PowerFirst)
@@ -137,12 +140,20 @@ void App_Sleep(void)
 			l_buf = 1;
 			while(l_buf)
 			{
-				 while( Port_On && Port_Mode && (!Port_Hall || OFF_Flag) )
+				#if  Func_TakeCoverAutoOn
+					
+				while( Port_On && Port_Mode && (!Port_Hall || OFF_Flag) )
+
 				 {
 					if(!Port_Hall || !Port_On)
 					{
 						OFF_Flag = 0;
 					}
+				#else
+				while( Port_On && Port_Mode )
+				{
+
+				#endif 
 					//喂狗
 		            WDTR = 0x5A;
 					if( FT0IRQ )
@@ -154,7 +165,11 @@ void App_Sleep(void)
 					}
 				 }
 				 Delay50us(4);	//green mode fcpu=32768/4=8k，是normal模式的250分之一，故实际延迟去抖为50ms
+				 #if Func_TakeCoverAutoOn
 				 if( !Port_On || !Port_Mode || (Port_Hall && OFF_Flag == 0))
+				 #else
+				 if( !Port_On || !Port_Mode )
+				 #endif
 				 {
 					l_buf = 0;
 				 }
@@ -218,7 +233,11 @@ void App_Sleep(void)
 				else
 				{
 					eSleepTask_Sta = Sleep_true;	//默认关机
+					#if Func_TakeCoverAutoOn
 					if( uKeyPress.bits.OKeyPress || (Port_Hall && OFF_Flag == 0))
+					#else
+					if( uKeyPress.bits.OKeyPress)
+					#endif
 					{
 						eSleepTask_Sta = Sleep_End;	//只有开机键运行开机
 					}
@@ -229,7 +248,7 @@ void App_Sleep(void)
 		//结束睡眠
 		case Sleep_End:
 			Port_Ble_En = 0; //蓝牙使能准备
-			ModeFlag = 0;
+			ModeFlag = 0;	//切换模式标志位
 			eSleepTask_Sta = Sleep_false;
 			eMain_Task = Task_InitMode;
 			Forehead_Ear_Check(RESET);	
@@ -238,7 +257,6 @@ void App_Sleep(void)
 			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//记忆键为短长按
 			HalKey_Set_KeyMode(Func_Short_Long, &sModeKey);	//模式键为长按
 			HalKey_Set_KeyMode(Func_Short_Long, &sVoiceKey);	//声音键为短长按
-			
 			break;
 		default:
 			break;

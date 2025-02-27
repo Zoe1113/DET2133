@@ -114,7 +114,7 @@ void Forehead_Ear_Check(bit cmd)
 				Frist_Mode = 1;
 				Frist_Foreheadmode = 0;
 				#if !Func_White
-				LED_White_En();
+					LED_White_En();
 				#endif
 			}
 
@@ -128,10 +128,11 @@ void Forehead_Ear_Check(bit cmd)
 				Frist_Foreheadmode = 1;
 				Frist_Mode = 1;
 				Frist_Earmode = 0;	
+				#if !Func_White
+					LED_White_Dis();
+				#endif
 			}
-			#if !Func_White
-				LED_White_Dis();
-			#endif
+
             
         }
 
@@ -147,15 +148,19 @@ void Forehead_Ear_Check(bit cmd)
         	eMain_Task = Task_ReadyMode;
 			eReadyTask_Sta = Ready_Refresh;
 			#if !Have_Voice_Func //蜂鸣款的在模式切换的时候，由于蜂鸣操作时延时。所以清屏和显示会有延时，为了解决这一问题把清屏的显示提前
-				Clr_Disp888();
-				Disp_Ready();	//首次开机必须显示_ _._
-				Disp_Unit();	//显示单位
-				Disp_VoiceSign(uSetFlag.bits.VoiceEnable);
+				// Clr_Disp888();
+				// Disp_Ready();	//首次开机必须显示_ _._
+				// Disp_Unit();	//显示单位
+				Disp_VoiceSign();
 				LED_CloseAll();
 				#if Func_White
 					LED_White_En();
 				#else
-					LED_Green_En();		//开启绿光
+					#if Func_3color
+						LED_Green_En();
+					#else
+						LED_White_En();
+					#endif
 				#endif
 			#endif
 			Disp_ModeSign();	//显示模式符号

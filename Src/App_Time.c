@@ -76,7 +76,14 @@ void Light_RGB(void)
 	{
 		F_First_Enter = 1;
 		g_20ms_Count = 0;
-		LED_Green_En();
+
+		#if Func_3color
+			LED_Green_En();
+		#else
+			LED_White_En();
+		#endif
+
+	
 	}
 
 #if Func_3color
@@ -106,7 +113,11 @@ void Light_RGB(void)
 	if (g_20ms_Count == 50)
 	{
 		#if !Func_Reverse_Disp
-			LED_Green_Dis();
+			#if Func_3color
+				LED_Green_Dis();
+			#else
+				LED_White_Dis();
+			#endif
 		#endif
 		g_20ms_Count = 0;
 		F_First_Enter = 0;

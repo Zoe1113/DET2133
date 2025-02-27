@@ -23,10 +23,16 @@
 void LED_CloseAll( void )
 {
 	#if !Func_Reverse_Disp
-		LED_Red_Dis();
-		LED_Yellow_Dis();
-		LED_Green_Dis();
-		#if Func_White
+	
+		#if Func_3color // 三色背光
+			LED_Red_Dis();
+			LED_Yellow_Dis();
+			LED_Green_Dis();
+		#else			//单白色背光
+			LED_White_Dis(); 
+		#endif
+
+		#if Func_White //环形灯
 			LED_White_Dis();
 		#endif
 	#endif

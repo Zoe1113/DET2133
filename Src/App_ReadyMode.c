@@ -115,7 +115,12 @@ void App_ReadyMode(void)
 				}
 			#else
 				LED_CloseAll();
-				LED_Green_En();		//开启绿光
+				
+				#if Func_3color
+					LED_Green_En();
+				#else
+					LED_White_En();
+				#endif
 			#endif
 			g_3s_Count = CountDown_3s;	//开启背光3s倒计时
 			

@@ -66,8 +66,8 @@ sfr lcd17 = 0xf11 ;
 #define lcd_smileface   0x02    //Ğ¦Á³
 #define lcd_ear         0x01    //¶úÎÂ·ûºÅ
 #define lcd_forehead    0x01    //¶îÎÂ·ûºÅ
-#define lcd_obj         0x02    //ÎïÎÂ·ûºÅ
-#define lcd_ntc         0x04    //»·ÎÂ·ûºÅ
+#define lcd_obj         0x04    //ÎïÎÂ·ûºÅ
+#define lcd_ntc         0x02    //»·ÎÂ·ûºÅ
 #define lcd_voice       0x04    //ÉùÒô·ûºÅ
 #define lcd_sound_off   0x08    //¾²Òô·ûºÅ
 #define lcd_unit_c      0x04    //µ¥Î»CµÄ_
