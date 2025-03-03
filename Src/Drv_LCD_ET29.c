@@ -1038,6 +1038,24 @@ void Disp_Debug2(void)
 // 	lcd9  = DispTable[ num ] ;
 //     lcd8  = DispTable[ num ] >> 8;
 // }
+// void Disp_Ear(uint8 L_buf)
+// {
+// 	uint16 R_LCD1,R_LCD2;
+// 	//取十位
+// 	R_LCD1 = L_buf /10;
+// 	//取个位
+// 	R_LCD2 = L_buf % 10;
+
+// 	lcd2 = S_E >> 8;
+//     lcd3 = S_E;
+// 	lcd4 = S_r >> 8;
+//     lcd5 = S_r;
+// 	lcd6 = DispTable[ R_LCD1 ] >> 8;
+//     lcd7 = DispTable[ R_LCD1 ];
+// 	lcd8 = DispTable[ R_LCD2 ] >> 8;
+// 	lcd9 = DispTable[ R_LCD2 ];
+// }
+
 
 /**************************************************************************
 函数名称：	Disp_12H()

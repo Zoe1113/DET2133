@@ -161,6 +161,7 @@ void Disp_Err(void);
 void Disp_Debug1(void);
 void Disp_Debug2(void);
 // void Disp_DebugPASn(uint8 num);
+void Disp_Ear(uint8 L_buf);
 void Disp_12H(void);
 void Disp_24H(void);
 void Disp_Ch(void);

@@ -258,7 +258,7 @@ void App_SetMode(void)
 			#endif
 
   			
-	#if ParamModif
+	#if 0
   			//发射率
 			case Set_Emission:
 				g_Emission ++;
@@ -266,21 +266,76 @@ void App_SetMode(void)
 					g_Emission = 96;
 				break;
 
-  			//人体系数
-			case Set_HumanRatio:
-				g_HumanRatio ++;
-				if( g_HumanRatio > 60 )
-					g_HumanRatio = 0;
-				break;
+			//人体系数
+		  	case Set_HumanRatio1:
+			  g_HumanRatio1 ++;
+			  if( g_HumanRatio1 > 60 )
+				  g_HumanRatio1 = 0;
+			  break;
+		  	//人体系数
+		  	case Set_HumanRatio2:
+			  g_HumanRatio2 ++;
+			  if( g_HumanRatio2 > 60 )
+				  g_HumanRatio2 = 0;
+			  break;
 
   			//耳套系数
-			#if Func_Probecover
+			#if 0
 				case Set_PcRatio:
 					g_PcRatio ++;
 					if( g_PcRatio > 85 )
 						g_PcRatio = 40;
 					break;
 			#endif
+
+			//耳套系数
+			case Set_Earcap10:
+				g_Earcap10 ++;
+				if( g_Earcap10 > 200 )
+					g_Earcap10 = 0;
+				break;
+
+			//耳套系数
+			case Set_Earcap15:
+				g_Earcap15 ++;
+				if( g_Earcap15 > 200 )
+					g_Earcap15 = 0;
+				break;
+
+			//耳套系数
+			case Set_Earcap20:
+				g_Earcap20 ++;
+				if( g_Earcap20 > 200 )
+					g_Earcap20 = 0;
+				break;
+
+			//耳套系数
+			case Set_Earcap25:
+				g_Earcap25 ++;
+				if( g_Earcap25 > 200 )
+					g_Earcap25 = 0;
+				break;
+
+			//耳套系数
+			case Set_Earcap30:
+				g_Earcap30 ++;
+				if( g_Earcap30 > 200 )
+					g_Earcap30 = 0;
+				break;
+
+			//耳套系数
+			case Set_Earcap35:
+				g_Earcap35 ++;
+				if( g_Earcap35 > 200 )
+					g_Earcap35 = 0;
+				break;
+
+			//耳套系数
+			case Set_Earcap40:
+				g_Earcap40 ++;
+				if( g_Earcap40 > 200 )
+					g_Earcap40 = 0;
+				break;
 			#if OffsetTable2open
  			//表格选项
 			case Set_TableNum:
@@ -357,7 +412,7 @@ void App_SetMode(void)
 					break;
 				#endif
 			#endif
-	#if ParamModif
+	#if 0
   			//发射率
 			case Set_Emission:
 				Clr_Disp();
@@ -365,16 +420,73 @@ void App_SetMode(void)
 				break;
 
   			//人体系数
-			case Set_HumanRatio:
-				Disp_Temp(0,0,0, (uint16)g_HumanRatio*10);
-				break;
+			case Set_HumanRatio1:   //无耳套
+				lcd_ear_en();
+				Disp_Temp(0,0,0, (uint16)g_HumanRatio1*10);
+			  break;
+		  	//人体系数
+		  	case Set_HumanRatio2:   //有耳套
+				lcd_pc_en();
+				lcd_ear_en();
+				Disp_Temp(0,0,0, (uint16)g_HumanRatio2*10);
+			  break;
 
   			//耳套系数
-			#if Func_Probecover
+			#if 0
 				case Set_PcRatio:
 					Disp_Temp(0,0,0,(uint16)g_PcRatio*10);
 					break;
 			#endif
+
+			//耳套系数
+			case Set_Earcap10:
+                Disp_Ear(10);
+                lcd_ear_clr();
+                lcd_pc_en();;
+				Disp_Temp(0,0,0,(uint16)g_Earcap10*10);
+				break;
+            //耳套系数
+			case Set_Earcap15:
+                Disp_Ear(15);
+                lcd_pc_en();
+				Disp_Temp(0,0,0,(uint16)g_Earcap15*10);
+				break;
+
+  			//耳套系数
+			case Set_Earcap20:
+                Disp_Ear(20);
+                lcd_pc_en();
+				Disp_Temp(0,0,0,(uint16)g_Earcap20*10);
+				break;
+
+  			//耳套系数
+			case Set_Earcap25:
+                Disp_Ear(25);
+                lcd_pc_en();
+				Disp_Temp(0,0,0,(uint16)g_Earcap25*10);
+				break;
+
+  			//耳套系数
+			case Set_Earcap30:
+                Disp_Ear(30);
+                lcd_pc_en();
+				Disp_Temp(0,0,0,(uint16)g_Earcap30*10);
+				break;
+
+  			//耳套系数
+			case Set_Earcap35:
+                Disp_Ear(35);
+                lcd_pc_en();
+				Disp_Temp(0,0,0,(uint16)g_Earcap35*10);
+				break;
+
+  			//耳套系数
+			case Set_Earcap40:
+                Disp_Ear(40);
+                lcd_pc_en();
+				Disp_Temp(0,0,0,(uint16)g_Earcap40*10);
+				break;
+
 			#if OffsetTable2open
  			//表格选项
 			case Set_TableNum:
@@ -393,20 +505,48 @@ void App_SetMode(void)
 				I2C_masterInit();
 				if(eMain_Task == Task_ParamModifymode)
 				{
-					#if OffsetTable2open
+					#if 1
 						L_Buf = (uStaFlag.g_StatusFlag >> 2) & 0x01;
 						I2C_Byte_W(I2C_Add_Table, L_Buf);				//保存黑体修正表格
 						Delay1ms(5);
 					#endif
 
+
+
 					I2C_Byte_W(I2C_Add_Emission, g_Emission);		//保存人体发射率
 					Delay1ms(5);
-					I2C_Byte_W(I2C_Add_HumanRatio, g_HumanRatio);	//保存人体系数
+
+					I2C_Byte_W(I2C_Add_HumanRatio1, g_HumanRatio1);	//保存人体系数
 					Delay1ms(5);
-					#if Func_Probecover
+
+					I2C_Byte_W(I2C_Add_HumanRatio2, g_HumanRatio2);	//保存人体系数
+					Delay1ms(5);
+
+					#if 0
 						I2C_Byte_W(I2C_Add_PcRatio, g_PcRatio);			//保存耳套系数
 						Delay1ms(5);
 					#endif
+
+					I2C_Byte_W(I2C_Add_Earcap10, g_Earcap10);		//g_Earcap10=100
+                    Delay1ms(5);
+
+                    I2C_Byte_W(I2C_Add_Earcap15, g_Earcap15);		//g_Earcap15=100
+                    Delay1ms(5);
+
+                    I2C_Byte_W(I2C_Add_Earcap20, g_Earcap20);		//g_Earcap15=100
+                    Delay1ms(5);
+
+                    I2C_Byte_W(I2C_Add_Earcap25, g_Earcap25);		//g_Earcap15=100
+                    Delay1ms(5);
+
+                    I2C_Byte_W(I2C_Add_Earcap30, g_Earcap30);		//g_Earcap15=100
+                    Delay1ms(5);
+
+                    I2C_Byte_W(I2C_Add_Earcap35, g_Earcap35);		//g_Earcap15=100
+                    Delay1ms(5);
+
+                    I2C_Byte_W(I2C_Add_Earcap40, g_Earcap40);		//g_Earcap15=100
+                    Delay1ms(5);
 				}
 				I2C_Disable();
 			#endif

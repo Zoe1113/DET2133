@@ -1238,3 +1238,33 @@ void BlackBodyOffset(void)
 	}
 }
 
+/**************************************************************************
+函数名称:	pcchange()
+函数功能:	耳套系数随NTC范围调整
+输入参数:	
+输出参数:	
+返回值  :	无
+占用空间:	TBD
+备    注:	无
+**************************************************************************/
+void pcchange(void)
+{
+    uint8 a;
+    a = g_NtcStep / 100;
+
+    //如果最低位为奇数，则奇数标志位置1
+    if( a <= 14 )
+        g_PcRatio = g_Earcap10;    //10
+    else if( a > 14 && a <= 18 )
+        g_PcRatio = g_Earcap15;    //15
+    else if( a > 18 && a <= 22 )
+		g_PcRatio = g_Earcap20;    //20
+    else if( a > 22 && a <= 28 )
+		g_PcRatio = g_Earcap25;    //25
+    else if( a > 28 && a <= 32 )
+		g_PcRatio = g_Earcap30;    //30
+    else if( a > 32 && a <= 38 )
+        g_PcRatio = g_Earcap35;    //35
+	else
+		g_PcRatio = g_Earcap40;    //40
+}

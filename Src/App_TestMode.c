@@ -118,7 +118,7 @@ void App_TestingMode(void)
 			if( Get_Adc_SingleRead() )
 			{
 				g_AdcCount ++;
-				if( eTestmode_num == Earmode )
+				if( eTestmode_num != Foreheadmode )
 				{
 					Get_Ear_Tp_Max( g_AdcData );		//找拐点
 					if( g_AdcCount == Ear_Num )
@@ -128,7 +128,8 @@ void App_TestingMode(void)
 							uErrFlag.bits.Er3 = 0;
 							g_AdcCount = Adc_Filter(Ear_array, Ear_Num);
 							g_TpCount_avg = Get_Ear_Tp_Avg(g_AdcCount);		//计算按下后平均值
-							g_TpCount = TpCount_Determine();		//目标温度决定算法
+							if(eTestmode_num == Earmode)
+								g_TpCount = TpCount_Determine();		//目标温度决定算法
 							g_AdcCount = 0;		//清0保证下次可以继续循环
 							g_TpCount = g_TpCount_avg;
 							Adc_Channel_Init(TPTONTC);//ADC初始化和通道切换
@@ -142,7 +143,7 @@ void App_TestingMode(void)
 						}
 					}
 				}
-				else if( eTestmode_num == Foreheadmode  )
+				else //if( eTestmode_num == Foreheadmode  )
 				{
 					Get_Forehead_Tp( g_AdcData );
 					if( g_AdcCount == Forehead_Num )
@@ -154,7 +155,7 @@ void App_TestingMode(void)
 						eTestTask_Sta = Test_Calculate;		//额温不采集测量后ntc
 					}
 				}
-				else
+				/*else
 				{
 					//其他模式只求平均，只是利用Get_Ear_Tp_Max获取原始值而已
 					Get_Ear_Tp_Max( g_AdcData );
@@ -177,7 +178,7 @@ void App_TestingMode(void)
 							eTestTask_Sta = Test_Disp;
 						}
 					}
-				}
+				}*/
 			}
 			break;
 

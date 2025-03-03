@@ -12,13 +12,23 @@
 
 //变量定义
 #if ET_FT !=1
-	uint8 g_HumanRatio;		//人体系数
+	uint8 g_HumanRatio1;		//人体系数1
+	uint8 g_HumanRatio2;		//人体系数2
 	uint8 g_Emission;		//发射率
 	#if Func_Probecover
 		uint8 g_PcRatio;		//耳套修正
 	#endif
+
 #endif
 uint8 g_CheckSum;		//CRC校验位
+
+uint8 g_Earcap10;		//变温增加
+uint8 g_Earcap15;		//变温增加
+uint8 g_Earcap20;		//变温增加
+uint8 g_Earcap25;		//变温增加
+uint8 g_Earcap30;		//变温增加
+uint8 g_Earcap35;		//变温增加
+uint8 g_Earcap40;		//变温增加
 
 /**************************************************************************
 函数名称：	void Param_Init(void)
@@ -87,15 +97,22 @@ void Param_Init(void)
 	I2C_Byte_W(I2C_Add_Emission, 0x64);		//发射率：1.00（仅耳温需要）
 	Delay1ms(5);
 
-	I2C_Byte_W(I2C_Add_HumanRatio, HumanRatio_Num);	//人体系数：0.02（仅耳温需要）
+	// I2C_Byte_W(I2C_Add_HumanRatio, HumanRatio_Num);
+	// Delay1ms(5);
+
+	//不带耳套的系数
+	I2C_Byte_W(I2C_Add_HumanRatio1, HumanRatio_Num);//人体系数：0.02（仅耳温需要）
+	Delay1ms(5);
+	//带耳套的系数
+	I2C_Byte_W(I2C_Add_HumanRatio2, 0x08);	//人体系数：0.008（仅耳温需要）
 	Delay1ms(5);
 
 	#if Func_Probecover
-		I2C_Byte_W(I2C_Add_PcRatio, 0x37);		//耳套系数：0.55（仅耳温需要）
-		Delay1ms(5);
+		// I2C_Byte_W(I2C_Add_PcRatio, 0x37);		//耳套系数：0.55（仅耳温需要）
+		// Delay1ms(5);
 
-		I2C_Byte_W(I2C_Add_PcStatus, 0x00);		//耳套状态：080H：有耳套；00H：无耳套（仅ETA需要）
-		Delay1ms(5);
+		// I2C_Byte_W(I2C_Add_PcStatus, 0x00);		//耳套状态：080H：有耳套；00H：无耳套（仅ETA需要）
+		// Delay1ms(5);
 	#endif
 #endif
 	I2C_Byte_W(I2C_Add_EarMem, 0x00);		//存耳温记忆总记录数
@@ -126,6 +143,30 @@ void Param_Init(void)
 
 	I2C_Byte_W(I2C_Add_IdentifyCode, IdentifyCode);		//识别码
 	Delay1ms(5);
+
+	#if Earcap_Texture == 1 //PP材质耳套
+		I2C_Byte_W(I2C_Add_Earcap10, 0x6E);		//g_Earcap10=110
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap15, 0x6C);		//g_Earcap15=108
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap20, 0x73);		//g_Earcap15=115
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap25, 0x76);		//g_Earcap15=118
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap30, 0x75);		//g_Earcap15=117
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap35, 0x75);		//g_Earcap15=117
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap40, 0x50);		//g_Earcap15=80
+		Delay1ms(5);
+	#endif
+
 
 	I2C_Disable();
 }
@@ -207,24 +248,49 @@ void Param_Check(void)
 	Delay1ms(5);
 
 	//耳温适用
-    g_HumanRatio = I2C_Random_R(I2C_Add_HumanRatio);	//人体系数
+    g_HumanRatio1 = I2C_Random_R(I2C_Add_HumanRatio1);	//人体系数 不戴耳套
+	Delay1ms(5);
+
+    //耳温适用
+    g_HumanRatio2 = I2C_Random_R(I2C_Add_HumanRatio2);	//人体系数 戴耳套
 	Delay1ms(5);
 
 	//耳套功能适用
 	#if Func_Probecover
-		g_PcRatio = I2C_Random_R(I2C_Add_PcRatio);		//耳套系数
-		Delay1ms(5);
+		// g_PcRatio = I2C_Random_R(I2C_Add_PcRatio);		//耳套系数
+		// Delay1ms(5);
 	//仅适用于A款程序
-    uStaFlag.bits.ProbeCover = 0;
-    if((I2C_Random_R(I2C_Add_PcStatus) & 0x01) == 0x01)
-   	    uStaFlag.bits.ProbeCover = 1; 		//耳套状态，0无耳套，1有耳套
-	Delay1ms(5);
+    // uStaFlag.bits.ProbeCover = 0;
+    // if((I2C_Random_R(I2C_Add_PcStatus) & 0x01) == 0x01)
+   	//     uStaFlag.bits.ProbeCover = 1; 		//耳套状态，0无耳套，1有耳套
+	// Delay1ms(5);
 	#endif
 
 #endif
 	uStaFlag.bits.Identify = 0;
 	if( I2C_Random_R(I2C_Add_IdentifyCode) != IdentifyCode )
 		uStaFlag.bits.Identify = 1;
+	Delay1ms(5);
+
+	g_Earcap10 = I2C_Random_R( I2C_Add_Earcap10 );
+	Delay1ms(5);
+
+    g_Earcap15 = I2C_Random_R( I2C_Add_Earcap15 );
+	Delay1ms(5);
+
+	g_Earcap20 = I2C_Random_R( I2C_Add_Earcap20 );
+	Delay1ms(5);
+
+	g_Earcap25 = I2C_Random_R( I2C_Add_Earcap25 );
+	Delay1ms(5);
+	
+	g_Earcap30 = I2C_Random_R( I2C_Add_Earcap30 );
+	Delay1ms(5);
+	
+	g_Earcap35 = I2C_Random_R( I2C_Add_Earcap35 );
+	Delay1ms(5);
+	
+	g_Earcap40 = I2C_Random_R( I2C_Add_Earcap40 );
 	Delay1ms(5);
 
 	I2C_Disable();
