@@ -320,5 +320,62 @@ END: ;        //跳转到此处。结束程序
 
 }
 
+/**************************************************************************
+函数名称：	void Er6_Display_Sound(bit cmd)
+函数功能：	Er6错误的蜂鸣和显示
+输入参数：	cmd->   0：运行蜂鸣和等待恢复   1：复位Er6错误
+输出参数：	无
+返回值  ：	无
+占用空间：	TBD
+**************************************************************************/
+#if Func_Obj	 
+void Er6_Display_Sound(bit cmd)
+{
+    static uint8 Er6_First_Enter = 0;      //注意该标志需要在关机时清零，否则在报Er6时关机，开机后第一次出现Er6时没有蜂鸣。
+    if(cmd == RESET)
+    {
+        Er6_First_Enter =0;              //提前退出函数，防止在清零该标志位时会蜂鸣。
+        goto END;                          //使用跳转语句跳到函数末尾，复位程序时蜂鸣
+    }
+    Disp_ErrMsg();	//显示错误信息
+    if(Er6_First_Enter == 0)
+    {
+		LED_CloseAll();
+        Er6_First_Enter = 1;
+        Auto_TurnOff_Time_Sel();
+        lcd_pc_en();	//显示耳套符号
+		lcd_obj_en();
+		lcd_ear_clr();
+		Er1_Display_Sound(RESET);		//清除Er1相关标志位
+		if( uSetFlag.bits.VoiceEnable == 1 )
+		{
+			#if Have_Voice_Func	//错误语音播报
+				g_DiDo = (uint16)uErrFlag.g_ErrFlag;
+				PlayStatueParam(2 , 0 , 0);
+				PlayStatueParam(1 , Play_Stop,0);
+				PlayStatueParam(1 , Play_Errmsg,0);
+			#else
+				BZ_Beep50();    //ER2报错，蜂鸣4声
+				BZ_Beep50();
+				BZ_Beep50();
+				BZ_Beep50();
+			#endif 
+		}
+	}
+    else
+    {
+        if(uErrFlag.bits.Er6 == 0)
+        {
+            Er6_First_Enter = 0;
+            lcd_pc_clr();
+            eReadyTask_Sta = Ready_Refresh;
+			uSetFlag.bits.Ready_First = 1;	//错误消除后蜂鸣2声
+        }
+    }
+END: ;                           //空语句结束程序
+}
+#endif
+
+
 
 

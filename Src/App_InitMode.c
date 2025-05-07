@@ -74,6 +74,7 @@ void App_InitMode(void)
 					LED_Reverse_Disp_En();
 				#endif
 				F_LED_Enable = Enable;	//¿ªÆô±³¹â
+				LED_Green_En();
 				Tone_Init();
                 // if(  uSetFlag.bits.VoiceEnable == 1 )
                 // {

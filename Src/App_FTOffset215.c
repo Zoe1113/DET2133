@@ -196,9 +196,7 @@ void Ear_Compensate(void)
 void Probecover_compensate(void)
 {
 	int16 a;
-    #if Earcap_Texture == 1 //PP¶úÌ×
     pcchange();
-    #endif
 	a = g_TpStep - g_NtcStep;
 	a = (int32)a * g_PcRatio /1000;
 	g_TpStep += a;

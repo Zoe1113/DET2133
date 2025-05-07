@@ -59,9 +59,9 @@ void App_TestingMode(void)
 
 			//关背光
 			LED_CloseAll();
-			#if !Func_White //环形灯
-				LED_White_Dis();
-			#endif
+			// #if !Func_White //环形灯
+			// 	LED_White_Dis();
+			// #endif
 
 			#if Have_Voice_Func
 				PlayStatueParam(2 , 0 , 0);
@@ -364,20 +364,21 @@ void App_TestingMode(void)
                 #if Have_Voice_Func
 					if( eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
 					{
+						PlayStatueParam(2 , 0 , 0);
 						if( uErrFlag.bits.Hi || uErrFlag.bits.Lo )
 						{
-							PlayStatueParam(2 , 0 , 0);
+						
 							PlayStatueParam(1 , Play_Di,0);
 						}
 						else if( uErrFlag.g_ErrFlag )
 						{
-							PlayStatueParam(2 , 0 , 0);
+							//PlayStatueParam(2 , 0 , 0);
 							g_DiDo = (uint16)uErrFlag.g_ErrFlag;
 							PlayStatueParam(1 , Play_Errmsg,0);
 						}
 						else
 						{
-							PlayStatueParam(2 , 0 , 0);
+							// PlayStatueParam(2 , 0 , 0);
 							g_DiDo = g_TpStep_Disp;
 							PlayStatueParam(1 , Play_Temp,0);
 						}

@@ -67,6 +67,8 @@ void Voice_Show_Init(void)
         #endif
         lcd_voice_clr();			//显示喇叭
 		lcd_sound_off_clr();
+		// 耳温模式不打开震动
+		g_MotorSystick = 0;
     }
     else                                //语音功能关闭
     {
@@ -76,20 +78,26 @@ void Voice_Show_Init(void)
 		#endif
 		lcd_voice_en();
 		lcd_sound_off_en();
-    }  
-	#if Have_Motor
-		// 如果语音功能关闭且不是在耳温模式下
-		if( (uSetFlag.bits.VoiceEnable == 0) && eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
+		if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
 		{
+			
 			// 打开震动
 			g_MotorSystick = Vibration_time;
 		}
-		else
-		{
-			// 耳温模式不打开震动
-			g_MotorSystick = 0;
-		}
-	#endif
+    }  
+	// #if Have_Motor
+	// 	// 如果语音功能关闭且不是在耳温模式下
+	// 	if( (uSetFlag.bits.VoiceEnable == 0) && eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
+	// 	{
+	// 		// 打开震动
+	// 		g_MotorSystick = Vibration_time;
+	// 	}
+	// 	else
+	// 	{
+	// 		// 耳温模式不打开震动
+	// 		g_MotorSystick = 0;
+	// 	}
+	// #endif
 }
 
 /**************************************************************************
@@ -380,7 +388,7 @@ void App_PCKeyProcess(void)
 {
 	//耳温/黑体/生产模式耳套按下则表示带耳套，反之无耳套
 
-	if( !Port_Rod )
+	if( !Port_Rod && Port_Hall)
 	{
 		if(!uStaFlag.bits.ProbeCover && !uErrFlag.bits.Er2)
 		{
