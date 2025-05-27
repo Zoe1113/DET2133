@@ -34,11 +34,11 @@ void Tone_Init(void)
 			AM5BA_SPI_Init();
 			AM5BA_Power_Enable();
 			AM5BA_Send_Cmd(LL_Stop, SS_Stop, Nodata);
-			Delay10ms(1);
+			Delay1ms(5);
 			AM5BA_Send_Cmd(LL_Volumn, SS_VolumeMax, Nodata);
-			Delay10ms(1);
+			Delay1ms(5);
 			AM5BA_Send_Cmd(LL_Broadcast, SS_Di, Nodata);
-			Delay10ms(1);
+			Delay1ms(5);
         #else
             BZ_Beep125();
         #endif

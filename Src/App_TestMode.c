@@ -64,8 +64,7 @@ void App_TestingMode(void)
 			// #endif
 
 			#if Have_Voice_Func
-				PlayStatueParam(2 , 0 , 0);
-                PlayStatueParam(1 , Play_Stop,0);
+				voice_stop();
 			#endif
 
 			//所有进入测量所需清除的变量都放在这里
@@ -118,6 +117,7 @@ void App_TestingMode(void)
 			if( Get_Adc_SingleRead() )
 			{
 				g_AdcCount ++;
+				//程序空间紧张，因此将耳温模式和其他模式合并在一起
 				if( eTestmode_num != Foreheadmode )
 				{
 					Get_Ear_Tp_Max( g_AdcData );		//找拐点
@@ -131,7 +131,8 @@ void App_TestingMode(void)
 							if(eTestmode_num == Earmode)
 								g_TpCount = TpCount_Determine();		//目标温度决定算法
 							g_AdcCount = 0;		//清0保证下次可以继续循环
-							g_TpCount = g_TpCount_avg;
+							if(eTestmode_num != Earmode)	//人体系数是20的用拐点算法，人体系数是45的用平均值算法
+								g_TpCount = g_TpCount_avg;
 							Adc_Channel_Init(TPTONTC);//ADC初始化和通道切换
 							eTestTask_Sta = Test_Get_Ntc;
 						}

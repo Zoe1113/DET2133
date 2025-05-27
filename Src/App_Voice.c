@@ -411,7 +411,7 @@ void voice_stop(void)
     #if Have_Voice_Func
         PlayStatueParam(2 , 0 , 0);
         PlayStatueParam(1 , Play_Stop,0);
-        App_PlayVoice3();
+        //App_PlayVoice3();
     #endif
 }
 

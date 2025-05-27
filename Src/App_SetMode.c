@@ -172,7 +172,7 @@ void App_SetMode(void)
 	if( uKeyPress.bits.ModeKeyPress )
 	{
 		uKeyRelease.bits.ModeKeyRelease = 0;
-		Auto_TurnOff_Time_Sel();	//按下关机时间清0
+		//Auto_TurnOff_Time_Sel();	//按下关机时间清0
 	}
 
 	//设置键按下则立即触发累加并更新显示（ET215）

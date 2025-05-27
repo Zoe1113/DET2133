@@ -163,8 +163,7 @@ static void Disp_MemNo(void)
         if(  uSetFlag.bits.VoiceEnable ==1 )
         {
             #if Have_Voice_Func
-                PlayStatueParam(2 , 0 , 0);
-                PlayStatueParam(1 , Play_Stop,0);
+				voice_stop();
                 PlayStatueParam(1 , Play_NoMem,0);
 			#else
 				BZ_Beep125();
@@ -208,8 +207,7 @@ static void Disp_MemNo(void)
         if(  uSetFlag.bits.VoiceEnable ==1 )
         {
             #if Have_Voice_Func 
-                PlayStatueParam(2 , 0 , 0);
-                PlayStatueParam(1 , Play_Stop,0);
+				voice_stop();
                 g_DiDo = i;
                 PlayStatueParam(1 , Play_MemNum,0);
 			#else
@@ -291,10 +289,10 @@ static int16 Disp_Mem(void)
 		L_Temp = CToF(L_Temp);
 		if( eTestmode_num == Insptectmode )
         {
-            lcd15 = 0x01;
-            lcd14 = 0x00;
-            lcd13 = 0x00;
-            lcd12 = 0x00;
+            // lcd15 = 0x01;
+            // lcd14 = 0x00;
+            // lcd13 = 0x00;
+            // lcd12 = 0x00;
             Disp_Temp(1,1,uSetFlag.bits.Unit,L_Temp);	//ÏÔÊ¾ÎÂ¶È  
         }	
 		else

@@ -158,8 +158,7 @@ void App_ReadyMode(void)
 						// 	g_3s_Count = CountDown_3s;	//开启背光3s倒计时
 						// #endif
 						#if Have_Voice_Func
-							PlayStatueParam(2 , 0 , 0);
-							PlayStatueParam(1 , Play_Stop,0);
+							voice_stop();
 							PlayStatueParam(1 , Play_Di,0);
 						#else
 							BZ_Beep50();
@@ -206,10 +205,18 @@ void App_ReadyMode(void)
 			Er2_Display_Sound(RUN);		//Er2错误处理
 			
 		break;
+
+		#if Func_Obj
+        case Ready_DisEr6:
+            Er6_Display_Sound(RUN);      //Er6的声音显示
+            break;
+        #endif
 		
 		case Ready_DisAir:	//显示环温
 			Clr_Disp888();
-			Disp_Temp(1,0,uSetFlag.bits.Unit,g_NtcStep);
+            L_Disp_Ntc = CToF(g_NtcStep);
+            L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
+            Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);
 		break;
 		//已就绪状态
 		case Ready_ReadyOk:
@@ -287,12 +294,15 @@ void Er2_Display_Sound(bit cmd)
 		Auto_TurnOff_Time_Sel();
 		Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
 		Er1_Display_Sound(RESET);		//清除Er1相关标志位
+		if(eMain_Task != Task_Memorymode)
+		{
+			lcd_mem_clr();
+		}
 		if( uSetFlag.bits.VoiceEnable == 1 )
 		{
 			#if Have_Voice_Func	//错误语音播报
 				g_DiDo = (uint16)uErrFlag.g_ErrFlag;
-				PlayStatueParam(2 , 0 , 0);
-				PlayStatueParam(1 , Play_Stop,0);
+				voice_stop();
 				PlayStatueParam(1 , Play_Errmsg,0);
 			#else
 				BZ_Beep50();    //ER2报错，蜂鸣4声
@@ -351,8 +361,7 @@ void Er6_Display_Sound(bit cmd)
 		{
 			#if Have_Voice_Func	//错误语音播报
 				g_DiDo = (uint16)uErrFlag.g_ErrFlag;
-				PlayStatueParam(2 , 0 , 0);
-				PlayStatueParam(1 , Play_Stop,0);
+				voice_stop();
 				PlayStatueParam(1 , Play_Errmsg,0);
 			#else
 				BZ_Beep50();    //ER2报错，蜂鸣4声

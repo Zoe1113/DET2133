@@ -24,6 +24,7 @@ void App_Sleep(void)
 			Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
 			Er1_Display_Sound(RESET);
 			Er2_Display_Sound(RESET);
+			Er6_Display_Sound(RESET);
 			//如果进入过检验模式或黑体模式，则需初始化
 			if(eTestmode_num == Insptectmode )
 			{
@@ -252,6 +253,7 @@ void App_Sleep(void)
 			eSleepTask_Sta = Sleep_false;
 			eMain_Task = Task_InitMode;
 			Forehead_Ear_Check(RESET);	
+			eTestmode_num = Earmode;
             uSetFlag.bits.Ready_First = 1;	//默认开启已就绪提示
 			HalKey_Set_KeyMode(Func_Long, &sOnKey);   //开机&测量键设为短长按
 			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//记忆键为短长按

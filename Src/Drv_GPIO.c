@@ -165,6 +165,7 @@ void Forehead_Ear_Check(bit cmd)
 			#endif
 			Disp_ModeSign();	//显示模式符号
 			Er1_Display_Sound(RESET);		//清除Er1相关标志位
+			Er6_Display_Sound(RESET);		//清除Er6相关标志位
 			Adc_Channel_Init(TPTONTC);
 			Auto_TurnOff_Time_Sel();
 			uSetFlag.bits.Ready_First = 1;
@@ -174,8 +175,7 @@ void Forehead_Ear_Check(bit cmd)
 				#if Have_Voice_Func
 				if(eTestmode_num == Earmode)
 				{
-					PlayStatueParam(2 , 0 , 0);
-					PlayStatueParam(1 , Play_Stop,0);
+					voice_stop();
 				}
 				#endif
 			}

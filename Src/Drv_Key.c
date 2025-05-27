@@ -45,6 +45,7 @@ strKey sModeKey, sOnKey, sVoiceKey, sMemKey ;
 bit VoiceKeyHoldFlag= 0;
 uint8 ModeFlag = 0;
 uint16 L_OnPressTime = 0;
+unsigned long L_Disp_Ntc; //显示环温
 /**************************************************************************
 函数名称：	Voice_Show_Init()
 函数功能：	开关语音函数
@@ -59,8 +60,7 @@ void Voice_Show_Init(void)
     if(uSetFlag.bits.VoiceEnable==1)     //语音功能开启
     {
         #if Have_Voice_Func             
-            PlayStatueParam(2 , 0 , 0);
-            PlayStatueParam(1 , Play_Stop,0);
+			voice_stop();
             PlayStatueParam(1 , Play_Di,0);
         #else
             BZ_Beep125();
@@ -124,7 +124,7 @@ void Voice_Show_Init(void)
 //长按测量键8s进入黑体
 void APP_Enter_Blackbodymode(void)
 {
-	if(eReadyTask_Sta == Ready_ReadyOk)
+	if(eReadyTask_Sta == Ready_ReadyOk || eReadyTask_Sta == Ready_DisEr2)
 	{
 		if(uKeyPress.bits.OKeyPress)
 		{
@@ -162,11 +162,6 @@ void APP_Enter_Blackbodymode(void)
 			HalKey_KeyClr();
 			Adc_Channel_Init(TPTONTC);	//某些模式会只采集tp故必须切回ntc采集，ADC初始化和通道切换
 			Er2_Display_Sound(RESET);//复位Er2错误
-			// #if Func_Ble
-			// 	eBle_Sta = Ble_Disable;	
-			// 	F_Ble_En = Disable;
-			// 	F_Ble_Blink = Disable;	//关闪烁
-			// #endif
 			#if Func_Ble
 				if( !Port_Ble_Link )
 				{
@@ -273,7 +268,17 @@ void App_MemorymodeKeyProcess(void)
 			Disp_Time(0,uSetFlag.bits.TimeFormat,g_Month,g_Day);	//日期显示3s
 			F_DispNtc_Time_Date_En = Enable;
 		}
-		eMain_Task = Task_Testingmode;	//准备进入测量模式   
+		if(uErrFlag.bits.Er6)
+		{
+			Er6_Display_Sound(RESET);
+			eMain_Task = Task_ReadyMode;
+			eReadyTask_Sta = Ready_DisEr6;	//只要有错需跳转到错误处理状态
+		}
+		else
+		{
+			eMain_Task = Task_Testingmode;	//准备进入测量模式   
+		}
+
 	}
 
 
@@ -305,8 +310,7 @@ void App_ModeKeyProcess(void)
 		eMain_Task = Task_ReadyMode;
 		eReadyTask_Sta = Ready_Refresh;
 		#if Have_Voice_Func
-			PlayStatueParam(2 , 0 , 0);
-			PlayStatueParam(1 , Play_Stop,0);
+			voice_stop();
 		#endif
 		switch (ModeFlag)
 		{
@@ -334,8 +338,11 @@ void App_ModeKeyProcess(void)
 				Clr_Disp888();
 				lcd_badface_clr();		//清除哭脸
 				lcd_smileface_clr();	//清除笑脸
-				Disp_Temp(1,0,uSetFlag.bits.Unit,g_NtcStep);	//显示NTC的温度值
+				L_Disp_Ntc = CToF(g_NtcStep);
+                L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
+                Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);	//显示NTC的温度值
 				eReadyTask_Sta = Ready_NoRefresh;
+				Er6_Display_Sound(RESET);//重置ER6
 				break;
 			default:
 				ModeFlag = 0;
@@ -356,7 +363,7 @@ void App_MemKeyProcess(void)
 {	
 
 	//ready模式下进记忆模式
-	if(eMain_Task == Task_ReadyMode && (eReadyTask_Sta== Ready_ReadyOk || eReadyTask_Sta == Ready_Timeout || eReadyTask_Sta == Ready_DisEr1))
+	if(eMain_Task == Task_ReadyMode && (eReadyTask_Sta== Ready_ReadyOk || eReadyTask_Sta == Ready_Timeout || eReadyTask_Sta == Ready_DisEr1 || eReadyTask_Sta == Ready_DisEr6))
 	{
 		if(uKeyPress.bits.MemKeyPress && !uErrFlag.bits.Er2)//短按进入记忆模式
 		{
@@ -396,10 +403,23 @@ void App_PCKeyProcess(void)
 		}
 		lcd_pc_en();	//显示耳套符号
 		uStaFlag.bits.ProbeCover = 1;
-		if(eTestmode_num == Foreheadmode || eTestmode_num == Objectmode || eTestmode_num == Airmode)
+		if(eTestmode_num == Foreheadmode || eTestmode_num == Airmode)
 		{
 			lcd_pc_clr();	//消隐耳套符号
 		}
+		if (eTestmode_num == Objectmode  )
+		{
+			uErrFlag.g_ErrFlag = 0;	//清除其他错误
+			uErrFlag.bits.Er6 = 1;
+			lcd_pc_en();	//显示耳套符号	
+			if(eMain_Task != Task_Memorymode)	
+			{
+				eReadyTask_Sta = Ready_DisEr6;	//只要有错需跳转到错误处理状态
+				eMain_Task = Task_ReadyMode;
+			}
+	
+		}
+
 	}
 	else
 	{
@@ -409,7 +429,24 @@ void App_PCKeyProcess(void)
 		}
 		lcd_pc_clr();	//消隐耳套符号
 		uStaFlag.bits.ProbeCover = 0;
+		uErrFlag.bits.Er6 = 0;
+
 	}
+
+	// //物温模式耳套按下报错，抬起恢复
+	// if (eTestmode_num == Objectmode  )
+	// {
+	// 	if ( !Port_Rod && !Port_Hall &&!uErrFlag.bits.Er2)
+	// 	{
+
+	// 	}
+	// 	//发生过Er6错误，耳套检测键抬起，则恢复
+	// 	if ( Port_Rod )
+	// 	{
+	// 		lcd_pc_clr();	//消隐耳套符号
+	// 		uErrFlag.bits.Er6 = 0;
+	// 	}
+	// }
 
 	
 }
