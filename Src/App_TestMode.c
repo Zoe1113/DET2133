@@ -128,11 +128,15 @@ void App_TestingMode(void)
 							uErrFlag.bits.Er3 = 0;
 							g_AdcCount = Adc_Filter(Ear_array, Ear_Num);
 							g_TpCount_avg = Get_Ear_Tp_Avg(g_AdcCount);		//计算按下后平均值
+							
 							if(eTestmode_num == Earmode)
 								g_TpCount = TpCount_Determine();		//目标温度决定算法
+
 							g_AdcCount = 0;		//清0保证下次可以继续循环
+
 							if(eTestmode_num != Earmode)	//人体系数是20的用拐点算法，人体系数是45的用平均值算法
 								g_TpCount = g_TpCount_avg;
+
 							Adc_Channel_Init(TPTONTC);//ADC初始化和通道切换
 							eTestTask_Sta = Test_Get_Ntc;
 						}
@@ -342,6 +346,7 @@ void App_TestingMode(void)
 			if( uErrFlag.g_ErrFlag )
 			{
 				Disp_ErrMsg();
+				F_Disp_Temp_Status = 0;
 			}
 			else
 			{
@@ -353,7 +358,8 @@ void App_TestingMode(void)
 				else
 					Disp_Temp(1,0,uSetFlag.bits.Unit,g_TpStep_Disp);	//显示温度
 				Mem_Store(g_TpStep);	//存放的是0.01精度的
-                
+				F_Disp_Temp_Status = 1;
+                g_Temp_Disp = g_TpStep;
 				//只有有测量结果时才会上传记忆
                 #if Func_Ble
 					F_Ble_FirstEnter = 0;//重新读取

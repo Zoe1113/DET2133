@@ -88,7 +88,7 @@ void App_Sleep(void)
 		//等待按键释放
 		case Sleep_waitkey:
 			//如果关机时一直长按则进入黑体模式(此处与原汇编不一样)
-			if(uKeyPress.bits.OKeyPress && !uStaFlag.bits.LowBat)
+			if(uKeyPress.bits.OKeyPress)
 			{
 
 			}
@@ -254,6 +254,7 @@ void App_Sleep(void)
 			eMain_Task = Task_InitMode;
 			Forehead_Ear_Check(RESET);	
 			eTestmode_num = Earmode;
+			F_Disp_Temp_Status = 0;
             uSetFlag.bits.Ready_First = 1;	//默认开启已就绪提示
 			HalKey_Set_KeyMode(Func_Long, &sOnKey);   //开机&测量键设为短长按
 			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//记忆键为短长按

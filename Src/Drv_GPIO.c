@@ -145,6 +145,7 @@ void Forehead_Ear_Check(bit cmd)
 		{
 			Frist_Mode = 0;
 			ModeFlag = 0;
+			F_Disp_Temp_Status = 0;
         	eMain_Task = Task_ReadyMode;
 			eReadyTask_Sta = Ready_Refresh;
 			#if !Have_Voice_Func //蜂鸣款的在模式切换的时候，由于蜂鸣操作时延时。所以清屏和显示会有延时，为了解决这一问题把清屏的显示提前

@@ -214,9 +214,10 @@ void App_ReadyMode(void)
 		
 		case Ready_DisAir:	//显示环温
 			Clr_Disp888();
-            L_Disp_Ntc = CToF(g_NtcStep);
-            L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
-            Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);
+            // L_Disp_Ntc = CToF(g_NtcStep);
+            // L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
+            // Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);
+			Switch_Temp();
 		break;
 		//已就绪状态
 		case Ready_ReadyOk:

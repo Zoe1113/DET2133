@@ -297,6 +297,9 @@ static int16 Disp_Mem(void)
         }	
 		else
 		{
+			F_Disp_Temp_Status = 1;
+            g_Temp_Disp  =  L_Temp;
+			
 			L_Temp = Temp_Resolution_Adjust(L_Temp);
 			Disp_Temp(1,0,uSetFlag.bits.Unit,L_Temp);	//ÏÔÊ¾ÎÂ¶È
 		}

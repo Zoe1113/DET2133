@@ -105,9 +105,11 @@ extern uKey4 uKeyContinue;
 
 extern strKey sMemKey, sOnKey, sModeKey ,sVoiceKey;
 extern uint8 ModeFlag;
+extern uint8 F_Disp_Temp_Status;
 extern unsigned long L_Disp_Ntc; //œ‘ æª∑Œ¬
+extern int16 g_Temp_Disp;
 // void App_KeyProcess(void);
-
+void Switch_Temp(void);
 uint8 HalKey_ReadKeyVal(void);
 void HalKey_KeyScan(void);
 void HalKey_Scan(uint8 L_Keydata,  strKey *sKey);

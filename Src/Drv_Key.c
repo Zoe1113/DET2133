@@ -46,6 +46,9 @@ bit VoiceKeyHoldFlag= 0;
 uint8 ModeFlag = 0;
 uint16 L_OnPressTime = 0;
 unsigned long L_Disp_Ntc; //显示环温
+int16 g_Temp_Disp;
+unsigned long L_TpStep;
+uint8 F_Disp_Temp_Status = 0;
 /**************************************************************************
 函数名称：	Voice_Show_Init()
 函数功能：	开关语音函数
@@ -99,6 +102,14 @@ void Voice_Show_Init(void)
 	// 	}
 	// #endif
 }
+void Switch_Temp(void)
+{
+	L_Disp_Ntc = CToF(g_NtcStep);
+	L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
+	Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);
+}
+
+
 
 /**************************************************************************
 函数名称：	void App_KeyProcess(void)
@@ -223,8 +234,14 @@ void App_VoiceKeyProcess(void)
 					Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
 					Er1_Display_Sound(RESET);		//清除Er1相关标志位
 					eReadyTask_Sta = Ready_NoRefresh;
-					eMain_Task = Task_Unitmode;	//进入单位设置模式
-					eSetTask = Set_Unit;
+					uSetFlag.bits.Unit = ~uSetFlag.bits.Unit;
+					Disp_Unit();	//显示单位
+					if(F_Disp_Temp_Status)
+					{
+						L_TpStep = CToF(g_Temp_Disp);
+						L_TpStep = Temp_Resolution_Adjust(L_TpStep);
+						Disp_Temp(1,0,uSetFlag.bits.Unit,L_TpStep);
+					}
 				}
 			}
 		#endif
@@ -307,6 +324,7 @@ void App_ModeKeyProcess(void)
 		Er1_Display_Sound(RESET);		//清除Er1相关标志位
 		Auto_TurnOff_Time_Sel();//自动关机
 		uSetFlag.bits.Ready_First = 1;
+		F_Disp_Temp_Status = 0;
 		eMain_Task = Task_ReadyMode;
 		eReadyTask_Sta = Ready_Refresh;
 		#if Have_Voice_Func
@@ -338,9 +356,10 @@ void App_ModeKeyProcess(void)
 				Clr_Disp888();
 				lcd_badface_clr();		//清除哭脸
 				lcd_smileface_clr();	//清除笑脸
-				L_Disp_Ntc = CToF(g_NtcStep);
-                L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
-                Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);	//显示NTC的温度值
+				// L_Disp_Ntc = CToF(g_NtcStep);
+                // L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
+                // Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);	//显示NTC的温度值
+				Switch_Temp();
 				eReadyTask_Sta = Ready_NoRefresh;
 				Er6_Display_Sound(RESET);//重置ER6
 				break;
@@ -372,6 +391,7 @@ void App_MemKeyProcess(void)
 			Er1_Display_Sound(RESET);		//清除Er1相关标志位，
 			Auto_TurnOff_Time_Sel();	//按下关机时间清0
 			F_Mem_FirstEnter = 0;
+			F_Disp_Temp_Status = 0;
 			eMain_Task = Task_Memorymode;
 			eReadyTask_Sta = Ready_ReadyOk;
 			//耳温切换到tp通道采集

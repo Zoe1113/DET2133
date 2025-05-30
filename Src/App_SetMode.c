@@ -258,7 +258,7 @@ void App_SetMode(void)
 			#endif
 
   			
-	#if 0
+	#if ParamModif
   			//发射率
 			case Set_Emission:
 				g_Emission ++;
@@ -412,7 +412,7 @@ void App_SetMode(void)
 					break;
 				#endif
 			#endif
-	#if 0
+	#if ParamModif
   			//发射率
 			case Set_Emission:
 				Clr_Disp();
@@ -505,7 +505,7 @@ void App_SetMode(void)
 				I2C_masterInit();
 				if(eMain_Task == Task_ParamModifymode)
 				{
-					#if 1
+					#if OffsetTable2open
 						L_Buf = (uStaFlag.g_StatusFlag >> 2) & 0x01;
 						I2C_Byte_W(I2C_Add_Table, L_Buf);				//保存黑体修正表格
 						Delay1ms(5);
