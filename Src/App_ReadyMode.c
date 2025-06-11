@@ -256,6 +256,7 @@ void Er1_Display_Sound(bit cmd)
 	{
 		Clr_Disp888();
 		F_Disp_Dash = Enable;//¿ªÆôer1´íÎóÆÁÄ»ÏÔÊ¾ ---¹ö¶¯Ë¢ÆÁ
+		F_Disp_Temp_Status = 0;
 		g_300ms_Count = 0;
 		Er1_First_Enter = 1;
 		uErrFlag.bits.Er1 = 1;

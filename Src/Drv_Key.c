@@ -62,14 +62,14 @@ void Voice_Show_Init(void)
 {
     if(uSetFlag.bits.VoiceEnable==1)     //语音功能开启
     {
+		lcd_voice_clr();			//显示喇叭
+		lcd_sound_off_clr();
         #if Have_Voice_Func             
 			voice_stop();
             PlayStatueParam(1 , Play_Di,0);
         #else
             BZ_Beep125();
         #endif
-        lcd_voice_clr();			//显示喇叭
-		lcd_sound_off_clr();
 		// 耳温模式不打开震动
 		g_MotorSystick = 0;
     }
@@ -229,11 +229,11 @@ void App_VoiceKeyProcess(void)
 			if(uKeyHold.bits.VoiceKeyHold && !VoiceKeyHoldFlag && !uErrFlag.bits.Er2)
 			{
 				VoiceKeyHoldFlag = 1;
-				if(eMain_Task != Task_Memorymode && eTestmode_num != Insptectmode)
+				if(eTestmode_num != Insptectmode)
 				{
-					Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
-					Er1_Display_Sound(RESET);		//清除Er1相关标志位
-					eReadyTask_Sta = Ready_NoRefresh;
+					// Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
+					// Er1_Display_Sound(RESET);		//清除Er1相关标志位
+					//eReadyTask_Sta = Ready_NoRefresh;
 					uSetFlag.bits.Unit = ~uSetFlag.bits.Unit;
 					Disp_Unit();	//显示单位
 					if(F_Disp_Temp_Status)
@@ -242,7 +242,33 @@ void App_VoiceKeyProcess(void)
 						L_TpStep = Temp_Resolution_Adjust(L_TpStep);
 						Disp_Temp(1,0,uSetFlag.bits.Unit,L_TpStep);
 					}
+						LED_CloseAll();
+						LED_White_En();
+						g_3s_Count = CountDown_3s;	//开启背光3s倒计时
+						if(uSetFlag.bits.VoiceEnable)
+						{
+							#if Have_Voice_Func
+							if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
+							{
+								voice_stop();
+								PlayStatueParam(1 , Play_Di,0);
+							}
+							#else
+								 BZ_Beep125();
+							#endif
+						}
+						else
+						{
+							#if Have_Motor
+								if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
+								{
+									g_MotorSystick = Vibration_time;
+								}
+							#endif	
+						}
+
 				}
+
 			}
 		#endif
 	}
@@ -285,6 +311,7 @@ void App_MemorymodeKeyProcess(void)
 			Disp_Time(0,uSetFlag.bits.TimeFormat,g_Month,g_Day);	//日期显示3s
 			F_DispNtc_Time_Date_En = Enable;
 		}
+		#if Func_Obj
 		if(uErrFlag.bits.Er6)
 		{
 			Er6_Display_Sound(RESET);
@@ -292,6 +319,7 @@ void App_MemorymodeKeyProcess(void)
 			eReadyTask_Sta = Ready_DisEr6;	//只要有错需跳转到错误处理状态
 		}
 		else
+		#endif
 		{
 			eMain_Task = Task_Testingmode;	//准备进入测量模式   
 		}
@@ -315,6 +343,14 @@ void App_ModeKeyProcess(void)
 	{
 		uKeyRelease.bits.ModeKeyRelease = 1;
 		ModeFlag ++;
+
+		#if !Func_Obj //没有物温
+		if(ModeFlag == Mode_Object)
+		{
+			ModeFlag++ ;
+		}
+		#endif
+
 		if(ModeFlag > 2)
 		{
 			ModeFlag = 0;
@@ -361,7 +397,9 @@ void App_ModeKeyProcess(void)
                 // Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);	//显示NTC的温度值
 				Switch_Temp();
 				eReadyTask_Sta = Ready_NoRefresh;
+				#if Func_Obj
 				Er6_Display_Sound(RESET);//重置ER6
+				#endif
 				break;
 			default:
 				ModeFlag = 0;

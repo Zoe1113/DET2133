@@ -280,15 +280,7 @@ void App_SetMode(void)
 			  break;
 
   			//耳套系数
-			#if 0
-				case Set_PcRatio:
-					g_PcRatio ++;
-					if( g_PcRatio > 85 )
-						g_PcRatio = 40;
-					break;
-			#endif
-
-			//耳套系数
+			#if Func_Probecover
 			case Set_Earcap10:
 				g_Earcap10 ++;
 				if( g_Earcap10 > 200 )
@@ -336,6 +328,7 @@ void App_SetMode(void)
 				if( g_Earcap40 > 200 )
 					g_Earcap40 = 0;
 				break;
+			#endif
 			#if OffsetTable2open
  			//表格选项
 			case Set_TableNum:
@@ -431,14 +424,8 @@ void App_SetMode(void)
 				Disp_Temp(0,0,0, (uint16)g_HumanRatio2*10);
 			  break;
 
-  			//耳套系数
-			#if 0
-				case Set_PcRatio:
-					Disp_Temp(0,0,0,(uint16)g_PcRatio*10);
-					break;
-			#endif
-
 			//耳套系数
+			#if Func_Probecover
 			case Set_Earcap10:
                 Disp_Ear(10);
                 lcd_ear_clr();
@@ -486,6 +473,7 @@ void App_SetMode(void)
                 lcd_pc_en();
 				Disp_Temp(0,0,0,(uint16)g_Earcap40*10);
 				break;
+			#endif
 
 			#if OffsetTable2open
  			//表格选项
@@ -521,11 +509,6 @@ void App_SetMode(void)
 
 					I2C_Byte_W(I2C_Add_HumanRatio2, g_HumanRatio2);	//保存人体系数
 					Delay1ms(5);
-
-					#if 0
-						I2C_Byte_W(I2C_Add_PcRatio, g_PcRatio);			//保存耳套系数
-						Delay1ms(5);
-					#endif
 
 					I2C_Byte_W(I2C_Add_Earcap10, g_Earcap10);		//g_Earcap10=100
                     Delay1ms(5);

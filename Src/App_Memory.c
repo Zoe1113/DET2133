@@ -286,6 +286,9 @@ static int16 Disp_Mem(void)
 		g_50ms_Count = DispTime_Init;	//循环显示时间、日期、ntc计时器赋初值
 		if( eTestmode_num != Insptectmode )
 			F_DispNtc_Time_Date_En = 1;		//使能显示环温、日期、时间
+		
+		F_Disp_Temp_Status = 1;
+        g_Temp_Disp  =  L_Temp;
 		L_Temp = CToF(L_Temp);
 		if( eTestmode_num == Insptectmode )
         {
@@ -297,8 +300,7 @@ static int16 Disp_Mem(void)
         }	
 		else
 		{
-			F_Disp_Temp_Status = 1;
-            g_Temp_Disp  =  L_Temp;
+
 			
 			L_Temp = Temp_Resolution_Adjust(L_Temp);
 			Disp_Temp(1,0,uSetFlag.bits.Unit,L_Temp);	//显示温度

@@ -24,7 +24,9 @@ void App_Sleep(void)
 			Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
 			Er1_Display_Sound(RESET);
 			Er2_Display_Sound(RESET);
+			#if Func_Obj
 			Er6_Display_Sound(RESET);
+			#endif
 			//如果进入过检验模式或黑体模式，则需初始化
 			if(eTestmode_num == Insptectmode )
 			{

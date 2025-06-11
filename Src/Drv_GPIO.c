@@ -166,7 +166,9 @@ void Forehead_Ear_Check(bit cmd)
 			#endif
 			Disp_ModeSign();	//显示模式符号
 			Er1_Display_Sound(RESET);		//清除Er1相关标志位
+			#if Func_Obj
 			Er6_Display_Sound(RESET);		//清除Er6相关标志位
+			#endif
 			Adc_Channel_Init(TPTONTC);
 			Auto_TurnOff_Time_Sel();
 			uSetFlag.bits.Ready_First = 1;
