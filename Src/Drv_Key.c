@@ -31,10 +31,12 @@ enum eKeyValue
 //Mode键切换模式
 enum ModeStatus
 {
-	Mode_Human = 0,		//人体模式
-	Mode_Object = 1,	//物温模式	
-	Mode_Air = 2		//环境温度
+	Mode_Human_Age36 = 0,	//人体模式36+年龄分段 
+	Mode_Human_Age0,		//人体模式0-36年龄分段
+	Mode_Object,			//物温模式	
+	Mode_Air,				//环境温度
 };
+
 
 uKey1 uKeyPress;
 uKey2 uKeyHold;
@@ -242,17 +244,14 @@ void App_VoiceKeyProcess(void)
 						L_TpStep = Temp_Resolution_Adjust(L_TpStep);
 						Disp_Temp(1,0,uSetFlag.bits.Unit,L_TpStep);
 					}
-						LED_CloseAll();
-						LED_White_En();
-						g_3s_Count = CountDown_3s;	//开启背光3s倒计时
+						// LED_CloseAll();
+						// LED_White_En();
+						// g_3s_Count = CountDown_3s;	//开启背光3s倒计时
 						if(uSetFlag.bits.VoiceEnable)
 						{
 							#if Have_Voice_Func
-							if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
-							{
 								voice_stop();
 								PlayStatueParam(1 , Play_Di,0);
-							}
 							#else
 								 BZ_Beep125();
 							#endif
@@ -260,10 +259,7 @@ void App_VoiceKeyProcess(void)
 						else
 						{
 							#if Have_Motor
-								if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
-								{
 									g_MotorSystick = Vibration_time;
-								}
 							#endif	
 						}
 
@@ -308,8 +304,10 @@ void App_MemorymodeKeyProcess(void)
 		if( eTestmode_num != Insptectmode )
 		{
 			F_Colon_Blink = Disable;
-			Disp_Time(0,uSetFlag.bits.TimeFormat,g_Month,g_Day);	//日期显示3s
-			F_DispNtc_Time_Date_En = Enable;
+			#if No_Time
+				Disp_Time(0,uSetFlag.bits.TimeFormat,g_Month,g_Day);	//日期显示3s
+				F_DispNtc_Time_Date_En = Enable;
+			#endif
 		}
 		#if Func_Obj
 		if(uErrFlag.bits.Er6)
@@ -339,73 +337,116 @@ void App_MemorymodeKeyProcess(void)
 void App_ModeKeyProcess(void)
 {
 	//er2,生产和黑体不能切换模式
-	if(uKeyPress.bits.ModeKeyPress && !uKeyRelease.bits.ModeKeyRelease && !uErrFlag.bits.Er2 && eTestmode_num != Insptectmode && eTestmode_num != Blackbodymode)
+	if(uKeyPress.bits.ModeKeyPress && !uKeyRelease.bits.ModeKeyRelease && eReadyTask_Sta !=Ready_DisEr1 && !uErrFlag.bits.Er2 && eTestmode_num != Insptectmode)
 	{
 		uKeyRelease.bits.ModeKeyRelease = 1;
 		ModeFlag ++;
-
-		#if !Func_Obj //没有物温
-		if(ModeFlag == Mode_Object)
-		{
-			ModeFlag++ ;
-		}
-		#endif
-
-		if(ModeFlag > 2)
-		{
-			ModeFlag = 0;
-		}
-		Adc_Channel_Init(TPTONTC);	//切换模式重新采集NTC,耳温在wait时切换TP通道
-		Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
-		Er1_Display_Sound(RESET);		//清除Er1相关标志位
-		Auto_TurnOff_Time_Sel();//自动关机
-		uSetFlag.bits.Ready_First = 1;
 		F_Disp_Temp_Status = 0;
-		eMain_Task = Task_ReadyMode;
-		eReadyTask_Sta = Ready_Refresh;
-		#if Have_Voice_Func
-			voice_stop();
-		#endif
+		if(ModeFlag > Mode_Air)
+		{
+			ModeFlag = Mode_Human_Age36;
+		}
+		if(eTestmode_num == Blackbodymode)
+		{
+			if(ModeFlag > Mode_Human_Age0)
+			{
+				ModeFlag = Mode_Human_Age36;
+			}
+		}
+
 		switch (ModeFlag)
 		{
-			case Mode_Human:	//人体温度
-				#if Func_Hall
-					if(Port_Hall)	//霍尔检测
-				#else
-					if(Port_Rod)	//检测杆检测
-				#endif
+			case Mode_Human_Age36:	//人体温度
+			case Mode_Human_Age0:	//人体温度
+				Select_Age();//切换不同年龄
+				if(eTestmode_num != Blackbodymode)
 				{
-					eTestmode_num = Earmode;
+					#if Func_Hall
+						if(Port_Hall)	//霍尔检测
+					#else
+						if(Port_Rod)	//检测杆检测
+					#endif
+					{
+						eTestmode_num = Earmode;
+						
+					}
+					else
+					{
+						eTestmode_num = Foreheadmode;	//额温模式
+						eReadyTask_Sta = Ready_ReadyOk;	
+					}	
 				}
-				else
-				{
-					eTestmode_num = Foreheadmode;	//额温模式	
-				}	
 				break;
 			case Mode_Object:	//物体温度
 				eTestmode_num = Objectmode;	
-				Clr_Disp888();
-				Disp_Ready();	
+				eReadyTask_Sta = Ready_ReadyOk;
 				break;
 			case Mode_Air:		//环境温度
 				eTestmode_num = Airmode;		
-				Clr_Disp888();
 				lcd_badface_clr();		//清除哭脸
 				lcd_smileface_clr();	//清除笑脸
-				// L_Disp_Ntc = CToF(g_NtcStep);
-                // L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
-                // Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);	//显示NTC的温度值
-				Switch_Temp();
+				Disp_Temp(1,0,uSetFlag.bits.Unit,g_NtcStep);	//显示NTC的温度值
+				Er6_Display_Sound(RESET);		//清除Er6相关标志位
 				eReadyTask_Sta = Ready_NoRefresh;
-				#if Func_Obj
-				Er6_Display_Sound(RESET);//重置ER6
-				#endif
 				break;
 			default:
-				ModeFlag = 0;
+				ModeFlag = Mode_Human_Age0;
 				break;
 		}
+
+
+		if(eTestmode_num == Objectmode || eTestmode_num == Airmode || eTestmode_num == Foreheadmode)
+		{
+			Adc_Channel_Init(TPTONTC);	//切换模式重新采集NTC,耳温在wait时切换TP通道
+			Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
+			Er1_Display_Sound(RESET);		//清除Er1相关标志位
+			if(eTestmode_num != Airmode)
+			{
+				Clr_Disp888();
+				Disp_Ready();	//首次开机必须显示_ _._
+			}
+			Disp_ModeSign();	//显示模式符号
+		}
+		if(eTestmode_num == Earmode)
+		{
+			if(eReadyTask_Sta != Ready_Timeout)
+			{
+				Adc_Channel_Init(NTCTOTP);
+				eReadyTask_Sta = Ready_ReadyOk;
+				Disp_ModeSign();	//显示模式符号	
+			}
+			Clr_Disp888();
+			Disp_Ready();	//首次开机必须显示_ _._
+			
+		}
+		Auto_TurnOff_Time_Sel();//自动关机
 		
+		Disp_VoiceSign();
+		Disp_Unit();	//显示单位
+		Disp_Age_Select(g_AgeSelectNum);
+		LED_CloseAll();
+		#if Func_White
+			LED_White_En();
+		#else
+			LED_Green_En();    
+		#endif
+		
+		g_3s_Count = CountDown_3s;	//开启背光
+		if(uSetFlag.bits.VoiceEnable)
+		{
+			#if Have_Voice_Func
+				voice_stop();
+				PlayStatueParam(1 , Play_Di,0);
+			#else
+					BZ_Beep125();
+			#endif
+		}
+		else
+		{
+			#if Have_Motor
+					g_MotorSystick = Vibration_time;
+			#endif	
+		}		
 	}
 	//没按键则清抬起标志
 	if( !uKeyPress.bits.ModeKeyPress )
@@ -510,6 +551,23 @@ void App_PCKeyProcess(void)
 }
 #endif
 
+/**************************************************************************
+    函数名称：	void Select_Age(void)
+    函数功能：	选择不同年龄分段
+    输入参数：	g_AgeSelectNum
+    输出参数：	g_AgeSelectNum
+    返回值  ：	无
+    占用空间：	TBD
+****************************************************************************/
+void  Select_Age(void)
+{
+    g_AgeSelectNum ++;
+    if(g_AgeSelectNum > Age_36)
+    {
+        g_AgeSelectNum = Age_0;
+    }
+
+}
 
 
 /**************************************************************************

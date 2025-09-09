@@ -54,6 +54,12 @@ void Time_Creat_20ms_50ms(void)
 	{
 		F_50ms = 1;
 	}
+
+	if(g_10ms_Count%50 == 0)
+	{
+		F_500ms = 1;
+		g_10ms_Count = 0;
+	}
 }
 
 /**************************************************************************
@@ -249,6 +255,7 @@ uint8 Time_CountDown_5s_timeout(bit State)
 占用空间：	TBD
 备    注：	20ms作为时基（500ms作为时基有更新延迟问题）
 **************************************************************************/
+#if No_Time
 void Disp_Time_Date_Ambient(void)
 {
 	g_50ms_Count ++;
@@ -297,6 +304,7 @@ void Disp_Time_Date_Ambient(void)
 	}
 
 }
+#endif
 
 /**************************************************************************
 函数名称：	void Disp_Colon(void)
@@ -307,6 +315,7 @@ void Disp_Time_Date_Ambient(void)
 占用空间：	TBD
 备    注：	500ms触发一次（50ms时基）
 **************************************************************************/
+#if No_Time
 void Disp_Colon(void)
 {
 	//当时间显示状态时冒号以0.5s频率闪烁
@@ -315,6 +324,7 @@ void Disp_Colon(void)
 		lcd_colon_xor();	//冒号异或
 	}
 }
+#endif
 
 /**************************************************************************
 函数名称：	void Disp_Dash(void)
@@ -332,7 +342,7 @@ void Disp_Dash(void)
 	//总计4轮，-/-/-/消失共4次，故1s/4=250ms，250/50=5；
 	if( g_300ms_Count == 1 )	//50ms
 	{
-		lcd11 |= lcd_dash;
+		lcd9 |= lcd_dash;
 		if(eTestmode_num == Earmode)
 		{
 			lcd_ear_en();
@@ -344,21 +354,21 @@ void Disp_Dash(void)
 	}
 	if( g_300ms_Count == 7 )	//350ms
 	{
-		lcd13 |= lcd_dash;
+		lcd7 |= lcd_dash;
 		lcd_ear_clr();
 		lcd_obj_clr();
 	}
 	if( g_300ms_Count == 13 )	//650ms
 	{
-		lcd15 |= lcd_dash;
+		lcd5 |= lcd_dash;
 		lcd_ear_clr();
 		lcd_obj_clr();
 	}
 	if( g_300ms_Count == 19 )	//950ms
 	{
-		lcd11 &= ~lcd_dash;
-		lcd13 &= ~lcd_dash;
-		lcd15 &= ~lcd_dash;
+		lcd9 &= ~lcd_dash;
+		lcd7 &= ~lcd_dash;
+		lcd5 &= ~lcd_dash;
 		if(eTestmode_num == Earmode)
 		{
 			lcd_ear_en();

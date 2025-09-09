@@ -34,6 +34,7 @@ void App_SetMode(void)
 		F_FirstEnter_SetMode = 1;
 		F_UpdateMenu = 1;	//首次需显示
 		g_Blink_count = 0;
+		High_Precision_Flag = 0;
 
 		//初始化开机键为短按
  		HalKey_Set_KeyMode(Func_Short, &sModeKey);
@@ -77,11 +78,12 @@ void App_SetMode(void)
 			{
 
 					eSetTask = Set_TimeFormate;
-
+					#if No_Time
 					if( uSetFlag.bits.TimeFormat )
 						Disp_12H();
 					else
 						Disp_24H();
+					#endif
 			
 			}
 			if(eMain_Task == Task_Unitmode && uSetFlag.bits.Unit_Change == Unit_Change_En)
@@ -348,6 +350,7 @@ void App_SetMode(void)
 		F_UpdateMenu = 0;
 		switch( eSetTask )
 		{
+			#if No_Time
 			//时制
 			case Set_TimeFormate:
 				if( uSetFlag.bits.TimeFormat )
@@ -385,7 +388,7 @@ void App_SetMode(void)
 				Disp_Time(0,uSetFlag.bits.TimeFormat,g_Month,g_Day);
 				g_Blink = right;	//右消隐
 				break;
-            
+            #endif
             //单位
 			case Set_Unit:
                 Clr_Disp();
@@ -599,6 +602,7 @@ void Time_Blink(void)
 	{
 		switch( eSetTask )
 		{
+			#if No_Time
   			//时
 			case Set_Hour:
   			//分
@@ -617,6 +621,7 @@ void Time_Blink(void)
 			case Set_Day:
 				Disp_Time(0,uSetFlag.bits.TimeFormat,g_Month,g_Day);
 				break;
+			#endif
 
 			default:
 				break;

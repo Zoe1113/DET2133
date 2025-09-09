@@ -145,6 +145,7 @@ void Forehead_Ear_Check(bit cmd)
 		{
 			Frist_Mode = 0;
 			ModeFlag = 0;
+			g_AgeSelectNum = Age_36;
 			F_Disp_Temp_Status = 0;
         	eMain_Task = Task_ReadyMode;
 			eReadyTask_Sta = Ready_Refresh;
@@ -165,6 +166,7 @@ void Forehead_Ear_Check(bit cmd)
 				#endif
 			#endif
 			Disp_ModeSign();	//显示模式符号
+			Disp_Age_Select(g_AgeSelectNum);
 			Er1_Display_Sound(RESET);		//清除Er1相关标志位
 			#if Func_Obj
 			Er6_Display_Sound(RESET);		//清除Er6相关标志位
@@ -305,11 +307,11 @@ void GPIO_PowerDown( void )
 {
 	//按键输入上拉高电平,XIN/XOUT输入不上拉0,E2供电口输出上拉搞
 	//0: input mode, 1: output mode
-	P0M = 0x0C;			//0b0000 1100
+	P0M = 0x3D;			//0b0011 1101
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P0UR = 0x33;		//0b0011 0011
+	P0UR = 0x02;		//0b0000 0010
 	//0: low level, 1: high level
-	P0 = 0x3F;			//0b0011 1111
+	P0 = 0x0E;			//0b0000 1110
 
 #if !Func_Ble
 	//白灯输入上拉高电平、MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输出不上拉0

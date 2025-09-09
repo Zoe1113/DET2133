@@ -104,7 +104,7 @@ void main(void)
 
 	Parm_AutoCheck();//程序参数校验
 	TC1Init();	//TC1设置（10ms）
-	T0Init();	//开启RTC中断
+	//T0Init();	//开启RTC中断
 	FGIE = 1;	//使能总中断等
 
     #if Have_Voice_Func
@@ -177,11 +177,12 @@ void main(void)
 			F_50ms = 0;
 
 			//开机全显外都可以使能日期、时间、环温循环显示
+			#if No_Time
 			if(eTestmode_num != Insptectmode)
 			{
 				Disp_Time_Date_Ambient();
 			}
-
+			#endif 
 
 			//额温滚屏
 			if( F_Disp_Dash && ( !uErrFlag.g_ErrFlag || uErrFlag.bits.Er1 ) )
@@ -208,15 +209,18 @@ void main(void)
 			F_500ms = 0;
 
 			//系统时间更新
-			Update_SysTime();
-
+			//Update_SysTime();
+			if(High_Precision_Flag)
+				Disp_High_Precision(uSetFlag.bits.Unit,High_Precision);
 			if(eTestmode_num != Insptectmode)
 			{
+				#if No_Time
 				//开机全显外都可以使能闪烁
 				if( eMain_Task == Task_ReadyMode || eMain_Task == Task_Testingmode || (eMain_Task == Task_Memorymode && !F_MemNull && F_DispNtc_Time_Date_En) )
 				{
 					Disp_Colon();
 				}
+				#endif
 			}
 
 

@@ -127,6 +127,7 @@ void App_PCKeyProcess(void);//¶úÌ×¼ì²âº¯Êý
 #endif
 void APP_CleanProcess(void);
 void APP_Enter_Blackbodymode(void);
+void  Select_Age(void);
 
 
 #endif

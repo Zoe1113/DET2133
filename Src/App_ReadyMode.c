@@ -41,6 +41,7 @@ void App_ReadyMode(void)
 	App_MemKeyProcess();	//记忆键
 	App_VoiceKeyProcess();	//静音键
 	Cal_Inspect_Detect();       //绑定检测模式、校准模式判断
+	Disp_Age_Select(g_AgeSelectNum);
 	Disp_VoiceSign();
 	Disp_Unit();	//显示单位
 	switch( eReadyTask_Sta )
@@ -57,10 +58,12 @@ void App_ReadyMode(void)
                 F_Ble_En = Enable;		//开启蓝牙
             #endif
 			//开机全显外都可以使能日期、时间、环温循环显示
+			#if No_Time
 			if( eTestmode_num != Insptectmode )
 			{
 				Disp_Time_Date_Ambient();
 			}
+			#endif
 			eReadyTask_Sta = Ready_Refresh;
 			
 			break;
@@ -255,6 +258,7 @@ void Er1_Display_Sound(bit cmd)
 	if(Er1_First_Enter == 0)
 	{
 		Clr_Disp888();
+		High_Precision_Flag = 0;
 		F_Disp_Dash = Enable;//开启er1错误屏幕显示 ---滚动刷屏
 		F_Disp_Temp_Status = 0;
 		g_300ms_Count = 0;
@@ -349,12 +353,13 @@ void Er6_Display_Sound(bit cmd)
         Er6_First_Enter =0;              //提前退出函数，防止在清零该标志位时会蜂鸣。
         goto END;                          //使用跳转语句跳到函数末尾，复位程序时蜂鸣
     }
-    Disp_ErrMsg();	//显示错误信息
+    
     if(Er6_First_Enter == 0)
     {
 		LED_CloseAll();
         Er6_First_Enter = 1;
         Auto_TurnOff_Time_Sel();
+		Disp_ErrMsg();	//显示错误信息
         lcd_pc_en();	//显示耳套符号
 		lcd_obj_en();
 		lcd_ear_clr();

@@ -48,6 +48,7 @@ void App_InitMode(void)
 				LVD_Init();
 				LVD_Chk();
 			#endif
+			//uStaFlag.bits.midBat = 1;
 			if(uStaFlag.bits.LowBat)
 			{
 				Clr_Disp();
@@ -175,6 +176,7 @@ void App_InitMode(void)
 
 		//初始化任务结束，还原当前任务为初始状态
 		case Init_End:
+			High_Precision_Flag = 0;
 			if (F_CaliOk == 1)
 			{
 				F_CaliOk = 0;

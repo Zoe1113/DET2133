@@ -22,12 +22,7 @@ void __interrupt[0x08] Interrupt_pro(void)
 		uint8 L_Rx_Data;
 	#endif
     
-	if(FT0IRQ)
-	{
-		FT0IRQ=0;
-		F_500ms =1;		//set 500ms flag
-	}
-	else if(FADC1IRQ)
+	if(FADC1IRQ)
 	{
 		FADC1IRQ = 0;
 	}

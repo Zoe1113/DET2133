@@ -48,6 +48,7 @@ uErr uErrFlag;
 bit F_DispNtc_Time_Date_En;	//0：不刷新时间、日期、环温，1：刷新时间、日期、环温
 bit F_CaliOk;
 uint8 g_TestNum;
+uint8 g_AgeSelectNum;	    //年龄选择
 
 #pragma rambank off
 /*************************************************************************/

@@ -24,6 +24,7 @@ void App_Sleep(void)
 			Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
 			Er1_Display_Sound(RESET);
 			Er2_Display_Sound(RESET);
+			High_Precision_Flag = 0;
 			#if Func_Obj
 			Er6_Display_Sound(RESET);
 			#endif
@@ -136,47 +137,47 @@ void App_Sleep(void)
 			INTEN0 = 0;			//所有中断除能
 			INTEN1 = 0;			//所有中断除能
 			FGIE = 0 ;			//关总中断
-			FCPUM1 = 1;		//Green mode（不能关T0模块）
+			FCPUM0 = 1;		    //睡眠模式 
 			NOP(2);
 
 			//无按键按下
 			l_buf = 1;
-			while(l_buf)
-			{
-				#if  Func_TakeCoverAutoOn
+			// while(l_buf)
+			// {
+			// 	#if  Func_TakeCoverAutoOn
 					
-				while( Port_On && Port_Mode && (!Port_Hall || OFF_Flag) )
+			// 	while( Port_On && Port_Mode && (!Port_Hall || OFF_Flag) )
 
-				 {
-					if(!Port_Hall || !Port_On)
-					{
-						OFF_Flag = 0;
-					}
-				#else
-				while( Port_On && Port_Mode )
-				{
+			// 	 {
+			// 		if(!Port_Hall || !Port_On)
+			// 		{
+			// 			OFF_Flag = 0;
+			// 		}
+			// 	#else
+			// 	while( Port_On && Port_Mode )
+			// 	{
 
-				#endif 
-					//喂狗
-		            WDTR = 0x5A;
-					if( FT0IRQ )
-					{
-						FT0IRQ = 0;
-						Update_SysTime();	//系统时间更新
-						FCPUM1 = 1;		//Green mode（不能关T0模块）
-						NOP(2);
-					}
-				 }
-				 Delay50us(4);	//green mode fcpu=32768/4=8k，是normal模式的250分之一，故实际延迟去抖为50ms
-				 #if Func_TakeCoverAutoOn
-				 if( !Port_On || !Port_Mode || (Port_Hall && OFF_Flag == 0))
-				 #else
-				 if( !Port_On || !Port_Mode )
-				 #endif
-				 {
-					l_buf = 0;
-				 }
-			}
+			// 	#endif 
+			// 		//喂狗
+		    //         WDTR = 0x5A;
+			// 		if( FT0IRQ )
+			// 		{
+			// 			FT0IRQ = 0;
+			// 			Update_SysTime();	//系统时间更新
+			// 			FCPUM1 = 1;		//Green mode（不能关T0模块）
+			// 			NOP(2);
+			// 		}
+			// 	 }
+			// 	 Delay50us(4);	//green mode fcpu=32768/4=8k，是normal模式的250分之一，故实际延迟去抖为50ms
+			// 	 #if Func_TakeCoverAutoOn
+			// 	 if( !Port_On || !Port_Mode || (Port_Hall && OFF_Flag == 0))
+			// 	 #else
+			// 	 if( !Port_On || !Port_Mode )
+			// 	 #endif
+			// 	 {
+			// 		l_buf = 0;
+			// 	 }
+			// }
 
 			FSTPHX = 0;		//开IHRC
 			NOP(2);
@@ -250,7 +251,9 @@ void App_Sleep(void)
 
 		//结束睡眠
 		case Sleep_End:
+		    g_AgeSelectNum = Age_36;
 			Port_Ble_En = 0; //蓝牙使能准备
+			High_Precision_Flag = 0;
 			ModeFlag = 0;	//切换模式标志位
 			eSleepTask_Sta = Sleep_false;
 			eMain_Task = Task_InitMode;

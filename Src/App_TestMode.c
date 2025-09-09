@@ -62,6 +62,7 @@ void App_TestingMode(void)
 			// #if !Func_White //环形灯
 			// 	LED_White_Dis();
 			// #endif
+			High_Precision_Flag = 0;
 
 			#if Have_Voice_Func
 				voice_stop();
@@ -266,7 +267,7 @@ void App_TestingMode(void)
 					Body_MeasureRange_Check();
 					g_TpStep_Disp = CToF(g_TpStep);
 					g_TpStep_Disp = Temp_Resolution_Adjust(g_TpStep_Disp);
-					Fever_alarm(g_TpStep_Disp);
+					Fever_alarm(g_TpStep_Disp ,g_AgeSelectNum);
 					break;
 				case Foreheadmode:
 					Forehead_Compensate();
@@ -289,7 +290,7 @@ void App_TestingMode(void)
 					g_TpStep_Disp = CToF(g_TpStep);
 					g_TpStep_Disp = Temp_Resolution_Adjust(g_TpStep_Disp);
 
-					Fever_alarm(g_TpStep_Disp);
+					Fever_alarm(g_TpStep_Disp ,g_AgeSelectNum);
 
 					eTestTask_Sta = Test_Disp;
 
@@ -319,7 +320,7 @@ void App_TestingMode(void)
 					Body_MeasureRange_Check();
 					g_TpStep_Disp = CToF(g_TpStep);
 					g_TpStep_Disp = Temp_Resolution_Adjust(g_TpStep_Disp);
-					Fever_alarm(g_TpStep_Disp);
+					Fever_alarm(g_TpStep_Disp ,g_AgeSelectNum);
 					break;
 				case Insptectmode:
 					Obj_MeasureRange_Check();
@@ -352,9 +353,10 @@ void App_TestingMode(void)
 			{
 				if( eTestmode_num == Insptectmode )
                 {
-                    F_DispNtc_Time_Date_En = 0;
-                    Disp_Temp(1,1,uSetFlag.bits.Unit,g_TpStep_Disp);	//显示温度
-                }	
+					High_Precision = g_TpStep_Disp;
+                    FrameFlag = 1;
+                    High_Precision_Flag = 1;
+				}	
 				else
 					Disp_Temp(1,0,uSetFlag.bits.Unit,g_TpStep_Disp);	//显示温度
 				Mem_Store(g_TpStep);	//存放的是0.01精度的

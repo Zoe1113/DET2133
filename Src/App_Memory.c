@@ -32,6 +32,8 @@ uint8 g_DayMem;			//用于表示记忆态下显示测量时间日期寄存器
 uint8 g_MonthMem;		//用于表示记忆态下显示测量时间月份寄存器
 uint16 g_YearMem;		//用于表示记忆态下显示测量时间年份寄存器
 uint8 g_MonthMem_momeory;  //记忆更新下的模式记忆
+uint8 m_AgeSelectNum;
+uint8 m_mode;
 
 /**************************************************************************
 函数名称：	App_Memory()
@@ -93,9 +95,9 @@ void App_Memory(void)
 		L_Temp = Disp_Mem();
 		if( L_Temp )
 		{
-			if( g_MonthMem_momeory & 0x40 || g_MonthMem_momeory & 0x20 ) 
+			if( m_mode == Earmode || m_mode == Foreheadmode) 
             {
-                Fever_alarm(L_Temp); 
+				Fever_alarm(L_Temp ,m_AgeSelectNum);
             }
 			else
 			{
@@ -183,6 +185,7 @@ static void Disp_MemNo(void)
 
 		//显示记忆序号
 		F_DispNtc_Time_Date_En = Disable;
+		High_Precision_Flag = 0;
 		Clr_Disp();
 		Disp_VoiceSign();
         #if Func_Ble
@@ -196,12 +199,12 @@ static void Disp_MemNo(void)
 		j = i/10;
 		if( j )
 		{
-			lcd12 = DispTable[ j ] >> 8;
-		    lcd13 = DispTable[ j ];
+			lcd6 = DispTable[ j ] >> 8;
+		    lcd7 = DispTable[ j ];
 		}
 		j = i%10;
-        lcd14 = DispTable[ j ] >> 8;
-		lcd15 = DispTable[ j ];
+        lcd4 = DispTable[ j ] >> 8;
+		lcd5 = DispTable[ j ];
 		lcd_mem_en();	//M点亮
 
         if(  uSetFlag.bits.VoiceEnable ==1 )
@@ -254,14 +257,15 @@ static int16 Disp_Mem(void)
 		L_MemAdd++;
 		g_MonthMem = I2C_Random_R(L_MemAdd);
 
-        g_MonthMem_momeory = g_MonthMem;
-        if( g_MonthMem & 0x40 )        //耳温   适配记忆缓存
+        //g_MonthMem_momeory = g_MonthMem;
+		m_mode = (g_MonthMem & 0xE0) >> 5;
+        if(  m_mode == Earmode  )        //耳温   适配记忆缓存
         {
             lcd_obj_clr();		//清除物温标志
             lcd_forehead_clr(); //清除额温标志
             lcd_ear_en();	    //显示耳温标志
         }
-		else if(g_MonthMem & 0x20)    //额温
+		else if(m_mode == Foreheadmode)    //额温
 		{   
 		
             lcd_obj_clr();		//清除物温标志
@@ -277,10 +281,33 @@ static int16 Disp_Mem(void)
 
         g_MonthMem &= 0x0F;
 
+
+
+
 		//获取日
 		L_MemAdd++;
 		g_DayMem =  I2C_Random_R(L_MemAdd);
+		m_AgeSelectNum = (g_DayMem & 0xC0)>>6;
+		g_DayMem &= 0x3F;
 		I2C_Disable();
+	    if(m_mode == Insptectmode || m_mode == Objectmode || m_mode == Blackbodymode)
+		{
+			Clr_Age_Select();
+		}
+		if(m_mode == Earmode || m_mode == Foreheadmode)
+		{
+			if(m_AgeSelectNum == Age_0)    //显示0-36月的图标
+			{
+				lcd_age0_en();
+				lcd_age36_clr();
+			}
+			else if(m_AgeSelectNum == Age_36)   //显示36+月的图标
+			{
+				lcd_age0_clr();
+				lcd_age36_en();
+				
+			}
+		}
 
 		//显示记忆值
 		g_50ms_Count = DispTime_Init;	//循环显示时间、日期、ntc计时器赋初值
@@ -292,16 +319,12 @@ static int16 Disp_Mem(void)
 		L_Temp = CToF(L_Temp);
 		if( eTestmode_num == Insptectmode )
         {
-            // lcd15 = 0x01;
-            // lcd14 = 0x00;
-            // lcd13 = 0x00;
-            // lcd12 = 0x00;
-            Disp_Temp(1,1,uSetFlag.bits.Unit,L_Temp);	//显示温度  
+            High_Precision = L_Temp;
+			FrameFlag = 1;
+			High_Precision_Flag = 1;
         }	
 		else
 		{
-
-			
 			L_Temp = Temp_Resolution_Adjust(L_Temp);
 			Disp_Temp(1,0,uSetFlag.bits.Unit,L_Temp);	//显示温度
 		}
@@ -345,7 +368,6 @@ static int16 Disp_Mem(void)
 void Mem_Store(int16 L_Temp)
 {
 	uint8 L_MemAdd;
-	uint8 L_tempbuf;
 
 	Mem_Init();
 	if ( g_MemTotalNo < MemMaxArray )
@@ -391,31 +413,31 @@ void Mem_Store(int16 L_Temp)
 	//存储月
 	L_MemAdd++;
 	
+    // L_tempbuf = g_Month;
+    // //读取总记录号和记忆号的EEPROM存放地址
+    // switch (eTestmode_num)
+    // {
+    //      case Earmode:
+    //      	L_tempbuf = g_Month | 0x40;
+    //      	break;
+    //      case Foreheadmode:
+    //        L_tempbuf = g_Month  | 0x20;
+    //        break;
+    //     case Objectmode:
+    //         L_tempbuf = g_Month;
+    //         break;
+    //     //生产、黑体模式均放obj存储区域
+    //     default:
+    //         L_tempbuf = g_Month;
+    //         break;
+    // }
 
-    L_tempbuf = g_Month;
-    //读取总记录号和记忆号的EEPROM存放地址
-    switch (eTestmode_num)
-    {
-         case Earmode:
-         	L_tempbuf = g_Month | 0x40;
-         	break;
-         case Foreheadmode:
-           L_tempbuf = g_Month  | 0x20;
-           break;
-        case Objectmode:
-            L_tempbuf = g_Month;
-            break;
-        //生产、黑体模式均放obj存储区域
-        default:
-            L_tempbuf = g_Month;
-            break;
-    }
-
-	I2C_Byte_W(L_MemAdd, L_tempbuf);
+	I2C_Byte_W(L_MemAdd, g_Month+ (eTestmode_num << 5));
 	Delay1ms(5);
 	//存储日
 	L_MemAdd++;
-	I2C_Byte_W(L_MemAdd, g_Day);
+	//日期数值最大是31占5位，最高的2位存年龄分组
+	I2C_Byte_W(L_MemAdd, g_Day + (g_AgeSelectNum << 6));
 	Delay1ms(5);
 	//存储年(存放格式为g_Year-2000)
 	L_MemAdd++;

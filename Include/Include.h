@@ -32,7 +32,7 @@
 #include "Drv_Uart.h"
 #include "Drv_Buzzer.h"
 #include "Drv_Key.h"
-#include "Drv_LCD_ET29.h"
+#include "Drv_LCD_ET29A.h"
 #include "Drv_LED.h"
 #include "Drv_GPIO.h"
 #include "Drv_LVD.h"
