@@ -48,11 +48,10 @@
 #define No_Time 0 
 #define Func_Probecover 1 //耳套功能
 
-#define Soft_Code 616	//软件代码
+#define Soft_Code 636	//软件代码
 
 //请仔细核对基础特性编码表！！！！！！
  
-
 
 //国外,额温0.5S测量,三色背光,时间日期，蜂鸣/振动，普通LCD
 #if Soft_Code == 999
@@ -82,208 +81,8 @@
 	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
 #endif
 
-//国外,额温1S测量,四色背光,时间日期，振动，普通LCD，语音，蓝牙
-#if Soft_Code == 582
-	#define OffsetTable2open 		0 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			0	//绑定显示校验参数 1：开启，0：关闭
-	#define Func_TakeCoverAutoOn	1
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
-	#define Func_White				1	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		1 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				1   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				1	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		1   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			1   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
-#endif
-
-
-
-//国外,额温1S测量,四色背光,时间日期，振动，普通LCD，语音
-#if Soft_Code == 581
-	#define OffsetTable2open 		1 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		1	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			1	//绑定显示校验参数 1：开启，0：关闭
-	#define  Func_TakeCoverAutoOn	1
-
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
-	#define Func_White				1	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		1 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				1   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				1	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		1   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			0   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
-#endif
-
-//国外,额温1S测量,三色背光,时间日期，振动，普通LCD，语音，蓝牙，自动开机，环形灯，霍尔
-#if Soft_Code == 583
-	#define OffsetTable2open 		0 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			0	//绑定显示校验参数 1：开启，0：关闭
-	#define Func_TakeCoverAutoOn	1   //1：取下额温罩自动开机，0：取下额温罩不会自动开机
-	
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
-	#define Func_White				0	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		0 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				1   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				1	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		1   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			1   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
-#endif
-
-//国外,额温1S测量,单白背光,时间日期，振动，普通LCD，蜂鸣
-#if Soft_Code == 584
-	#define OffsetTable2open 		0 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			0	//绑定显示校验参数 1：开启，0：关闭
-
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
-	#define Func_3color				0	//1：开启3色背光，0：无背光或单白色背光
-	#define Func_White				0	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		0 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				0   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_TakeCoverAutoOn	0   //1：取下额温罩自动开机，0：取下额温罩不会自动开机
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				1	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		0   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			1   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
-#endif
-
-
-//国外,额温1S测量,四色背光,时间日期，振动，普通LCD，语音，蓝牙,检测杆
-#if Soft_Code == 585
-	#define OffsetTable2open 		0 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			0	//绑定显示校验参数 1：开启，0：关闭
-
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单白色背光
-	#define Func_White				1	//1：开启四色的白色背光，0：开启环形灯
-	#define Func_Probecover 		0 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				0   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_TakeCoverAutoOn	0   //1：取下额温罩自动开机，0：取下额温罩不会自动开机
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				1	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		1   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			1   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
-#endif
-
-//国外,额温1S测量,三色背光,时间日期，振动，普通LCD，霍尔，蜂鸣
-#if Soft_Code == 586
-	#define OffsetTable2open 		0 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			0	//绑定显示校验参数 1：开启，0：关闭
-
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
-	#define Func_White				0	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		0 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				1   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_TakeCoverAutoOn	0   //1：取下额温罩自动开机，0：取下额温罩不会自动开机
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				1	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		0   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			0   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
-#endif
-
-//国外,额温1S测量,三色背光,时间日期，普通LCD，蜂鸣，霍尔，耳套
-#if Soft_Code == 615
-	#define OffsetTable2open 		1 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		1	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			1	//绑定显示校验参数 1：开启，0：关闭
-	#define Func_TakeCoverAutoOn	1   //取下额温罩自动开机，1：开启，0：关闭
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
-	#define Func_White				0	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		1 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				1   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				1	//1：二级电压， 0：一级电压
-	#define Have_Motor      		0   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		0   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			0   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
-#endif
-
-
-//国外,额温1S测量,三色背光,时间日期，普通LCD，蜂鸣，霍尔，耳套
-#if Soft_Code == 616
+//国外,额温1S测量,三色背光,普通LCD，蜂鸣，环形灯
+#if Soft_Code == 636
 	#define OffsetTable2open 		1 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
 	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
 	#define Check_Parameter			1	//绑定显示校验参数 1：开启，0：关闭
@@ -295,12 +94,12 @@
 	#define Func_Obj 				1	//1：有物温功能 0：无物温功能
 	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
 	#define Func_White				0	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		1 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				1   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
+	#define Func_Probecover 		0 	//1：有耳套功能，0：无耳套功能
+	#define Func_Hall				0   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
 	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
 	#define Second_LVD 				1	//1：二级电压， 0：一级电压
 	#define Have_Motor      		0   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		1   //1：开启语音功能， 0：无语音功能
+	#define Have_Voice_Func 		0   //1：开启语音功能， 0：无语音功能
 	#define Voice_Lang 				1	//1：英文，0：中文
 	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
 	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
@@ -310,62 +109,7 @@
 	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
 #endif
 
-//国外,额温1S测量,四色背光,时间日期，普通LCD，蜂鸣
-#if Soft_Code == 762
-	#define OffsetTable2open 		1 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		1	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			1	//绑定显示校验参数 1：开启，0：关闭
-	#define Func_TakeCoverAutoOn	0	//摘下额温罩开机功能  1：开启 0：关闭
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				0	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
-	#define Func_White				1	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		0 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				0   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				0	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		0   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			0   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			0   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			0	//1：表示可切换   0：表示不可切换
-#endif
 
-
-//国外,额温1S测量,四色背光,时间日期，普通LCD，蜂鸣，蓝牙
-#if Soft_Code == 763
-	#define OffsetTable2open 		1 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
-	#define ParamModif         		1	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			1	//绑定显示校验参数 1：开启，0：关闭
-	#define Func_TakeCoverAutoOn	0	//摘下额温罩开机功能  1：开启 0：关闭
-	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
-	
-	#define Forehead_Measure_Method 1	//1：1s长按保持 0：3s测量，
-	#define Electricity_poweroff    1	//1：上电直接自动关机  0"上电进入设置
-	#define Func_Obj 				0	//1：有物温功能 0：无物温功能
-	#define Func_3color				1	//1：开启3色背光，0：无背光或单色背光
-	#define Func_White				1	//1：开启白色背光，0：开启环形灯
-	#define Func_Probecover 		0 	//1：有耳套功能，0：无耳套功能
-	#define Func_Hall				0   //1：用霍尔切换耳额温，0：用检测杆切换耳额温
-	#define Func_Reverse_Disp		0	//1：开启反显， 0：关闭反显
-	#define Second_LVD 				0	//1：二级电压， 0：一级电压
-	#define Have_Motor      		1   //1：开启震动功能， 0：无震动功能
-	#define Have_Voice_Func 		0   //1：开启语音功能， 0：无语音功能
-	#define Voice_Lang 				1	//1：英文，0：中文
-	#define Have_VoiceLang_Change 	0	//1：有语种切换， 0: 无语种切换
-	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
-    #define Func_Ble     			1   //1：有蓝牙功能； 0：无蓝牙功能；
-    #define Nation       			0   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			0	//1：表示可切换   0：表示不可切换
-#endif
 
 //增加程序命令宏
 #define RUN 0
