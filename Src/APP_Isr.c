@@ -20,8 +20,15 @@ void __interrupt[0x08] Interrupt_pro(void)
 {
 	#if Func_Ble		
 		uint8 L_Rx_Data;
+
+    if(FT0IRQ)
+	{
+		FT0IRQ=0;
+		F_500ms =1;		//set 500ms flag
+	}
+	else
 	#endif
-    
+	
 	if(FADC1IRQ)
 	{
 		FADC1IRQ = 0;

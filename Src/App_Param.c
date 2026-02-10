@@ -151,7 +151,7 @@ void Param_Init(void)
 	I2C_Byte_W(I2C_Add_Earcap15, 0x6C);		//g_Earcap15=108
 	Delay1ms(5);
 
-	I2C_Byte_W(I2C_Add_Earcap20, 0x73);		//g_Earcap15=115
+	I2C_Byte_W(I2C_Add_Earcap20, 0x6E);		//g_Earcap15=110
 	Delay1ms(5);
 
 	I2C_Byte_W(I2C_Add_Earcap25, 0x76);		//g_Earcap15=118

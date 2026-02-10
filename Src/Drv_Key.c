@@ -21,10 +21,10 @@ enum eKeyStatus
 //按键键值eKeyVal
 enum eKeyValue
 {
-	ModeKey = 0x01,		 //Mode Key value
+	SetKey = 0x01,		 //Mode Key value
     OnKey   = 0x02,		 //On Key value
-	VoiceKey  = 0x10,	 //Set Key value
-    MemKey  = 0x20,
+	MemKey  = 0x10,	 	//Mem Key value
+    HallKey  = 0x20,	//Hall
 	KeyMask = 0x33		 //按键掩码（p00 p01 p04 p05）
 }eKeyVal;
 
@@ -43,7 +43,7 @@ uKey2 uKeyHold;
 uKey3 uKeyRelease;
 uKey4 uKeyContinue;
 
-strKey sModeKey, sOnKey, sVoiceKey, sMemKey ;
+strKey sSetKey, sOnKey, sHallKey, sMemKey ;
 bit VoiceKeyHoldFlag= 0;
 uint8 ModeFlag = 0;
 uint16 L_OnPressTime = 0;
@@ -170,6 +170,7 @@ void APP_Enter_Blackbodymode(void)
 			Disp_CAL();	//显示CAL表示进入黑体模式
 			Delay10ms(100);
 			Disp_Code(Soft_Code);	//显示程序编码
+			Delay10ms(100);
 			Disp_Version(Soft_External_Version);	//显示对外程序版本
 			Delay10ms(100);
 			HalKey_KeyClr();
@@ -225,76 +226,33 @@ void App_OnKeyProcess(void)
 void App_VoiceKeyProcess(void)
 {
 
-	if(uKeyPress.bits.VoiceKeyPress && !uErrFlag.bits.Er2)//er2不能进行声音开关
+	if(uKeyPress.bits.SetKeyPress && !VoiceKeyHoldFlag&& !uErrFlag.bits.Er2)//er2不能进行声音开关
 	{
-		#if Func_Change_CF
-			if(uKeyHold.bits.VoiceKeyHold && !VoiceKeyHoldFlag && !uErrFlag.bits.Er2)
-			{
-				VoiceKeyHoldFlag = 1;
-				if(eTestmode_num != Insptectmode)
-				{
-					// Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
-					// Er1_Display_Sound(RESET);		//清除Er1相关标志位
-					//eReadyTask_Sta = Ready_NoRefresh;
-					uSetFlag.bits.Unit = ~uSetFlag.bits.Unit;
-					Disp_Unit();	//显示单位
-					if(F_Disp_Temp_Status)
-					{
-						L_TpStep = CToF(g_Temp_Disp);
-						L_TpStep = Temp_Resolution_Adjust(L_TpStep);
-						Disp_Temp(1,0,uSetFlag.bits.Unit,L_TpStep);
-					}
-						// LED_CloseAll();
-						// LED_White_En();
-						// g_3s_Count = CountDown_3s;	//开启背光3s倒计时
-						if(uSetFlag.bits.VoiceEnable)
-						{
-							#if Have_Voice_Func
-								voice_stop();
-								PlayStatueParam(1 , Play_Di,0);
-							#else
-								 BZ_Beep125();
-							#endif
-						}
-						else
-						{
-							#if Have_Motor
-									g_MotorSystick = Vibration_time;
-							#endif	
-						}
-
-				}
-
-			}
-		#endif
-	}
-	else
-	{
-
-		if(uKeyRelease.bits.VoiceKeyRelease && !VoiceKeyHoldFlag && !uErrFlag.bits.Er2)
+		if(uKeyHold.bits.SetKeyHold&& !VoiceKeyHoldFlag)
 		{
+			VoiceKeyHoldFlag = 1;
+			uKeyRelease.bits.SetKeyRelease = 0;
 			Auto_TurnOff_Time_Sel();
 			uSetFlag.bits.VoiceEnable =	~uSetFlag.bits.VoiceEnable;
 			Voice_Show_Init();	//声音开关
 		}
 		else
 		{
+
+			uKeyRelease.bits.SetKeyRelease = 0;
 			VoiceKeyHoldFlag = 0;
+			
 		}
 	}
-	
 
-	if( !uKeyPress.bits.VoiceKeyPress )
-	{
-		uKeyRelease.bits.VoiceKeyRelease = 0;
-	}
+
 
 
 }
 
 
 //记忆模式下的按键操作
-void App_MemorymodeKeyProcess(void)
+void App_MemorySetKeyProcess(void)
 {
 	//记忆模式下，测量键按下并抬起开始测量
 	if(uKeyRelease.bits.OKeyRelease)
@@ -319,6 +277,7 @@ void App_MemorymodeKeyProcess(void)
 		else
 		#endif
 		{
+			Er1_Display_Sound(RESET);
 			eMain_Task = Task_Testingmode;	//准备进入测量模式   
 		}
 
@@ -334,12 +293,12 @@ void App_MemorymodeKeyProcess(void)
 
 
 //模式键，切换不同模式
-void App_ModeKeyProcess(void)
+void App_SetKeyProcess(void)
 {
 	//er2,生产和黑体不能切换模式
-	if(uKeyPress.bits.ModeKeyPress && !uKeyRelease.bits.ModeKeyRelease && eReadyTask_Sta !=Ready_DisEr1 && !uErrFlag.bits.Er2 && eTestmode_num != Insptectmode)
+	if(uKeyRelease.bits.SetKeyRelease  && !VoiceKeyHoldFlag&& eReadyTask_Sta !=Ready_DisEr1 && !uErrFlag.bits.Er2 && eTestmode_num != Insptectmode)
 	{
-		uKeyRelease.bits.ModeKeyRelease = 1;
+		uKeyRelease.bits.SetKeyRelease = 0;
 		ModeFlag ++;
 		F_Disp_Temp_Status = 0;
 		if(ModeFlag > Mode_Air)
@@ -449,9 +408,10 @@ void App_ModeKeyProcess(void)
 		}		
 	}
 	//没按键则清抬起标志
-	if( !uKeyPress.bits.ModeKeyPress )
+	if( !uKeyPress.bits.SetKeyPress )
 	{
-		uKeyRelease.bits.ModeKeyRelease = 0;
+		VoiceKeyHoldFlag = 0;
+		uKeyRelease.bits.SetKeyRelease = 0;
 	}
 
 }
@@ -532,21 +492,6 @@ void App_PCKeyProcess(void)
 
 	}
 
-	// //物温模式耳套按下报错，抬起恢复
-	// if (eTestmode_num == Objectmode  )
-	// {
-	// 	if ( !Port_Rod && !Port_Hall &&!uErrFlag.bits.Er2)
-	// 	{
-
-	// 	}
-	// 	//发生过Er6错误，耳套检测键抬起，则恢复
-	// 	if ( Port_Rod )
-	// 	{
-	// 		lcd_pc_clr();	//消隐耳套符号
-	// 		uErrFlag.bits.Er6 = 0;
-	// 	}
-	// }
-
 	
 }
 #endif
@@ -602,8 +547,8 @@ void HalKey_KeyScan(void)
 	L_Keydata = HalKey_ReadKeyVal();
     HalKey_Scan(L_Keydata & MemKey, &sMemKey);
 	HalKey_Scan(L_Keydata & OnKey, &sOnKey);
-	HalKey_Scan(L_Keydata & ModeKey,  &sModeKey);
-	HalKey_Scan(L_Keydata & VoiceKey, &sVoiceKey);
+	HalKey_Scan(L_Keydata & SetKey,  &sSetKey);
+	HalKey_Scan(L_Keydata & HallKey, &sHallKey);
 }
 
 /**************************************************************************
@@ -737,11 +682,11 @@ void HalKey_KeyClr(void)
 	uKeyContinue.g_KeyContinue_Flag = 0;
 	sOnKey.g_Key_Val = 0;
 	sMemKey.g_Key_Val = 0;
-	sModeKey.g_Key_Val = 0;
-	sVoiceKey.g_Key_Val = 0;
+	sSetKey.g_Key_Val = 0;
+	sHallKey.g_Key_Val = 0;
 	sOnKey.g_Key_Status = 0;
 	sMemKey.g_Key_Status = 0;
-	sModeKey.g_Key_Status = 0;
-	sVoiceKey.g_Key_Status = 0;
+	sSetKey.g_Key_Status = 0;
+	sHallKey.g_Key_Status = 0;
 
 }

@@ -540,7 +540,7 @@ uint8 App_Upload_Temperature()
         I2C_Disable();
 
         //²âÁ¿²¿Î»
-        if( (L_MonthMem & 0x20) == 0x20 )		//¶úÎÂ
+        if( (L_MonthMem & 0xE0) == 0 )		//¶úÎÂ
         {
             g_Ble_TxData[L_datalenth++] = 0x01;
             L_Checksum += 0x01;
@@ -568,10 +568,10 @@ uint8 App_Upload_Temperature()
         L_Checksum += L_Temp;
         g_Ble_TxData[L_datalenth++] = L_YearMem;
         L_Checksum += L_YearMem;
-        g_Ble_TxData[L_datalenth++] = L_MonthMem & 0x0F;
-        L_Checksum += L_MonthMem & 0x0F;
-        g_Ble_TxData[L_datalenth++] = L_DayMem;
-        L_Checksum += L_DayMem;
+        g_Ble_TxData[L_datalenth++] = L_MonthMem & 0x1F;
+        L_Checksum += L_MonthMem & 0x1F;
+        g_Ble_TxData[L_datalenth++] = L_DayMem & 0x3F;
+        L_Checksum += L_DayMem & 0x3F;
         g_Ble_TxData[L_datalenth++] = L_HourMem;
         L_Checksum += L_HourMem;
         g_Ble_TxData[L_datalenth++] = L_MinuteMem;

@@ -37,7 +37,7 @@ void App_ReadyMode(void)
 		App_PCKeyProcess();	//耳套按键操作
 	#endif
 	App_OnKeyProcess();	//测量键
-	App_ModeKeyProcess();	//模式切换按键
+	App_SetKeyProcess();	//模式切换按键
 	App_MemKeyProcess();	//记忆键
 	App_VoiceKeyProcess();	//静音键
 	Cal_Inspect_Detect();       //绑定检测模式、校准模式判断
@@ -117,6 +117,8 @@ void App_ReadyMode(void)
 					LED_White_En();
 				}
 			#else
+			if(eTestmode_num != Foreheadmode && eTestmode_num != Objectmode)//测量结束后有蜂鸣声
+			{
 				LED_CloseAll();
 				
 				#if Func_3color
@@ -124,6 +126,8 @@ void App_ReadyMode(void)
 				#else
 					LED_White_En();
 				#endif
+			}
+
 			#endif
 			g_3s_Count = CountDown_3s;	//开启背光3s倒计时
 			

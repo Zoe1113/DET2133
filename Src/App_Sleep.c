@@ -137,47 +137,51 @@ void App_Sleep(void)
 			INTEN0 = 0;			//所有中断除能
 			INTEN1 = 0;			//所有中断除能
 			FGIE = 0 ;			//关总中断
-			FCPUM0 = 1;		    //睡眠模式 
+			#if Func_Ble
+			FCPUM1 = 1;		    //绿色模式
+			#else
+			FCPUM0= 1;		    //睡眠模式
+			#endif
 			NOP(2);
 
 			//无按键按下
 			l_buf = 1;
-			// while(l_buf)
-			// {
-			// 	#if  Func_TakeCoverAutoOn
+			while(l_buf)
+			{
+				#if  Func_TakeCoverAutoOn
 					
-			// 	while( Port_On && Port_Mode && (!Port_Hall || OFF_Flag) )
+				while( Port_On && Port_Set && (!Port_Hall || OFF_Flag) )
 
-			// 	 {
-			// 		if(!Port_Hall || !Port_On)
-			// 		{
-			// 			OFF_Flag = 0;
-			// 		}
-			// 	#else
-			// 	while( Port_On && Port_Mode )
-			// 	{
+				 {
+					if(!Port_Hall || !Port_On)
+					{
+						OFF_Flag = 0;
+					}
+				#else
+				while( Port_On && Port_Set )
+				{
 
-			// 	#endif 
-			// 		//喂狗
-		    //         WDTR = 0x5A;
-			// 		if( FT0IRQ )
-			// 		{
-			// 			FT0IRQ = 0;
-			// 			Update_SysTime();	//系统时间更新
-			// 			FCPUM1 = 1;		//Green mode（不能关T0模块）
-			// 			NOP(2);
-			// 		}
-			// 	 }
-			// 	 Delay50us(4);	//green mode fcpu=32768/4=8k，是normal模式的250分之一，故实际延迟去抖为50ms
-			// 	 #if Func_TakeCoverAutoOn
-			// 	 if( !Port_On || !Port_Mode || (Port_Hall && OFF_Flag == 0))
-			// 	 #else
-			// 	 if( !Port_On || !Port_Mode )
-			// 	 #endif
-			// 	 {
-			// 		l_buf = 0;
-			// 	 }
-			// }
+				#endif 
+					//喂狗
+		            WDTR = 0x5A;
+					if( FT0IRQ )
+					{
+						FT0IRQ = 0;
+						Update_SysTime();	//系统时间更新
+						FCPUM1 = 1;		//Green mode（不能关T0模块）
+						NOP(2);
+					}
+				 }
+				 Delay50us(4);	//green mode fcpu=32768/4=8k，是normal模式的250分之一，故实际延迟去抖为50ms
+				 #if Func_TakeCoverAutoOn
+				 if( !Port_On || !Port_Set || (Port_Hall && OFF_Flag == 0))
+				 #else
+				 if( !Port_On || !Port_Set )
+				 #endif
+				 {
+					l_buf = 0;
+				 }
+			}
 
 			FSTPHX = 0;		//开IHRC
 			NOP(2);
@@ -190,7 +194,7 @@ void App_Sleep(void)
 			FGIE = 1;
 
 			HalKey_KeyClr();	//清所有按键信息
-			HalKey_Set_KeyMode(Func_Long, &sModeKey);	//设置键设为长按（ET05)
+			HalKey_Set_KeyMode(Func_Long, &sSetKey);	//设置键设为长按（ET05)
 			l_buf = 0;
 			eSleepTask_Sta = Sleep_wakeup;
 			break;
@@ -202,9 +206,9 @@ void App_Sleep(void)
 			if( l_buf > 8 )
 			{
 				//设置键长按3s进设置态（设置不全显的机型适用，一般独立按键，非开机键）
-				if( uKeyPress.bits.ModeKeyPress )
+				if( uKeyPress.bits.SetKeyPress )
 				{
-					if( uKeyHold.bits.ModeKeyHold )
+					if( uKeyHold.bits.SetKeyHold )
 					{
 						//进入设置态和快进为同一按键适用（当然非同一个按键也适用这样的写法）
 						if( uStaFlag.bits.LowBat )
@@ -223,14 +227,15 @@ void App_Sleep(void)
 						else
 						{
 							HalKey_KeyClr();	//清除所有按键信息
+							eMain_Task = Task_Unitmode;
 							App_SetMode();
-							while(!Port_Mode)
+							while(!Port_Set)
 							{
 								//喂狗
 								WDTR = 0x5A;
 							}
 							eSleepTask_Sta = Sleep_false;	//还原当前任务状态
-							eMain_Task = Task_Setmode;
+							
 						}
 					}
 				}
@@ -263,8 +268,14 @@ void App_Sleep(void)
             uSetFlag.bits.Ready_First = 1;	//默认开启已就绪提示
 			HalKey_Set_KeyMode(Func_Long, &sOnKey);   //开机&测量键设为短长按
 			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//记忆键为短长按
-			HalKey_Set_KeyMode(Func_Short_Long, &sModeKey);	//模式键为长按
-			HalKey_Set_KeyMode(Func_Short_Long, &sVoiceKey);	//声音键为短长按
+			HalKey_Set_KeyMode(Func_Short_Long, &sSetKey);	//模式键为长按
+			HalKey_Set_KeyMode(Func_Short_Long, &sHallKey);	//声音键为短长按
+			#if Have_Voice_Func
+				AM5BA_SPI_Init();
+				AM5BA_Power_Enable();
+				PlayStatueParam(2 , 0 , 0);
+                PlayStatueParam(1 , Play_Stop,0);
+			#endif
 			break;
 		default:
 			break;

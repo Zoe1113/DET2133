@@ -85,6 +85,10 @@ void App_BondTestMode(void)
 
 		//进行Ntc判定显示相应画面
 		case BondTest_Ntc:
+			#if Func_3color
+				LED_Yellow_Dis();
+				LED_Red_En();
+			#endif
 			Clr_Disp();
 			if( Port_Debug == 0 )
 			{
@@ -92,6 +96,7 @@ void App_BondTestMode(void)
 				if ( g_NtcCount < 0x2793  &&  g_NtcCount > 0x268D )
 				{
 					Disp_Code(Soft_Code);
+					Delay10ms(100);
 					Disp_Version(Soft_Internal_Version);
 				}
 				else
@@ -100,17 +105,13 @@ void App_BondTestMode(void)
 				}
 
 				//将无法测试的IO口全部放这里测试（IO口配置要正确），显示内容与绑定文件统一
-				if(!Port_Mode )
+				if(!Port_Set )
 				{
 					lcd_obj_en(); 	//显示物温符号
 				}
 				if(!Port_Mem)
 				{
 					lcd_mem_en();	//显示记忆符号
-				}
-				if(!Port_Voice)
-				{
-					lcd_voice_en();	//显示语音符号
 				}
 				if(!Port_Rod) 		//检测杆
 				{
@@ -132,13 +133,11 @@ void App_BondTestMode(void)
 				else
 				{
 					Disp_Code(Soft_Code);
+					Delay10ms(100);
 					Disp_Version(Soft_Internal_Version);
 				}
 			}
-			#if Func_3color
-				LED_Yellow_Dis();
-				LED_Red_En();
-			#endif
+
 
 			Drv_PGA_Init(Adc_PGA_Gain);
 			Drv_Adc_Channel_Set(AI3_AI4);	//切换到Tp采集
@@ -161,7 +160,7 @@ void App_BondTestMode(void)
 
 				// 设定绑定厂无法进入
 				#if Check_Parameter
-					if( !Port_Debug && Port_Mode)	//防止受入检进入
+					if( !Port_Debug && Port_Set)	//防止受入检进入
 					{
 						Clr_Disp();
 						//显示传感器参数循环显示

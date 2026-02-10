@@ -16,13 +16,13 @@ void Drv_BZ_Enable(void)
 {
 	TC2Init();
 	FTC2ENB = 1 ;		//使能TC0定时器
-	FPWM9OUT = 1 ;		//enable PT12 pwm 4KHZ输出
+	FPWM8OUT = 1 ;		//enable PT11 pwm 4KHZ输出
 }
 
 void Drv_BZ_Disable(void)
 {
 	FTC2ENB = 0 ;		//关闭TC0定时器
-	FPWM9OUT = 0 ;		//关闭 PT12 pwm 4KHZ输出
+	FPWM8OUT = 0 ;		//关闭 PT12 pwm 4KHZ输出
 	Port_BZ = 0;
 }
 

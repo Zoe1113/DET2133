@@ -26,12 +26,12 @@ typedef union
 	uint8 g_KeyPress_Flag;		//表示按键按下标志位，抬起自动清0
 	struct
 	{
-		unsigned ModeKeyPress:1;
+		unsigned SetKeyPress:1;
         unsigned OKeyPress:1;
 		unsigned TKeyPress:1;
 		unsigned AKeyPress:1;
-        unsigned VoiceKeyPress:1;
-		unsigned MemKeyPress:1;
+        unsigned MemKeyPress:1;
+		unsigned HallKeyPress:1;
 		unsigned CKeyPress:1;
 		unsigned DKeyPress:1;
 	}bits;
@@ -43,12 +43,12 @@ typedef union
 	uint8 g_KeyHold_Flag;		//表示按键保持长按标志位，抬起自动清0
 	struct
 	{
-        unsigned ModeKeyHold:1;
+        unsigned SetKeyHold:1;
 		unsigned OKeyHold:1;
 		unsigned TKeyHold:1;
 		unsigned AKeyHold:1;
-        unsigned VoiceKeyHold:1;
-		unsigned MemKeyHold:1;
+        unsigned MemKeyHold:1;
+		unsigned HallKeyHold:1;
 		unsigned CKeyHold:1;
 		unsigned DKeyHold:1;
 	}bits;
@@ -60,12 +60,12 @@ typedef union
 	uint8 g_KeyRelease_Flag;	//表示按键抬起标志位，必须手动清0
 	struct
 	{
-        unsigned ModeKeyRelease:1;
+        unsigned SetKeyRelease:1;
 		unsigned OKeyRelease:1;
 		unsigned TKeyRelease:1;
 		unsigned KeyRelease:1;
-        unsigned VoiceKeyRelease:1;
-		unsigned MemKeyRelease:1;
+        unsigned MemKeyRelease:1;
+		unsigned HallKeyRelease:1;
 		unsigned CKeyRelease:1;
 		unsigned DKeyRelease:1;
 	}bits;
@@ -77,12 +77,12 @@ typedef union
 	uint8 g_KeyContinue_Flag;	//表示按键加速按标志位，抬起自动清0（实际未使用）
 	struct
 	{
-        unsigned ModeKeyContinue:1;
+        unsigned SetKeyContinue:1;
 		unsigned OKeyContinue:1;
 		unsigned TKeyContinue:1;
 		unsigned AKeyContinue:1;
-        unsigned VoiceKeyContinue:1;
-		unsigned MemKeyContinue:1;
+        unsigned MemKeyContinue:1;
+		unsigned HallKeyContinue:1;
 		unsigned CKeyContinue:1;
 		unsigned DKeyContinue:1;
 	}bits;
@@ -103,7 +103,7 @@ extern uKey2 uKeyHold;
 extern uKey3 uKeyRelease;
 extern uKey4 uKeyContinue;
 
-extern strKey sMemKey, sOnKey, sModeKey ,sVoiceKey;
+extern strKey sMemKey, sOnKey, sSetKey ,sHallKey;
 extern uint8 ModeFlag;
 extern uint8 F_Disp_Temp_Status;
 extern unsigned long L_Disp_Ntc; //显示环温
@@ -117,9 +117,9 @@ void HalKey_Set_KeyMode(uint8 function,  strKey *sKey);
 void HalKey_KeyClr(void);
 
 void App_OnKeyProcess(void);//该模式下开机键任务处理
-void App_ModeKeyProcess(void);
+void App_SetKeyProcess(void);
 void App_MemKeyProcess(void);
-void App_MemorymodeKeyProcess(void);
+void App_MemorySetKeyProcess(void);
 void App_VoiceKeyProcess(void);
 
 #if Func_Probecover

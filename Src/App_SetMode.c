@@ -37,7 +37,7 @@ void App_SetMode(void)
 		High_Precision_Flag = 0;
 
 		//初始化开机键为短按
- 		HalKey_Set_KeyMode(Func_Short, &sModeKey);
+ 		HalKey_Set_KeyMode(Func_Short, &sSetKey);
 		//初始化设置键为加速按
  		HalKey_Set_KeyMode(Func_Short_Continue, &sOnKey);
 		Auto_TurnOff_Time_Sel();	//按下关机时间清0
@@ -61,7 +61,7 @@ void App_SetMode(void)
 		//上电复位由于未使能，故无法播报（设计就是无法播报）
 		Tone_Init();//语音功能
 		
-	#if ParamModif 
+		#if ParamModif 
 			if( eMain_Task == Task_ParamModifymode )
 			{
 				
@@ -72,20 +72,8 @@ void App_SetMode(void)
 					#endif
 			
 			}
-			else
+		#endif
 
-	#endif
-			{
-
-					eSetTask = Set_TimeFormate;
-					#if No_Time
-					if( uSetFlag.bits.TimeFormat )
-						Disp_12H();
-					else
-						Disp_24H();
-					#endif
-			
-			}
 			if(eMain_Task == Task_Unitmode && uSetFlag.bits.Unit_Change == Unit_Change_En)
 			{
 				eSetTask = Set_Unit;
@@ -95,7 +83,7 @@ void App_SetMode(void)
 		
 			}
 
-			while (!Port_Voice)
+			while (!Port_Set)
 			{
 				//喂狗
 				WDTR = 0x5A;
@@ -106,9 +94,9 @@ void App_SetMode(void)
 	}
 
 	//开机键按下并抬起后才触发切换设置项并更新显示(ET05/ETH)
-	if( uKeyPress.bits.VoiceKeyPress && eMain_Task == Task_Unitmode)
+	if( uKeyPress.bits.SetKeyPress && eMain_Task == Task_Unitmode)
 	{
-		uKeyPress.bits.VoiceKeyPress = 0;
+		uKeyPress.bits.SetKeyPress = 0;
 		Auto_TurnOff_Time_Sel();	//按下关机时间清0
 		F_UpdateMenu = 1;
 		eSetTask ++;
@@ -119,9 +107,9 @@ void App_SetMode(void)
 	
 	}
 
-	if( uKeyPress.bits.ModeKeyPress && eMain_Task == Task_Setmode)
+	if( uKeyPress.bits.SetKeyPress && eMain_Task == Task_Setmode)
 	{
-		uKeyPress.bits.ModeKeyPress = 0;
+		uKeyPress.bits.SetKeyPress = 0;
 		Auto_TurnOff_Time_Sel();	//按下关机时间清0
 		F_UpdateMenu = 1;
 		eSetTask ++;
@@ -151,9 +139,9 @@ void App_SetMode(void)
 	}
 
 #if ParamModif
-	if( uKeyPress.bits.ModeKeyPress && eMain_Task == Task_ParamModifymode)
+	if( uKeyPress.bits.SetKeyPress && eMain_Task == Task_ParamModifymode)
 	{
-		uKeyPress.bits.ModeKeyPress = 0;
+		uKeyPress.bits.SetKeyPress = 0;
 		Auto_TurnOff_Time_Sel();	//按下关机时间清0
 		F_UpdateMenu = 1;
 		eSetTask ++;
@@ -171,9 +159,9 @@ void App_SetMode(void)
 		Auto_TurnOff_Time_Sel();	//按下关机时间清0
 	}
 
-	if( uKeyPress.bits.ModeKeyPress )
+	if( uKeyPress.bits.SetKeyPress )
 	{
-		uKeyRelease.bits.ModeKeyRelease = 0;
+		uKeyRelease.bits.SetKeyRelease = 0;
 		//Auto_TurnOff_Time_Sel();	//按下关机时间清0
 	}
 
@@ -200,6 +188,7 @@ void App_SetMode(void)
 		F_UpdateMenu = 1;		//修改参数后必须立刻更新显示
 		switch( eSetTask )
 		{
+			#if No_Time
 			//时制
 			case Set_TimeFormate:
 				uSetFlag.bits.TimeFormat = ~uSetFlag.bits.TimeFormat;
@@ -241,12 +230,13 @@ void App_SetMode(void)
 				g_Day ++;
 				Data_Handle();
 				break;
+			#endif
             
             //单位
 			case Set_Unit:
 				uSetFlag.bits.Unit = ~uSetFlag.bits.Unit;
 				break;
-
+			
   			//语种
 			#if Have_Voice_Func
 				#if Have_VoiceLang_Change
@@ -561,10 +551,11 @@ void App_SetMode(void)
 				break;
 		}
 	}
-
+#if No_Time
 	//非加速按时启动消隐
 	if( !uKeyContinue.bits.OKeyContinue )
 		Time_Blink();
+#endif
 }
 
 /**************************************************************************
@@ -576,6 +567,7 @@ void App_SetMode(void)
 占用空间：	TBD
 备    注：	20ms作为时基
 **************************************************************************/
+		#if No_Time
 void Time_Blink(void)
 {
 	g_Blink_count ++;
@@ -630,10 +622,12 @@ void Time_Blink(void)
 	if(	g_Blink_count == 102 )
 		g_Blink_count = 0;
 }
+#endif
 
 /**
  * 判断日期是否超出月份的最大值
 */
+#if No_Time
 void Data_Handle(void)
 {
 	L_MaxDay = MonthTable[g_Month-1];
@@ -645,3 +639,4 @@ void Data_Handle(void)
 	if( g_Day > L_MaxDay )
 		g_Day = 1;
 }
+#endif

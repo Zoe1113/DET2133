@@ -51,6 +51,6 @@ void TC2Init( void )
 	TC2RL = 0xC1 ;		//250us
 	TC2CH = 0xFF ;
 	TC2RH = 0xFF ;		//250us
-	TC2DL7 = 0xE0 ;
-	TC2DH7 = 0xFF ;		//125us£¨1/2 duty)
+	TC2DL6 = 0xE0 ;
+	TC2DH6 = 0xFF ;		//125us£¨1/2 duty)
 }

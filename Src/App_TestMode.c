@@ -333,10 +333,6 @@ void App_TestingMode(void)
 
 		//显示处理
 		case Test_Disp:
-			#if !Func_White //环形灯
-				if(eTestmode_num == Earmode)
-					LED_White_En();
-			#endif
 			Clr_Disp888();
 			if(eTestmode_num == Foreheadmode || eTestmode_num == Objectmode)
 			{

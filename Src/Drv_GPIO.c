@@ -60,18 +60,18 @@ void Cal_Inspect_Detect(void)
 void CF_Check(void)
 {
 	//单位状态检测
-	#if !Func_unit
-		uSetFlag.bits.Unit = Unit_C;
-	#else
+	uSetFlag.bits.Unit = Unit_C;
+	if( !Port_CF )
+	{
 		uSetFlag.bits.Unit = Unit_F;
-	#endif
+	}
 
 	//单位可切换状态检测
-	#if Func_Change_CF
-		uSetFlag.bits.Unit_Change = Unit_Change_En;
-	#else
+	uSetFlag.bits.Unit_Change = Unit_Change_En;
+	if( !Port_Change_CF )
+	{
 		uSetFlag.bits.Unit_Change = Unit_Change_Dis;
-	#endif
+	}
 
 }
 
@@ -113,9 +113,13 @@ void Forehead_Ear_Check(bit cmd)
 				Frist_Earmode = 1;
 				Frist_Mode = 1;
 				Frist_Foreheadmode = 0;
+
 				#if !Func_White
-					LED_White_En();
+				//没戴额温罩，声音关闭的情况下开启夜灯
+				if(!uSetFlag.bits.VoiceEnable)
+				LED_White_En();
 				#endif
+
 			}
 
 
@@ -235,13 +239,13 @@ void GPIO_Init(void)
 #if Have_Voice_Func
 	//白灯输出不上拉高电平、MOSI输出不上拉高电平，MISO输入不上拉高电平,SCK输出不上拉高电平,TX输入不上拉高电平（防止向BLE供电）,RX输入不上拉,VOC_EN输出上拉低,BLE_LINK输入不上拉高
 	//0: input mode, 1: output mode
-	P1M = 0x4B;			//0b0100 1011
+	P1M = 0x47;			//0b0100 0111
 	//0: LCD functon pin, 1: IO pin
 	P1SEG = 0xFF;		//均为普通IO口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P1UR = 0x40;		//0b0100 0000
+	P1UR = 0xC0;		//0b1100 0000
 	//0: low level, 1: hFFigh level
-	P1 = 0xBF;			//0b1011 1111
+	P1 = 0xFD;			//0b1111 1101
 #else
 	//白灯输出不上拉高电平,MOSI输出不上拉高电平,MISO输入不上拉高电平,SCK输出不上拉高电平,TX输入不上拉高电平（防止向BLE供电）,RX输入不上拉,VOC_EN,BLE_LINK输入不上拉1
 	//0: input mode, 1: output mode
@@ -251,10 +255,10 @@ void GPIO_Init(void)
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
 	P1UR = 0x40;		//0b0100 0000
 	//0: low level, 1: high lDevel
-	P1 = 0xBB;			//0b1011 1011
+	P1 = 0xB9;			//0b1011 1001
 #endif
 
-	//MOTOR输出不上拉低电平,G320_EN输出不上拉高、检测杆输入上拉高、HALL输入上拉高、Debug输入上拉高电平,RGB输出不上拉高电平
+	//MOTOR输出不上拉低电平,C/、CF、CAL、Debug输入上拉高
 	//0: input mode, 1: output mode
 	P5M = 0xE3;			//0b1110 0011
 	//0: LCD functon pin, 1: IO pin
@@ -264,15 +268,15 @@ void GPIO_Init(void)
 	//0: low level, 1: high level
 	P5 = 0xFE;			//0b1111 1110
 
-	//P22-P27为seg口，LINK脚输入 不上拉 高,EN输出 上拉 低，额温盖检测脚输入上拉 高
+	//P25-P27为seg口，LINK脚输入 不上拉 高,EN输出 上拉 低，BUSY输入不上拉高，G320_EN输出不上拉高，VOC_EN输出不上拉低
 	//0: input mode, 1: output mode
-	P2M = 0x01;			//0b0000 0001
+	P2M = 0x0B;			//0b0000 1011
 	//0: LCD functon pin, 1: IO pin
-	P2SEG = 0x03;		//0b0000 0011,P23-P27均为LCD口
+	P2SEG = 0x1F;		//0b0001 1111,P25-P27均为LCD口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P2UR = 0x00;		//0b0000 0000
+	P2UR = 0x08;		//0b0000 1000
 	//0: low level, 1: high level
-	P2 = 0x03;			//0b0000 0011
+	P2 = 0x16;			//0b0001 0110
 
 	//0: input mode, 1: output mode
 	P3M = 0x00;			//均为LCD口
@@ -305,36 +309,16 @@ void GPIO_Init(void)
 **************************************************************************/
 void GPIO_PowerDown( void )
 {
-	//按键输入上拉高电平,XIN/XOUT输入不上拉0,E2供电口输出上拉搞
+	//按键输入上拉高电平,XIN/XOUT输入不上拉0,E2供电口输出上拉高
 	//0: input mode, 1: output mode
-	P0M = 0x3D;			//0b0011 1101
+	P0M = 0x0C;			//0b0000 1100
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P0UR = 0x02;		//0b0000 0010
+	P0UR = 0x13;		//0b0001 0011
 	//0: low level, 1: high level
-	P0 = 0x0E;			//0b0000 1110
+	P0 = 0x1F;			//0b0001 1111
 
 #if !Func_Ble
-	//白灯输入上拉高电平、MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输出不上拉0
-	//0: input mode, 1: output mode
-	P1M = 0xDE;			//0b1101 1110
-	//0: LCD functon pin, 1: IO pin
-	P1SEG = 0xFF;		//均为普通IO口
-	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P1UR = 0x41;		//0b0100 0001
-	//0: low level, 1: high level
-	P1 = 0x41;			//0b0100 0001
-
-	//P23-P27为seg口，BLE_Link、BLE_EN、额温盖检测脚输出 上拉 高,其他均为输入上拉高电平
-	//0: input mode, 1: output mode
-	P2M = 0x01;			//0b 0000 0001
-	//0: LCD functon pin, 1: IO pin
-	P2SEG = 0x03;		//0b00000011,P23-P27均为LCD口
-	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P2UR = 0x00;		//0b 0000 0000
-	//0: low level, 1: high level
-	P2 = 0x00;			//0b 0000 0000
-#else
-	//白灯输入上拉1,BZ不上拉输出0,MISO/MOSI/SCK/TX均输出不上拉低电平,VOC_EN输出上拉低,BLE_LINK输入不上拉0
+	//白灯输入上拉高，按键输入上拉高电平,BZ/MOSI/MISO/TX/RX/SCK均输出不上拉低，
 	//0: input mode, 1: output mode
 	P1M = 0xFE;			//0b 1111 1110
 	//0: LCD functon pin, 1: IO pin
@@ -344,26 +328,46 @@ void GPIO_PowerDown( void )
 	//0: low level, 1: high level
 	P1 = 0x41;			//0b 0100 0001
 
-	//P23-P27为seg口，BLE_Link、BLE_EN、额温盖检测脚输出 上拉 高,其他均为输入上拉高电平
+	//P25-P27为seg口，BLE_Link、BLE_EN、BLE_BUSY、G320_EN输出不上拉低，VOC_EN输出上拉高
 	//0: input mode, 1: output mode
 	P2M = 0x03;			//0b 0000 0011
 	//0: LCD functon pin, 1: IO pin
-	P2SEG = 0x03;		//0b00000011,P23-P27均为LCD口
+	P2SEG = 0x1F;		//0b 0001 1111,P25-P27均为LCD口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P2UR = 0x00;		//0b 0000 0000
+	P2UR = 0x1D;		//0b 0001 1101
 	//0: low level, 1: high level
-	P2 = 0x00;			//0b 0000 0000
+	P2 = 0x1D;			//0b 0001 1101
+#else
+	//按键输出不上拉低,，SCK/RX1/TX1/MISO/MOSI/BZ输出不上拉低,白灯输入上拉高，
+	//0: input mode, 1: output mode
+	P1M = 0xFE;			//0b 1111 1110
+	//0: LCD functon pin, 1: IO pin
+	P1SEG = 0xFF;		//均为普通IO口
+	//0: disable pullup, 1: enable pullup, pull resistor = 200k
+	P1UR = 0x01;		//0b 0000 0001
+	//0: low level, 1: high level
+	P1 = 0x01;			//0b 0000 0001
+
+	//P25-P27为seg口，BLE_Link、BLE_EN、BLE_BUSY、G320_EN输出不上拉低，VOC_EN输出上拉高
+	//0: input mode, 1: output mode
+	P2M = 0x1F;			//0b 0001 1111
+	//0: LCD functon pin, 1: IO pin
+	P2SEG = 0x1F;		//0b 0001 1111,P25-P27均为LCD口
+	//0: disable pullup, 1: enable pullup, pull resistor = 200k
+	P2UR = 0x01;		//0b 0000 0001
+	//0: low level, 1: high level
+	P2 = 0x01;			//0b 0000 0001
 #endif
 
-    //MOTOR输出不上拉低，G320_EN输出不上拉高,CF/C/F输出不上拉0，CAL/Debug输入上拉高电平,RGB输入上拉高
+    //RGB输入上拉高，CAL/Debug输入上拉高电平,C/F、CF输出不上拉0，MOTOR输出不上拉低
     //0: input mode, 1: output mode
     P5M = 0x07;			//0b0000 0111
     //0: LCD functon pin, 1: IO pin
     P5SEG = 0xFF;		//0b1111 1111
     //0: disable pullup, 1: enable pullup, pull resistor = 200k
-    P5UR = 0xF0;		//0b1111 0000
+    P5UR = 0xF8;		//0b1111 1000
     //0: low level, 1: high level
-    P5 = 0xF0;			//0b1111 0000
+    P5 = 0xF8;			//0b1111 1000
 
 
 	//0: input mode, 1: output mode

@@ -49,8 +49,8 @@ void App_Memory(void)
 	#if Func_Probecover
 		App_PCKeyProcess();		//耳套检测
 	#endif
-	App_MemorymodeKeyProcess();
-	//App_ModeKeyProcess();
+	App_MemorySetKeyProcess();
+	//App_SetKeyProcess();
 	App_VoiceKeyProcess();	//静音键
 	int16 L_Temp;
 
@@ -431,7 +431,7 @@ void Mem_Store(int16 L_Temp)
     //         L_tempbuf = g_Month;
     //         break;
     // }
-
+	//月份的高3位存储模式
 	I2C_Byte_W(L_MemAdd, g_Month+ (eTestmode_num << 5));
 	Delay1ms(5);
 	//存储日

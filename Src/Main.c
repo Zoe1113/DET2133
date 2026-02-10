@@ -48,7 +48,7 @@
 //主程序
 void main(void)
 {
-    WDTR = 0x5A; //喂狗
+       WDTR = 0x5A; //喂狗
 	//系统时钟设定
  	OSCM = 0x00;		//开启内置IHRC=8M，外置低速晶振32768，Fcpu=Normal mode
 	Delay1ms(5);
@@ -104,13 +104,15 @@ void main(void)
 
 	Parm_AutoCheck();//程序参数校验
 	TC1Init();	//TC1设置（10ms）
-	//T0Init();	//开启RTC中断
+	#if Func_Ble
+	T0Init();	//开启RTC中断
+	#endif
 	FGIE = 1;	//使能总中断等
 
     #if Have_Voice_Func
 		AM5BA_Power_Disable();
 	#endif
-	HalKey_Set_KeyMode(Func_Long, &sModeKey);	//设置键为短长按
+	HalKey_Set_KeyMode(Func_Long, &sSetKey);	//设置键为短长按
 
 	// 重新设置自动关机时间
 	Auto_TurnOff_Time_Sel();	//按下关机时间清0
@@ -209,7 +211,7 @@ void main(void)
 			F_500ms = 0;
 
 			//系统时间更新
-			//Update_SysTime();
+			Update_SysTime();
 			if(High_Precision_Flag)
 				Disp_High_Precision(uSetFlag.bits.Unit,High_Precision);
 			if(eTestmode_num != Insptectmode)

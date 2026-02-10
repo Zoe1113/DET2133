@@ -50,7 +50,7 @@ void Lcd_Init( void )
 {
 	P4SEG = 0x00 ;
 	P3SEG = 0X00 ;
-	P2SEG = 0x03 ;			//设置LCD显示IO
+	P2SEG = 0x1F ;			//设置LCD显示IO
 
 	LCDM1 = 0x03 ;			//1/3Bias,C-Type LCD Mode.
 	LCDM2 = 0x04 ;			//VLCD = 3.0V,
@@ -145,27 +145,27 @@ void Lcd_Init( void )
 占用空间：	TBD
 备    注：	无
 **************************************************************************/
-void Disp_Year(uint16 L_buf)
-{
-	uint8 R_LCD1,R_LCD2;
+// void Disp_Year(uint16 L_buf)
+// {
+// 	uint8 R_LCD1,R_LCD2;
 
-	L_buf -= 2000;
+// 	L_buf -= 2000;
 
-	//取十位
-	R_LCD1 = L_buf /10;
-	//取个位
-	R_LCD2 = L_buf % 10;
+// 	//取十位
+// 	R_LCD1 = L_buf /10;
+// 	//取个位
+// 	R_LCD2 = L_buf % 10;
 
-	lcd3 = DispTable[ 2 ];
-    lcd2 = DispTable[ 2 ]>> 8;
-	lcd5 = DispTable[ 0 ];
-    lcd4 = DispTable[ 0 ]>> 8;
-	lcd7 = DispTable[ R_LCD1 ];
-    lcd6 = DispTable[ R_LCD1 ]>> 8;
-	lcd9 = DispTable[ R_LCD2 ];
-	lcd8 = DispTable[ R_LCD2 ]>> 8;
-	//lcd7 = 0;
-}
+// 	lcd3 = DispTable[ 2 ];
+//     lcd2 = DispTable[ 2 ]>> 8;
+// 	lcd5 = DispTable[ 0 ];
+//     lcd4 = DispTable[ 0 ]>> 8;
+// 	lcd7 = DispTable[ R_LCD1 ];
+//     lcd6 = DispTable[ R_LCD1 ]>> 8;
+// 	lcd9 = DispTable[ R_LCD2 ];
+// 	lcd8 = DispTable[ R_LCD2 ]>> 8;
+// 	//lcd7 = 0;
+// }
 
 /**************************************************************************
 函数名称：	void Clr_SetTime( uint8 L_Blink )

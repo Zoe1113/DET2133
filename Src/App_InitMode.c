@@ -9,10 +9,7 @@
 **************************************************************************/
 #include "Include.h"
 
-uint8 s_KeyCompose( uint8 SetFlag );
-void InitKey(void);
-static uint16 key_timeout;
-static uint8 Mode_now;
+
 eInitModeTask eInitTask_Sta;
 
 void App_InitMode(void)
@@ -31,9 +28,6 @@ void App_InitMode(void)
 
 			//默认跳到下个状态
 			eInitTask_Sta = Init_Disp;
-			key_timeout = 0;
-            Mode_now = 0;
-			Mode_now = s_KeyCompose(0);
 			//EEPROM参数校验(如果校验和识别码都错则初始化数据，如果仅校验和错误则报错)
 			//EEPROM参数校验(Er5无法启动语音播报，因为语种可能未读出)
 			Parm_AutoCheck();//程序参数校验
@@ -76,25 +70,24 @@ void App_InitMode(void)
 				#endif
 				F_LED_Enable = Enable;	//开启背光
 				LED_Green_En();
-				Tone_Init();
-                // if(  uSetFlag.bits.VoiceEnable == 1 )
-                // {
-				// 	lcd_voice_en();				//显示喇叭
-                //     #if Have_Voice_Func
-                //     PlayStatueParam(2 , 0 , 0);
-                //     PlayStatueParam(1 , Play_VolumeMax,0);
-                //     PlayStatueParam(1 , Play_Di,0);
-                //     #else
-                //         BZ_Beep125();
-                //     #endif	
-				// 	// g_MotorSystick =0;
-                // }
-                // else
-                // {  
-				// 	#if Have_Motor
-				// 		g_MotorSystick = 25;
-				// 	#endif
-                // }
+                if(  uSetFlag.bits.VoiceEnable == 1 )
+                {
+					lcd_voice_en();				//显示喇叭
+                    #if Have_Voice_Func
+                    PlayStatueParam(2 , 0 , 0);
+                    PlayStatueParam(1 , Play_VolumeMax,0);
+                    PlayStatueParam(1 , Play_Di,0);
+                    #else
+                        BZ_Beep125();
+                    #endif	
+					// g_MotorSystick =0;
+                }
+                else
+                {  
+					#if Have_Motor
+						g_MotorSystick = 25;
+					#endif
+                }
 
 				//默认跳到下个状态
 				eInitTask_Sta = Init_ADDoff;
@@ -154,11 +147,6 @@ void App_InitMode(void)
 		case Init_Wait:
 			if( !F_LED_Enable )
 				eInitTask_Sta = Init_Key;
-
-			if( uKeyPress.bits.OKeyPress )
-			{
-				InitKey();
-			}
 			break;
 
 		//按键判断
@@ -166,7 +154,21 @@ void App_InitMode(void)
 			//是否长按3s？（设置全显的机型适用）
 			if( uKeyPress.bits.OKeyPress )
 			{
-				InitKey();
+				//必须等待on键释放才退出判断,否则进入ready会立刻关机
+				if( uKeyRelease.bits.OKeyRelease )
+				{
+					eInitTask_Sta = Init_End;
+				}
+				//优先判断测量键是否抬起后又长按进入生产检验模式
+				if( uKeyHold.bits.MemKeyHold &&  uKeyRelease.bits.MemKeyRelease )
+				{
+					Clr_Disp();
+					Disp_BadFace();
+                    Clr_All_Memory();  
+					uSetFlag.bits.Unit = Unit_C;	//进入检验态默认C
+					NtcTableWider_Check();
+					eTestmode_num = Insptectmode;	//非任务切换，仅改变测量模式而已
+				}
 			}
 			else
 			{
@@ -177,21 +179,13 @@ void App_InitMode(void)
 		//初始化任务结束，还原当前任务为初始状态
 		case Init_End:
 			High_Precision_Flag = 0;
-			if (F_CaliOk == 1)
-			{
-				F_CaliOk = 0;
-				eInitTask_Sta = Init_Set;		//任务切换必须将当前任务状态设定为初始状态
-				eMain_Task = Task_Calimode;						
-			}
-			else
-			{
-				//HalKey_Set_KeyMode(Func_Long, &sModeKey);	//设置键为长按
-				HalKey_Set_KeyMode(Func_Long, &sVoiceKey);	//声音键为短长按
-				HalKey_KeyClr();	//清除所有按键信息
-				eInitTask_Sta = Init_Set;		//任务切换必须将当前任务状态设定为初始状态
-				eMain_Task = Task_ReadyMode;	//切换到下一个任务
-				eReadyTask_Sta = Ready_Init;
-			}
+
+			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//声音键为短长按
+			HalKey_KeyClr();	//清除所有按键信息
+			eInitTask_Sta = Init_Set;		//任务切换必须将当前任务状态设定为初始状态
+			eMain_Task = Task_ReadyMode;	//切换到下一个任务
+			eReadyTask_Sta = Ready_Init;
+
 
 			break;
 
@@ -219,83 +213,4 @@ void TimeAndMode_Set(void)
 }
 
 
-uint8 s_KeyCompose( uint8 SetFlag )
-{
-    static uint8 s_key_count = 0, s_key_mode = 0;
-    if(0 == SetFlag)
-    {
-        s_key_count = 0;
-		s_key_mode = 0;
-    }
-    else if(1 == SetFlag)
-    {
-        if(uKeyRelease.bits.MemKeyRelease && 0 == s_key_count)
-        {
-            uKeyRelease.bits.MemKeyRelease = 0;
-            uKeyPress.bits.MemKeyPress = 0;
-            s_key_mode = 1;
-            s_key_count++;
-        }
-        else if(1 == s_key_mode)
-        {
-            if(uKeyRelease.bits.VoiceKeyRelease && (1 == s_key_count || 2 == s_key_count))
-            {
-                uKeyRelease.bits.VoiceKeyRelease = 0;
-                uKeyPress.bits.VoiceKeyPress = 0;
-                s_key_count++;
-            }
-            else if(uKeyRelease.bits.MemKeyRelease && 3 == s_key_count )
-            {
-                uKeyRelease.bits.MemKeyRelease = 0;
-                uKeyPress.bits.MemKeyPress = 0;
-                F_CaliOk = 1;
-                s_key_count = 0;
-				eInitTask_Sta = Init_End;	//将当前状态设置为初始状态
-            }
-            else
-            {
-                s_key_count = 0;
-                uKeyRelease.bits.OKeyRelease = 0;
-                uKeyRelease.bits.VoiceKeyRelease = 0;
-                uKeyRelease.bits.MemKeyRelease = 0;
-            }
-        }
-    }
-    return s_key_mode;
-}
-
-void InitKey(void)
-{
-	//必须等待on键释放才退出判断,否则进入ready会立刻关机
-	if( uKeyRelease.bits.OKeyRelease )
-	{
-		eInitTask_Sta = Init_End;
-	}
-	//优先判断测量键是否抬起后又长按进入生产检验模式
-	if( uKeyHold.bits.VoiceKeyHold &&  uKeyRelease.bits.VoiceKeyRelease )
-	{
-		Clr_Disp();
-		Disp_BadFace();
-		Clr_All_Memory();  
-		uSetFlag.bits.Unit = Unit_C;	//进入检验态默认C
-		NtcTableWider_Check();
-		eTestmode_num = Insptectmode;	//非任务切换，仅改变测量模式而已
-	}
-
-	if(uKeyRelease.g_KeyRelease_Flag)
-	{
-		//key_timeout = 0;
-		Mode_now = s_KeyCompose(1);
-	}
-
-	if(Mode_now)
-		key_timeout++;
-
-	if( key_timeout > 400)  //3s
-	{
-		eInitTask_Sta = Init_End;
-		Mode_now = s_KeyCompose(0);
-		key_timeout = 0;
-	}
-}
 
