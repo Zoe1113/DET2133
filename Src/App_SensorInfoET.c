@@ -74,12 +74,12 @@ void Disp_Sensor_Name(void)
 #endif
 
 #if Sensor == B5F55
-		lcd10 = S_b >> 8;
-        lcd11 = S_b;
-        lcd12 = 0x0B;
-        lcd13 = 0x0C;
-        lcd14 = S_F >> 8;
-        lcd15 = S_F;
+		lcd8 = S_b >> 8;
+        lcd9 = S_b;
+        lcd6 = S_S >> 8;
+        lcd7 = S_S;
+        lcd4 = S_F >> 8;
+        lcd5 = S_F;
 #endif
 }
 

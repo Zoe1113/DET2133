@@ -32,6 +32,7 @@ void App_CaliMode(void)
 	{
 		//显示Ab后，显示当前环境温度
 		case Cali_Ntc:
+			F_Ble_En = Disable;	//关闭蓝牙
 			LED_CloseAll();
 			Disp_Ab();
 			Tone_Init();

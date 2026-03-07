@@ -252,8 +252,10 @@ void App_VoiceKeyProcess(void)
 
 
 //记忆模式下的按键操作
-void App_MemorySetKeyProcess(void)
+void App_MemoryOnKeyProcess(void)
 {
+
+	uKeyRelease.bits.SetKeyRelease = 0;
 	//记忆模式下，测量键按下并抬起开始测量
 	if(uKeyRelease.bits.OKeyRelease)
 	{
@@ -344,7 +346,7 @@ void App_SetKeyProcess(void)
 				eTestmode_num = Airmode;		
 				lcd_badface_clr();		//清除哭脸
 				lcd_smileface_clr();	//清除笑脸
-				Disp_Temp(1,0,uSetFlag.bits.Unit,g_NtcStep);	//显示NTC的温度值
+				Switch_Temp();
 				Er6_Display_Sound(RESET);		//清除Er6相关标志位
 				eReadyTask_Sta = Ready_NoRefresh;
 				break;

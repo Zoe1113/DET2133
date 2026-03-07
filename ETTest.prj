@@ -131,7 +131,7 @@ IsRunGlobalOptimization=0
 IsSN8Modified=0
 IsMultipleFun=0
 IsEnable190=0
-IsCheckStackLevel=0
+IsCheckStackLevel=1
 ExternalDeviceCount=0
 
 [ICE]

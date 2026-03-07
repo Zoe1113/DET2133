@@ -208,7 +208,7 @@ void App_Sleep(void)
 				//设置键长按3s进设置态（设置不全显的机型适用，一般独立按键，非开机键）
 				if( uKeyPress.bits.SetKeyPress )
 				{
-					if( uKeyHold.bits.SetKeyHold )
+					if( uKeyHold.bits.SetKeyHold && !uSetFlag.bits.Unit_Change)
 					{
 						//进入设置态和快进为同一按键适用（当然非同一个按键也适用这样的写法）
 						if( uStaFlag.bits.LowBat )

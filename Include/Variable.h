@@ -105,8 +105,6 @@
 	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
     #define Func_Ble     			1   //1：有蓝牙功能； 0：无蓝牙功能；
     #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
 #endif
 /**
  * 蜂鸣和环形灯不能同时开启，摘掉额温罩，开启蜂鸣环形灯关闭，关闭蜂鸣环形灯开启
@@ -134,8 +132,6 @@
 	//#define Func_Ntc_Fun 			0	//1：有环温功能， 0：无环温功能，
     #define Func_Ble     			0   //1：有蓝牙功能； 0：无蓝牙功能；
     #define Nation       			1   //1：国外， 0:国内
-	#define Func_unit 				0   //0:默认单位为℃  1：默认单位为℉  
-	#define Func_Change_CF			1	//1：表示可切换   0：表示不可切换
 #endif
 
 

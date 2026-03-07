@@ -55,6 +55,7 @@ void App_ReadyMode(void)
 			HalKey_KeyClr();               //清除所有按键信息
 			g_50ms_Count = DispTime_Init;	//循环显示时间、日期、ntc计时器赋初值
 			#if Func_Ble
+			if(eTestmode_num != Insptectmode) //生产模式准备状态关闭蓝牙
                 F_Ble_En = Enable;		//开启蓝牙
             #endif
 			//开机全显外都可以使能日期、时间、环温循环显示

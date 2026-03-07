@@ -160,7 +160,7 @@ void App_InitMode(void)
 					eInitTask_Sta = Init_End;
 				}
 				//优先判断测量键是否抬起后又长按进入生产检验模式
-				if( uKeyHold.bits.MemKeyHold &&  uKeyRelease.bits.MemKeyRelease )
+				if( uKeyHold.bits.SetKeyHold &&  uKeyRelease.bits.SetKeyRelease )
 				{
 					Clr_Disp();
 					Disp_BadFace();
@@ -179,8 +179,7 @@ void App_InitMode(void)
 		//初始化任务结束，还原当前任务为初始状态
 		case Init_End:
 			High_Precision_Flag = 0;
-
-			HalKey_Set_KeyMode(Func_Long, &sMemKey);	//声音键为短长按
+			HalKey_Set_KeyMode(Func_Long, &sSetKey);	//声音键为短长按
 			HalKey_KeyClr();	//清除所有按键信息
 			eInitTask_Sta = Init_Set;		//任务切换必须将当前任务状态设定为初始状态
 			eMain_Task = Task_ReadyMode;	//切换到下一个任务

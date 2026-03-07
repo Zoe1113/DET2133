@@ -119,7 +119,7 @@ void HalKey_KeyClr(void);
 void App_OnKeyProcess(void);//该模式下开机键任务处理
 void App_SetKeyProcess(void);
 void App_MemKeyProcess(void);
-void App_MemorySetKeyProcess(void);
+void App_MemoryOnKeyProcess(void);
 void App_VoiceKeyProcess(void);
 
 #if Func_Probecover

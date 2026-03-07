@@ -21,7 +21,7 @@ uint8 g_MotorSystick = 0;		//振动马达的剩余时间
 void Cal_Inspect_Detect(void)
 {
 	//绑定检测模式、校温检测模式、系数调整模式判断
-	if( !Port_Debug )
+	if( !Port_Debug && Port_Cal)
 	{
 		if ( eTestmode_num == Insptectmode )
 		{
@@ -38,14 +38,14 @@ void Cal_Inspect_Detect(void)
 	}
 
 	// //设置态决不允许进入校温，汇编和C的程序结构不一样，未初始化adc
-	// if( !Port_Debug && eMain_Task == Task_ReadyMode )
-	// {
-	// 	#if Func_Ble
-    //         F_Ble_En = Disable;         //进入校准关闭蓝牙
-    //         Port_Ble_En = 0;            //蓝牙失能
-    //     #endif
-	// 	eMain_Task = Task_Calimode;		//用户模式下短路debug和cal进入校温模式
-	// }
+	if( !Port_Cal && !Port_Debug&& eMain_Task == Task_ReadyMode )
+	{
+		#if Func_Ble
+            F_Ble_En = Disable;         //进入校准关闭蓝牙
+            Port_Ble_En = 0;            //蓝牙失能
+        #endif
+		eMain_Task = Task_Calimode;		//用户模式下短路debug和cal进入校温模式
+	}
 }
 
 /**************************************************************************
@@ -260,11 +260,11 @@ void GPIO_Init(void)
 
 	//MOTOR输出不上拉低电平,C/、CF、CAL、Debug输入上拉高
 	//0: input mode, 1: output mode
-	P5M = 0xE3;			//0b1110 0011
+	P5M = 0xE1;			//0b1110 0001
 	//0: LCD functon pin, 1: IO pin
 	P5SEG = 0xFF;		//0b1111 1111
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P5UR = 0x1C;		//0b0001 1100
+	P5UR = 0x1E;		//0b0001 1110
 	//0: low level, 1: high level
 	P5 = 0xFE;			//0b1111 1110
 

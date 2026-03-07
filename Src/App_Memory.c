@@ -49,7 +49,7 @@ void App_Memory(void)
 	#if Func_Probecover
 		App_PCKeyProcess();		//¶úÌ×¼ì²â
 	#endif
-	App_MemorySetKeyProcess();
+	App_MemoryOnKeyProcess();
 	//App_SetKeyProcess();
 	App_VoiceKeyProcess();	//¾²Òô¼ü
 	int16 L_Temp;

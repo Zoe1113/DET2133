@@ -1,23 +1,23 @@
 # SONIX DSP Makefile Version:1.0.0.2
 # Defination
-COMPILER = "d:\SN8STU~1\bin\build\sn8pc.exe"
-GMA = "D:\SN8STU~1\Bin\Build\gma.exe"
-LINKER = "D:\SN8STU~1\Bin\Build\slink.exe"
-CONVERT = "D:\SN8STU~1\Bin\Build\RcvSN8.exe"
+COMPILER = "d:\sn8\bin\build\sn8pc.exe"
+GMA = "D:\SN8\Bin\Build\gma.exe"
+LINKER = "D:\SN8\Bin\Build\slink.exe"
+CONVERT = "D:\SN8\Bin\Build\RcvSN8.exe"
 
 # Define Path Macro
 PRJ_PATH=.
 OBJ_PATH=.\Obj
 INC_PATH=.\Include
 LIB_PATH=.\Lib
-C_INC_PATH=D:\SN8STU~1\C\include
+C_INC_PATH=D:\SN8\C\include
 OUT_PATH=.\Bin
 VPATH=.\:$(OBJ_PATH):$(LIB_PATH):$(INC_PATH):$(C_INC_PATH):$(OUT_PATH)
 
 # Define Option Flags
-COMPILER_FLAGS = -target=SN8P2988 -INI="D:\SN8STU~1\Bin\Build\SN8P1900.ini" -PROJECTNAME=".\ETTest.prj" -WL=3 -Chip_Series=2 -A -g -I.\Include -ID:\SN8STU~1\C\include -PUSH0 -NoCALLHL -NoX -NoGlobalOpt -tempdir="$(OBJ_PATH)"  -cpp_skip_asm -DICE_Mode=0
+COMPILER_FLAGS = -target=SN8P2988 -INI="D:\SN8\Bin\Build\SN8P1900.ini" -PROJECTNAME=".\ETTest.prj" -WL=3 -Chip_Series=2 -A -g -I.\Include -ID:\SN8\C\include -PUSH0 -NoCALLHL -NoX -NoGlobalOpt -tempdir="$(OBJ_PATH)"  -cpp_skip_asm -DICE_Mode=0
 GMA_FLAGS = /INI:"SN8P1900.ini" /ID1:0 /ID2:0  /MACHINE:SN8P2988  /Chip_Series:2 /NOPeephole: /PATH:".\Include" /PROJECTNAME:".\ETTest.prj" /WL:3 /DEFINE:ICE_Mode=0 /DEFINE:SN8P2988=1  /OutputPath:"$(OBJ_PATH)" 
-LINK_FLAGS = /MACHINE:SN8P2988 /Chip_Series:2 /INI:"SN8P1900.ini" /WL:3 /OutputFile:"$(OUT_PATH)/ETTest.out"  /MAP:"$(OBJ_PATH)\ETTest.map"   /LISTFILE:  /STDLIB:".\Obj"    /PATH:"$(LIB_PATH)" /STACK: /PROJECTNAME:".\ETTest.prj"
+LINK_FLAGS = /MACHINE:SN8P2988 /Chip_Series:2 /INI:"SN8P1900.ini" /WL:3 /OutputFile:"$(OUT_PATH)/ETTest.out"  /MAP:"$(OBJ_PATH)\ETTest.map"   /LISTFILE:  /STDLIB:".\Obj"    /PATH:"$(LIB_PATH)" /STACK: /EnableCheckStackLevel /PROJECTNAME:".\ETTest.prj"
 CONV_FLAGS = /MACHINE:SN8P2988 /INI:"SN8P1900.ini" /WL:3 /OutputFile:"$(OUT_PATH)/ETTest.sn8"  /PROJECTNAME:".\ETTest.prj" /IDSVersion:V1.20.219.376n /Chip_Series:2 /OSLIB:".\Obj"  
 LINK_DEP_FILES = $(OBJ_PATH)\App_Param.o $(OBJ_PATH)\App_Function.o $(OBJ_PATH)\Drv_ADC.o $(OBJ_PATH)\Drv_Buzzer.o $(OBJ_PATH)\Drv_Delay.o $(OBJ_PATH)\Drv_I2C_HW.o $(OBJ_PATH)\Drv_Key.o $(OBJ_PATH)\Drv_LVD.o $(OBJ_PATH)\Drv_LED.o $(OBJ_PATH)\Drv_Timer.o $(OBJ_PATH)\Drv_Uart.o $(OBJ_PATH)\Variable.o $(OBJ_PATH)\Drv_GPIO.o $(OBJ_PATH)\Main.o $(OBJ_PATH)\App_Memory.o $(OBJ_PATH)\APP_Isr.o $(OBJ_PATH)\App_CaliMode.o $(OBJ_PATH)\App_ReadyMode.o $(OBJ_PATH)\App_TestMode.o $(OBJ_PATH)\App_InitMode.o $(OBJ_PATH)\App_SetMode.o $(OBJ_PATH)\App_Core.o $(OBJ_PATH)\App_Sleep.o $(OBJ_PATH)\App_BondTestMode.o $(OBJ_PATH)\App_Voice.o $(OBJ_PATH)\App_Time.o $(OBJ_PATH)\App_FTOffset215.o $(OBJ_PATH)\App_BleMode06.o $(OBJ_PATH)\App_SensorInfoET.o $(OBJ_PATH)\Drv_LCD_ET29A.o   \
 
