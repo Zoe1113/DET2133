@@ -137,12 +137,12 @@ void main(void)
 					eMain_Task = Task_ReadyMode;
 				}
 			}
-			#if !Have_Voice_Func
+			//#if !Have_Voice_Func
 			if( (eMain_Task == Task_ReadyMode && eReadyTask_Sta != Ready_Init ) || eMain_Task == Task_Testingmode || eMain_Task == Task_Memorymode)
 			{
 				Forehead_Ear_Check(RUN);
 			}
-			#endif
+			//#endif
 		}
 
 		//20ms任务轮询
@@ -163,9 +163,9 @@ void main(void)
 			{
 				//3s背光倒计时
 				Led_CountDown_3s();
-				#if Have_Voice_Func
-                	Forehead_Ear_Check(RUN);
-				#endif
+				// #if Have_Voice_Func
+                // 	Forehead_Ear_Check(RUN);
+				// #endif
 			}
 
 			//自动关机

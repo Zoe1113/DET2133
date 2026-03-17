@@ -83,7 +83,7 @@ void Voice_Show_Init(void)
 		#endif
 		lcd_voice_en();
 		lcd_sound_off_en();
-		if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
+		if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode || eMain_Task == Task_Memorymode)
 		{
 			
 			// 打开震动
@@ -226,22 +226,17 @@ void App_OnKeyProcess(void)
 void App_VoiceKeyProcess(void)
 {
 
-	if(uKeyPress.bits.SetKeyPress && !VoiceKeyHoldFlag&& !uErrFlag.bits.Er2)//er2不能进行声音开关
+	if(uKeyPress.bits.SetKeyPress && !uErrFlag.bits.Er2)//er2不能进行声音开关
 	{
-		if(uKeyHold.bits.SetKeyHold&& !VoiceKeyHoldFlag)
+		if(uKeyHold.bits.SetKeyHold)
 		{
 			VoiceKeyHoldFlag = 1;
+			uKeyHold.bits.SetKeyHold = 0;
+			sSetKey.g_Key_Hold_cnt = 0;	//按键计时清0保证再次长按3s
 			uKeyRelease.bits.SetKeyRelease = 0;
 			Auto_TurnOff_Time_Sel();
 			uSetFlag.bits.VoiceEnable =	~uSetFlag.bits.VoiceEnable;
 			Voice_Show_Init();	//声音开关
-		}
-		else
-		{
-
-			uKeyRelease.bits.SetKeyRelease = 0;
-			VoiceKeyHoldFlag = 0;
-			
 		}
 	}
 

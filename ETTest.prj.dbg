@@ -8,13 +8,13 @@ HideCount=0
 Radix=16
 ShowCharacter=1
 [Watch_Window_1]
-Count=7
+Count=4
 Item0=uErrFlag
 Radix=10
 ShowCharacter=0
 Item1=uKeyPress
 Item2=uSetFlag
-Item3=F_Disp_Dash
+Item3=VoiceKeyHoldFlag
 Item4=eSetTask
 Item5=g_NtcStep
 Item6=g_3s_Count

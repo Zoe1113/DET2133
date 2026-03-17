@@ -486,6 +486,7 @@ uint8 App_Upload_Temperature()
 
 	static uint8 L_Checksum = 0;
 	uint16 L_Temp;
+	uint8 L_mode;
     uint8 L_MemAdd;
 	uint8 L_HourMem;		//用于表示记忆态下显示测量时间小时寄存器
 	uint8 L_MinuteMem;		//用于表示记忆态下显示测量时间分钟寄存器
@@ -538,14 +539,14 @@ uint8 App_Upload_Temperature()
         L_MemAdd++;
         L_YearMem = I2C_Random_R(L_MemAdd);		//只传20xx-2000后的值
         I2C_Disable();
-
+		L_mode = L_MonthMem >> 5;
         //测量部位
-        if( (L_MonthMem & 0xE0) == 0 )		//耳温
+        if( L_mode == 0 )		//耳温
         {
             g_Ble_TxData[L_datalenth++] = 0x01;
             L_Checksum += 0x01;
         }
-        else if( (L_MonthMem & 0x40) == 0x40 )	//额温
+        else if( L_mode == 1 )	//额温
         {
             g_Ble_TxData[L_datalenth++] = 0x02;
             L_Checksum += 0x02;
