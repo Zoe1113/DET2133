@@ -146,6 +146,7 @@ void App_Sleep(void)
 
 			//无按键按下
 			l_buf = 1;
+			#if Func_Ble
 			while(l_buf)
 			{
 				#if  Func_TakeCoverAutoOn
@@ -182,6 +183,7 @@ void App_Sleep(void)
 					l_buf = 0;
 				 }
 			}
+			#endif
 
 			FSTPHX = 0;		//开IHRC
 			NOP(2);

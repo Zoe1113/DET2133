@@ -253,7 +253,7 @@ void GPIO_Init(void)
 	//0: LCD functon pin, 1: IO pin
 	P1SEG = 0xFF;		//均为普通IO口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P1UR = 0x40;		//0b0100 0000
+	P1UR = 0xC0;		//0b0100 0000
 	//0: low level, 1: high lDevel
 	P1 = 0xB9;			//0b1011 1001
 #endif
@@ -309,6 +309,7 @@ void GPIO_Init(void)
 **************************************************************************/
 void GPIO_PowerDown( void )
 {
+	#if Func_Hall
 	//按键输入上拉高电平,XIN/XOUT输入不上拉0,E2供电口输出上拉高
 	//0: input mode, 1: output mode
 	P0M = 0x0C;			//0b0000 1100
@@ -316,6 +317,15 @@ void GPIO_PowerDown( void )
 	P0UR = 0x13;		//0b0001 0011
 	//0: low level, 1: high level
 	P0 = 0x1F;			//0b0001 1111
+	#else //用检测杆的话，检测杆口输出上拉高
+	//按键输入上拉高电平,XIN/XOUT输入不上拉0,E2供电口输出上拉高
+	//0: input mode, 1: output mode
+	P0M = 0x2C;			//0b0010 1100
+	//0: disable pullup, 1: enable pullup, pull resistor = 200k
+	P0UR = 0x33;		//0b0011 0011
+	//0: low level, 1: high level
+	P0 = 0x3F;			//0b0011 1111
+	#endif
 
 #if !Func_Ble
 	//白灯输入上拉高，按键输入上拉高电平,BZ/MOSI/MISO/TX/RX/SCK均输出不上拉低，
@@ -324,9 +334,9 @@ void GPIO_PowerDown( void )
 	//0: LCD functon pin, 1: IO pin
 	P1SEG = 0xFF;		//均为普通IO口
 	//0: disable pullup, 1: enable pullup, pull resistor = 200k
-	P1UR = 0x41;		//0b 0100 0001
+	P1UR = 0x01;		//0b 0100 0001
 	//0: low level, 1: high level
-	P1 = 0x41;			//0b 0100 0001
+	P1 = 0x01;			//0b 0100 0001
 
 	//P25-P27为seg口，BLE_Link、BLE_EN、BLE_BUSY、G320_EN输出不上拉低，VOC_EN输出上拉高
 	//0: input mode, 1: output mode

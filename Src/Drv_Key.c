@@ -83,12 +83,11 @@ void Voice_Show_Init(void)
 		#endif
 		lcd_voice_en();
 		lcd_sound_off_en();
-		if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode || eMain_Task == Task_Memorymode)
-		{
+
 			
 			// 打开震动
 			g_MotorSystick = Vibration_time;
-		}
+		
     }  
 	// #if Have_Motor
 	// 	// 如果语音功能关闭且不是在耳温模式下
