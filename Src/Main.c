@@ -48,7 +48,7 @@
 //主程序
 void main(void)
 {
-       WDTR = 0x5A; //喂狗
+    WDTR = 0x5A; //喂狗
 	//系统时钟设定
  	OSCM = 0x00;		//开启内置IHRC=8M，外置低速晶振32768，Fcpu=Normal mode
 	Delay1ms(5);
@@ -117,7 +117,11 @@ void main(void)
 	// 重新设置自动关机时间
 	Auto_TurnOff_Time_Sel();	//按下关机时间清0
 	// 绑定检测，因为修改上电进入模式的原因，移到此处；
-	Cal_Inspect_Detect();
+	if(!uStaFlag.bits.LowBat)
+	{
+		Cal_Inspect_Detect();
+	}
+
 
 	while(1)
 	{
@@ -137,12 +141,12 @@ void main(void)
 					eMain_Task = Task_ReadyMode;
 				}
 			}
-			//#if !Have_Voice_Func
+
 			if( (eMain_Task == Task_ReadyMode && eReadyTask_Sta != Ready_Init ) || eMain_Task == Task_Testingmode || eMain_Task == Task_Memorymode)
 			{
 				Forehead_Ear_Check(RUN);
 			}
-			//#endif
+
 		}
 
 		//20ms任务轮询
@@ -163,9 +167,6 @@ void main(void)
 			{
 				//3s背光倒计时
 				Led_CountDown_3s();
-				// #if Have_Voice_Func
-                // 	Forehead_Ear_Check(RUN);
-				// #endif
 			}
 
 			//自动关机

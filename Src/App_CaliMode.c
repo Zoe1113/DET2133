@@ -156,6 +156,8 @@ void App_CaliMode(void)
 
 		//存储校准值和校验和
 		case Cali_Store:
+			/* 耳套参数初始化，防止重绑的板子耳套参数不对*/
+			Probecover_Param_Init();
  			Param_Calistore();
 
 			eCaliTask = Cali_End;	//默认正常退出
@@ -346,7 +348,8 @@ uint8 S_Adc_Stable(void)
 **************************************************************************/
 uint8 S_Adjust(void)
 {
-	uint16 a,b,c;
+	uint16 b,c;
+	int16 a;
 
 	//37理论值-(校正时NTC对应TP相对25的0000电压差)
 	a =  g_Table37C - g_Cali25TP;

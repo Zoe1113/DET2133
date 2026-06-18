@@ -181,6 +181,7 @@ void APP_Enter_Blackbodymode(void)
 					lcd_ble_en();
 				}
 			#endif
+			ModeFlag = Mode_Human_Age36;
 			eTestmode_num = Blackbodymode;	//代表进入黑体模式
 			eSleepTask_Sta = Sleep_false;	//设置当前任务状态为初始状态
 			eMain_Task = Task_ReadyMode;
@@ -275,6 +276,7 @@ void App_MemoryOnKeyProcess(void)
 		{
 			Er1_Display_Sound(RESET);
 			eMain_Task = Task_Testingmode;	//准备进入测量模式   
+			TestTask_Reset();				//测量任务复位
 		}
 
 	}

@@ -59,6 +59,7 @@ extern uint8 g_Earcap35;		//变温增加
 extern uint8 g_Earcap40;		//变温增加
 
 void Param_Init(void);
+void Probecover_Param_Init(void);
 void Param_Check(void);
 void Parm_AutoCheck(void);
 void Param_Calistore(void);

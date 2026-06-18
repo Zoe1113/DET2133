@@ -81,6 +81,7 @@ void App_Memory(void)
 		#endif
 		g_3s_Count = CountDown_3s;		//开启背光3s倒计时
 		Disp_MemNo();
+		Delay10ms(50);
 		
 	}
 
@@ -116,6 +117,7 @@ void App_Memory(void)
 			g_3s_Count = CountDown_3s;		//开启背光3s倒计时
 			
 		}
+		Delay10ms(50);
 	}
 }
 

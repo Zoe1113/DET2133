@@ -72,6 +72,7 @@ void App_TestingMode(void)
 			Clr_ModeSign();
 			lcd_badface_clr();
 			lcd_smileface_clr();
+			lcd_mem_clr();
 			F_Mem_FirstEnter = 0;
 			uStaFlag.bits.Fever = 0;
 
@@ -426,6 +427,7 @@ void App_TestingMode(void)
 		case Test_End:
 			eTestTask_Sta = Test_Init;		//当前任务状态初始化
 			eMain_Task = Task_ReadyMode;	//切换到下个任务
+			uKeyRelease.bits.SetKeyRelease = 0;
 			Adc_Channel_Init(TPTONTC);			//切换到ntc通道
 			eReadyTask_Sta = Ready_Timeout;	//下个任务状态初始化
 			g_5s_Count = CountDown_5s;		//开启5s等待

@@ -100,13 +100,6 @@ void Param_Init(void)
 	// I2C_Byte_W(I2C_Add_HumanRatio, HumanRatio_Num);
 	// Delay1ms(5);
 
-	//不带耳套的系数
-	I2C_Byte_W(I2C_Add_HumanRatio1, HumanRatio_Num);//人体系数：0.02（仅耳温需要）
-	Delay1ms(5);
-	//带耳套的系数
-	I2C_Byte_W(I2C_Add_HumanRatio2, 0x08);	//人体系数：0.008（仅耳温需要）
-	Delay1ms(5);
-
 	#if Func_Probecover
 		// I2C_Byte_W(I2C_Add_PcRatio, 0x37);		//耳套系数：0.55（仅耳温需要）
 		// Delay1ms(5);
@@ -143,30 +136,53 @@ void Param_Init(void)
 
 	I2C_Byte_W(I2C_Add_IdentifyCode, IdentifyCode);		//识别码
 	Delay1ms(5);
-//耳温计适用
-#if Func_Probecover
-	I2C_Byte_W(I2C_Add_Earcap10, 0x6E);		//g_Earcap10=110
-	Delay1ms(5);
 
-	I2C_Byte_W(I2C_Add_Earcap15, 0x6C);		//g_Earcap15=108
-	Delay1ms(5);
+	I2C_Disable();
+	Probecover_Param_Init();
+}
 
-	I2C_Byte_W(I2C_Add_Earcap20, 0x6E);		//g_Earcap15=110
-	Delay1ms(5);
+/**************************************************************************
+函数名称：	Probecover_Param_Init()
+函数功能：	耳套参数初始化
+输入参数：	无
+输出参数：	各变量
+返回值  ：	无
+占用空间：	TBD
+备    注：	无
+**************************************************************************/
+void Probecover_Param_Init(void)
+{
 
-	I2C_Byte_W(I2C_Add_Earcap25, 0x76);		//g_Earcap15=118
+	I2C_masterInit();
+	//不带耳套的系数
+	I2C_Byte_W(I2C_Add_HumanRatio1, HumanRatio_Num);//人体系数：0.02（仅耳温需要）
 	Delay1ms(5);
-
-	I2C_Byte_W(I2C_Add_Earcap30, 0x75);		//g_Earcap15=117
+	//带耳套的系数
+	I2C_Byte_W(I2C_Add_HumanRatio2, 0x08);	//人体系数：0.008（仅耳温需要）
 	Delay1ms(5);
+	//耳温计适用
+	#if Func_Probecover
+		I2C_Byte_W(I2C_Add_Earcap10, 0x6E);		//g_Earcap10=110
+		Delay1ms(5);
 
-	I2C_Byte_W(I2C_Add_Earcap35, 0x75);		//g_Earcap15=117
-	Delay1ms(5);
+		I2C_Byte_W(I2C_Add_Earcap15, 0x6C);		//g_Earcap15=108
+		Delay1ms(5);
 
-	I2C_Byte_W(I2C_Add_Earcap40, 0x50);		//g_Earcap15=80
-	Delay1ms(5);
-#endif 
+		I2C_Byte_W(I2C_Add_Earcap20, 0x6E);		//g_Earcap15=110
+		Delay1ms(5);
 
+		I2C_Byte_W(I2C_Add_Earcap25, 0x76);		//g_Earcap15=118
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap30, 0x75);		//g_Earcap15=117
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap35, 0x75);		//g_Earcap15=117
+		Delay1ms(5);
+
+		I2C_Byte_W(I2C_Add_Earcap40, 0x50);		//g_Earcap15=80
+		Delay1ms(5);
+	#endif 
 	I2C_Disable();
 }
 
@@ -301,13 +317,13 @@ void Parm_AutoCheck(void)
 {
 	//EEPROM参数校验(如果校验和识别码都错则初始化数据，如果仅校验和错误则报错)
 	Param_Check();
-	if( uErrFlag.bits.Er5 )            //校验和错误
+	if( uErrFlag.bits.Er5 || uStaFlag.bits.Identify)            //校验和错误
 	{
 		if( uStaFlag.bits.Identify )
 		{
 			Param_Init();
 			Param_Check();
-			if( uErrFlag.bits.Er5 )
+			if( uErrFlag.bits.Er5 || uStaFlag.bits.Identify)
 			{
 				#if Func_Reverse_Disp
 					LED_Reverse_Disp_En();
