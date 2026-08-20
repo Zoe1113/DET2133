@@ -56,7 +56,7 @@ void App_CaliMode(void)
 					else
 					{
 						NtcTable_Find();
-						Disp_Temp(1,1,0,g_NtcStep);
+						Disp_Temp(1,0,0,g_NtcStep);
 					}
 				}
 			}while( Port_On );
@@ -363,10 +363,13 @@ uint8 S_Adjust(void)
 	a = b - g_Cali41Data;
 	a = labs(a);
 	c = g_Cali41Data -g_Cali37Data;
-
-	//41相对37的发射率偏差大于0.3℃，此次校准数据有误
-	//表示41相对37校准值差值小于100count，此次校准数据有误
-	if ( a > 0x30 || c < 100 )
+	//不同的传感器，取值范围不同
+    #if Sensor == STP9CF55
+    if ( a > 0x30 || c < 100 )
+    #endif
+    #if Sensor == B5F55
+    if ( a > 0x43 || c < 100 )
+    #endif
 	{
 		return 1;
 	}

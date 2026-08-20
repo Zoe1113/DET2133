@@ -248,6 +248,8 @@ void App_TestingMode(void)
 		#if Func_debug
 			Uart_Transmit(0x96, g_TpStep);
 		#endif
+		// g_NtcStep = 3500;
+		// g_TpStep = 4100;
 			BlackBodyOffset();
 
 		#if Func_debug

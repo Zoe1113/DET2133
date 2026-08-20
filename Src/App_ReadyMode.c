@@ -154,6 +154,13 @@ void App_ReadyMode(void)
 					LED_White_En();
 					g_3s_Count = CountDown_3s;	//开启背光3s倒计时
 				}
+				#else//三色背光，开机亮绿色背光
+				if(uSetFlag.bits.Ready_First)
+				{
+					LED_CloseAll();
+					LED_Green_En();
+					g_3s_Count = CountDown_3s;	//开启背光3s倒计时
+				}
 				#endif
 
 				if( uSetFlag.bits.VoiceEnable == 1)//开机第一次时的语音/蜂鸣声
@@ -221,7 +228,7 @@ void App_ReadyMode(void)
         #endif
 		
 		case Ready_DisAir:	//显示环温
-			Clr_Disp888();
+			//Clr_Disp888();
             // L_Disp_Ntc = CToF(g_NtcStep);
             // L_Disp_Ntc = Temp_Resolution_Adjust(L_Disp_Ntc);
             // Disp_Temp(1,0,uSetFlag.bits.Unit,L_Disp_Ntc);

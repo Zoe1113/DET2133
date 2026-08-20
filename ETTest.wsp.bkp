@@ -2,10 +2,10 @@
 TableSize=-1, -1, -1
 BreakpointCount=0
 [Breakpoint_0]
-State=1
+State=0
 LocationType=0
-FileName=.\Src\App_Sleep.c
-FileLine=166
+FileName=.\Src\App_TestMode.c
+FileLine=253
 HitCountType=0
 HitThreshold=1
 Visible=1
@@ -17,8 +17,8 @@ DumpRamRegions=
 [Breakpoint_1]
 State=0
 LocationType=0
-FileName=.\Src\App_Sleep.c
-FileLine=227
+FileName=.\Src\App_TestMode.c
+FileLine=259
 HitCountType=0
 HitThreshold=1
 Visible=1

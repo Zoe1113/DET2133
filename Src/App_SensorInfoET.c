@@ -39,12 +39,12 @@ void Disp_Sensor_Name(void)
 
 #if Sensor == STP9CF55
 //STP
-		lcd6 = 0x0C;
-        lcd5 = 0x0B;
-        lcd4 = 0x0E;
-        lcd3 = 0x01;
-        lcd2 = 0x0E;
-        lcd1 = 0x0C;
+		lcd8 = S_S >> 8;
+        lcd9 = S_S;
+        lcd6 = S_T >> 8;
+        lcd7 = S_T;
+        lcd4 = S_P >> 8;
+        lcd5 = S_P;
 #endif
 
 #if Sensor == ZXH
