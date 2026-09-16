@@ -164,9 +164,9 @@ void App_BondTestMode(void)
 					{
 						Clr_Disp();
 						//显示传感器参数循环显示
-						Disp_Temp(0,1,0,g_AdcDoff);
+						Disp_Temp(0,0,0,g_AdcDoff);
 						Delay10ms(100);
-						Disp_Temp(0,1,0,g_OpDoff);
+						Disp_Temp(0,0,0,g_OpDoff);
 						Delay10ms(100);
 						Disp_Temp(0,1,0,g_Cali25TP);
 						Delay10ms(100);

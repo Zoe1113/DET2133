@@ -796,7 +796,7 @@ void Disp_Hi(void)
 void Disp_Ready(void)
 {
 	lcd4 = 0x01;
-    lcd5 = 0x00;
+    lcd5 = 0x01;
     lcd6 = 0x01;
     lcd7 = 0x00;
     lcd8 = 0x01;

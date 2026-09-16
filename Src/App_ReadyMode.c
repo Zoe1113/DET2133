@@ -94,10 +94,6 @@ void App_ReadyMode(void)
             Clr_Disp888();
 			Disp_Ready();	//首次开机必须显示_ _._
 
-			//模式切换的时候需要背光
-			// LED_CloseAll();
-			// LED_Green_En();		//开启绿光
-			// g_3s_Count = CountDown_3s;	//开启背光3s倒计时
             eReadyTask_Sta = Ready_WaitReady;
 			break;
 		//这两个为人为增加的过渡状态
@@ -111,85 +107,65 @@ void App_ReadyMode(void)
 			Disp_ModeSign();	//显示模式符号
 			Auto_TurnOff_Time_Sel();//自动关机
 
-			#if Func_White
-				if(eTestmode_num != Foreheadmode)
-				{
-					LED_CloseAll();
-					LED_White_En();
-				}
-			#else
-			if(eTestmode_num != Foreheadmode && eTestmode_num != Objectmode)//测量结束后有蜂鸣声
+			//耳温的等待结束的背光和蜂鸣
+			if(eTestmode_num == Earmode || eTestmode_num == Blackbodymode)
 			{
 				LED_CloseAll();
-				
-				#if Func_3color
-					LED_Green_En();
-				#else
+				#if Func_White
 					LED_White_En();
+				#else
+					LED_Green_En();
 				#endif
-			}
-
-			#endif
-			g_3s_Count = CountDown_3s;	//开启背光3s倒计时
-			
-
-		#if !Have_Voice_Func
-			if(eTestmode_num == Earmode || eTestmode_num == Blackbodymode)//测量结束后有蜂鸣声
-			{
+				g_3s_Count = CountDown_3s;	//开启背光3s倒计时
+				#if !Have_Voice_Func
 				if(uSetFlag.bits.VoiceEnable == 1)
 				{
 					BZ_Beep50();
 					BZ_Beep50();		//蜂鸣2声
 				}
+				#endif
 			}
-		#endif
-
-			//if(eTestmode_num == Insptectmode ||  eTestmode_num == Foreheadmode)
+			
+			//额温和生产模式的背光、蜂鸣、语音和振动
 			if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
 			{
-				#if Func_White	//额温的白色背光只有切换到额温的第一次会亮
 				if(uSetFlag.bits.Ready_First)
 				{
 					LED_CloseAll();
+					#if Func_White
 					LED_White_En();
+					#else
+					LED_Green_En();
+					#endif
 					g_3s_Count = CountDown_3s;	//开启背光3s倒计时
 				}
-				#else//三色背光，开机亮绿色背光
+
+				//蜂鸣和振动
 				if(uSetFlag.bits.Ready_First)
 				{
-					LED_CloseAll();
-					LED_Green_En();
-					g_3s_Count = CountDown_3s;	//开启背光3s倒计时
-				}
-				#endif
-
-				if( uSetFlag.bits.VoiceEnable == 1)//开机第一次时的语音/蜂鸣声
-				{
-					if(uSetFlag.bits.Ready_First)
+					if( uSetFlag.bits.VoiceEnable == 1)
 					{
-						// #if Func_White	//额温的白色背光只有切换到额温的第一次会亮
-						// 	LED_CloseAll();
-						// 	LED_White_En();
-						// 	g_3s_Count = CountDown_3s;	//开启背光3s倒计时
-						// #endif
-						#if Have_Voice_Func
-							voice_stop();
-							PlayStatueParam(1 , Play_Di,0);
-						#else
-							BZ_Beep50();
-							BZ_Beep50();		//蜂鸣2声
+					#if Have_Voice_Func
+						voice_stop();
+						PlayStatueParam(1 , Play_Di,0);
+					#else
+						BZ_Beep50();
+						BZ_Beep50();		//蜂鸣2声
+					#endif
+					}
+					else
+					{
+						#if Have_Motor
+							if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
+							{
+								g_MotorSystick = Vibration_time;
+							}
 						#endif
 					}
+
 				}
-				else
-				{
-					#if Have_Motor
-						if(eTestmode_num != Earmode && eTestmode_num != Blackbodymode)
-						{
-							g_MotorSystick = Vibration_time;
-						}
-					#endif
-				}
+				
+
 			}
 			if(eTestmode_num != Insptectmode) //生产模式准备状态一直有声音
 			{

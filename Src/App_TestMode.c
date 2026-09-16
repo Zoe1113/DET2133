@@ -59,9 +59,7 @@ void App_TestingMode(void)
 
 			//关背光
 			LED_CloseAll();
-			// #if !Func_White //环形灯
-			// 	LED_White_Dis();
-			// #endif
+
 			High_Precision_Flag = 0;
 
 			#if Have_Voice_Func
@@ -307,11 +305,7 @@ void App_TestingMode(void)
 					#if Func_White
 						LED_White_En();
 					#else
-						#if Func_3color
-							LED_Green_En();
-						#else
-							LED_White_En();
-						#endif
+						LED_Green_En();
 					#endif
 					break;
 				case Blackbodymode:

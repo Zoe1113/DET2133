@@ -73,11 +73,7 @@ void App_Memory(void)
 		#if Func_White
 			LED_White_En();
 		#else
-			#if Func_3color
-				LED_Green_En();
-			#else
-				LED_White_En();
-			#endif
+			LED_Green_En();
 		#endif
 		g_3s_Count = CountDown_3s;		//开启背光3s倒计时
 		Disp_MemNo();
@@ -103,16 +99,13 @@ void App_Memory(void)
 			else
 			{
 				LED_CloseAll();
-                #if Func_3color
-					#if Func_White
-						LED_White_En();
-					#else
-						LED_Green_En();		//开启绿光
-					#endif
-                #else
+				#if Func_White
 					LED_White_En();
-					
-                #endif
+				#else
+					LED_Green_En();		//开启绿光
+				#endif
+             
+
 			}
 			g_3s_Count = CountDown_3s;		//开启背光3s倒计时
 			

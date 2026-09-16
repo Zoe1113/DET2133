@@ -67,9 +67,6 @@ void App_Sleep(void)
 			    Drv_BZ_Disable();
             #endif
 			LED_CloseAll();	//关背光
-			#if !Func_White //环形灯
-				LED_White_Dis();
-			#endif
 
 			// 判断是否为上电关机，为上电关机则不显示OFF
             if(uSetFlag.bits.PowerFirst)
@@ -221,7 +218,7 @@ void App_Sleep(void)
 							eSleepTask_Sta = Sleep_false;
 							eMain_Task = Task_InitMode;
 							eInitTask_Sta = Init_Err;
-
+							uKeyRelease.bits.OKeyRelease = 1;
 							#if Func_Reverse_Disp
 								LED_Reverse_Disp_En();
 							#endif

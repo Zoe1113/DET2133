@@ -48,7 +48,7 @@
 #define No_Time 0 
 #define Func_Probecover 1 //耳套功能
 
-#define Soft_Code 648	//软件代码
+#define Soft_Code 677	//软件代码
 
 //请仔细核对基础特性编码表！！！！！！
  
@@ -107,11 +107,11 @@
     #define Nation       			1   //1：国外， 0:国内
 #endif
 
-//磁吸,四色背光,普通LCD，语音，蓝牙，振动
+//磁吸,三色背光,普通LCD，语音，蓝牙，振动
 #if Soft_Code == 677
 	#define OffsetTable2open 		0 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
 	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
-	#define Check_Parameter			0	//绑定显示校验参数 1：开启，0：关闭
+	#define Check_Parameter			1	//绑定显示校验参数 1：开启，0：关闭
 	#define Func_TakeCoverAutoOn	1   //取下额温罩自动开机，1：开启，0：关闭
 	#define HumanRatio_Num  		20	//人体系数，正常人体系数为20；棒米算法为45
 	

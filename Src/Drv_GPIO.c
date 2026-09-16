@@ -86,118 +86,68 @@ void CF_Check(void)
 **************************************************************************/
 void Forehead_Ear_Check(bit cmd)
 {
-
-	static bit Frist_Earmode = 0;
-	static bit Frist_Foreheadmode = 0;
-	static bit Frist_Mode = 0;
-
-	if(cmd) // 状态复位
+	static uint8 last_mode = 0xFF;  /* 记录上次模式，检测模式变化 */
+	uint8 current_mode;
+	
+	if (cmd) /* 复位 */
 	{
-		Frist_Earmode = 0;
-		Frist_Foreheadmode = 0;
-		Frist_Mode = 0;
+		last_mode = 0xFF;
 		return;
 	}
 
-    if( eTestmode_num != Insptectmode && eTestmode_num != Blackbodymode && !uErrFlag.bits.Er2 ) 
-    {
-		#if Func_Hall
-		if(Port_Hall)	//霍尔检测
-		#else
-        if(Port_Rod)	//检测杆检测
-		#endif
-		{
-			if(!Frist_Earmode)
-			{
-				eTestmode_num = Earmode;	//默认耳温模式
-				Frist_Earmode = 1;
-				Frist_Mode = 1;
-				Frist_Foreheadmode = 0;
+	/* 仅在非生产和非黑体模式下执行 */
+	if (eTestmode_num == Insptectmode || eTestmode_num == Blackbodymode || uErrFlag.bits.Er2)
+		return;
 
-				#if !Func_White
-				//没戴额温罩，声音关闭的情况下开启夜灯
-				if(!uSetFlag.bits.VoiceEnable)
+	/* 根据状态确定当前模式 */
+	#if Func_Hall
+	current_mode = Port_Hall ? Earmode : Foreheadmode;
+	#else
+	current_mode = Port_Rod ? Earmode : Foreheadmode;
+	#endif
+
+
+	/* 检测到模式变化时处理 */
+	if (current_mode != last_mode)
+	{
+		last_mode = current_mode;
+		eTestmode_num = current_mode;
+		ModeFlag = 0;
+		g_AgeSelectNum = Age_36;
+		F_Disp_Temp_Status = 0;
+		eMain_Task = Task_ReadyMode;
+		eReadyTask_Sta = Ready_Refresh;
+		#if !Have_Voice_Func //蜂鸣款的在模式切换的时候，由于蜂鸣操作时延时。所以清屏和显示会有延时，为了解决这一问题把清屏的显示提前
+			// Clr_Disp888();
+			// Disp_Ready();	//首次开机必须显示_ _._
+			// Disp_Unit();	//显示单位
+			Disp_VoiceSign();
+			LED_CloseAll();
+			#if Func_White
 				LED_White_En();
-				#endif
-
-			}
-
-
-		}              
-        else
-        {
-            if(!Frist_Foreheadmode)
-			{
-				eTestmode_num = Foreheadmode;	//默认额温模式
-				Frist_Foreheadmode = 1;
-				Frist_Mode = 1;
-				Frist_Earmode = 0;	
-				#if !Func_White
-					LED_White_Dis();
-				#endif
-			}
-
-            
-        }
-
-		// if(uSetFlag.bits.Ready_First)
-		// {
-		// 	Frist_Mode = 0;
-		// }
-
-		if(Frist_Mode)
+			#else
+				LED_Green_En();
+			#endif
+		#endif
+		Disp_ModeSign();	//显示模式符号
+		Disp_Age_Select(g_AgeSelectNum);
+		Er1_Display_Sound(RESET);		//清除Er1相关标志位
+		#if Func_Obj
+		Er6_Display_Sound(RESET);		//清除Er6相关标志位
+		#endif
+		Adc_Channel_Init(TPTONTC);
+		Auto_TurnOff_Time_Sel();
+		uSetFlag.bits.Ready_First = 1;
+		if( uSetFlag.bits.VoiceEnable == 1)// && ET_mode_buf
 		{
-			Frist_Mode = 0;
-			ModeFlag = 0;
-			g_AgeSelectNum = Age_36;
-			F_Disp_Temp_Status = 0;
-        	eMain_Task = Task_ReadyMode;
-			eReadyTask_Sta = Ready_Refresh;
-			#if !Have_Voice_Func //蜂鸣款的在模式切换的时候，由于蜂鸣操作时延时。所以清屏和显示会有延时，为了解决这一问题把清屏的显示提前
-				// Clr_Disp888();
-				// Disp_Ready();	//首次开机必须显示_ _._
-				// Disp_Unit();	//显示单位
-				Disp_VoiceSign();
-				LED_CloseAll();
-				#if Func_White
-					LED_White_En();
-				#else
-					#if Func_3color
-						LED_Green_En();
-					#else
-						LED_White_En();
-					#endif
-				#endif
-			#endif
-			Disp_ModeSign();	//显示模式符号
-			Disp_Age_Select(g_AgeSelectNum);
-			Er1_Display_Sound(RESET);		//清除Er1相关标志位
-			#if Func_Obj
-			Er6_Display_Sound(RESET);		//清除Er6相关标志位
-			#endif
-			Adc_Channel_Init(TPTONTC);
-			Auto_TurnOff_Time_Sel();
-			uSetFlag.bits.Ready_First = 1;
-			if( uSetFlag.bits.VoiceEnable == 1)// && ET_mode_buf
+			
+			#if Have_Voice_Func
+			if(eTestmode_num == Earmode)
 			{
-				
-				#if Have_Voice_Func
-				if(eTestmode_num == Earmode)
-				{
-					voice_stop();
-				}
-				#endif
+				voice_stop();
 			}
-			#if Have_Motor
-				if( (uSetFlag.bits.VoiceEnable == 0) &&(eTestmode_num != Earmode))
-				{
-					g_MotorSystick = Vibration_time;
-				}			 	
-				else
-				{
-					g_MotorSystick = 0;
-				}
 			#endif
+			
 		}
 		
     }

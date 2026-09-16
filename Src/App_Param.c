@@ -329,6 +329,7 @@ void Parm_AutoCheck(void)
 					LED_Reverse_Disp_En();
 				#endif
 				Clr_Disp();
+				uErrFlag.bits.Er5 = 1;
 				Disp_ErrMsg();	//显示错误信息(此处设计为如果初始化成功，则不会显示错误信息，如果依然Er5则报错)
 				Auto_TurnOff_Time_Sel();	//关机时间选择
 				while ( Port_On )

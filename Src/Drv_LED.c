@@ -32,7 +32,7 @@ void LED_CloseAll( void )
 			LED_White_Dis(); 
 		#endif
 
-		#if Func_White //»·ÐÎµÆ
+		#if Func_White 
 			LED_White_Dis();
 		#endif
 	#endif

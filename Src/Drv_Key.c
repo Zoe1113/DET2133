@@ -330,7 +330,7 @@ void App_SetKeyProcess(void)
 					else
 					{
 						eTestmode_num = Foreheadmode;	//额温模式
-						eReadyTask_Sta = Ready_ReadyOk;	
+						eReadyTask_Sta = Ready_ReadyOk;
 					}	
 				}
 				break;
@@ -344,38 +344,40 @@ void App_SetKeyProcess(void)
 				lcd_smileface_clr();	//清除笑脸
 				Switch_Temp();
 				Er6_Display_Sound(RESET);		//清除Er6相关标志位
-				eReadyTask_Sta = Ready_NoRefresh;
+				eReadyTask_Sta = Ready_DisAir;
 				break;
 			default:
 				ModeFlag = Mode_Human_Age0;
 				break;
 		}
 
-
+		//物温，额温，环温切换到NTC通道
 		if(eTestmode_num == Objectmode || eTestmode_num == Airmode || eTestmode_num == Foreheadmode)
 		{
 			Adc_Channel_Init(TPTONTC);	//切换模式重新采集NTC,耳温在wait时切换TP通道
 			Time_CountDown_5s_timeout(RESET);		//清除倒计时相关标志位
 			Er1_Display_Sound(RESET);		//清除Er1相关标志位
-			if(eTestmode_num != Airmode)
-			{
-				Clr_Disp888();
-				Disp_Ready();	//首次开机必须显示_ _._
-			}
-			Disp_ModeSign();	//显示模式符号
+
 		}
+		//耳温切换到tp通道采集
 		if(eTestmode_num == Earmode)
 		{
+			//5s倒计时切换到TP通道采集，否则采集NTC
 			if(eReadyTask_Sta != Ready_Timeout)
 			{
-				Adc_Channel_Init(NTCTOTP);
+				Adc_Channel_Init(NTCTOTP);	
 				eReadyTask_Sta = Ready_ReadyOk;
-				Disp_ModeSign();	//显示模式符号	
 			}
+
+		}
+
+		if(eTestmode_num != Airmode)
+		{
 			Clr_Disp888();
 			Disp_Ready();	//首次开机必须显示_ _._
-			
+
 		}
+		Disp_ModeSign();	//显示模式符号
 		Auto_TurnOff_Time_Sel();//自动关机
 		
 		Disp_VoiceSign();
@@ -387,7 +389,6 @@ void App_SetKeyProcess(void)
 		#else
 			LED_Green_En();    
 		#endif
-		
 		g_3s_Count = CountDown_3s;	//开启背光
 		if(uSetFlag.bits.VoiceEnable)
 		{
