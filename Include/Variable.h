@@ -48,7 +48,7 @@
 #define No_Time 0 
 #define Func_Probecover 1 //耳套功能
 
-#define Soft_Code 677	//软件代码
+#define Soft_Code 648	//软件代码
 
 //请仔细核对基础特性编码表！！！！！！
  

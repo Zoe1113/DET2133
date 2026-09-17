@@ -421,7 +421,7 @@ void App_SetMode(void)
 			#if Func_Probecover
 			case Set_Earcap10:
                 Disp_Temp(0,0,0,(uint16)100);
-				Delay10ms(5);
+				Delay10ms(50);
                 lcd_ear_clr();
                 lcd_pc_en();;
 				Disp_Temp(0,0,0,(uint16)g_Earcap10*10);
@@ -429,7 +429,7 @@ void App_SetMode(void)
             //耳套系数
 			case Set_Earcap15:
                 Disp_Temp(0,0,0,(uint16)150);
-				Delay10ms(5);
+				Delay10ms(50);
                 lcd_pc_en();
 				Disp_Temp(0,0,0,(uint16)g_Earcap15*10);
 				break;
@@ -437,7 +437,7 @@ void App_SetMode(void)
   			//耳套系数
 			case Set_Earcap20:
                 Disp_Temp(0,0,0,(uint16)200);
-				Delay10ms(5);
+				Delay10ms(50);
                 lcd_pc_en();
 				Disp_Temp(0,0,0,(uint16)g_Earcap20*10);
 				break;
@@ -445,7 +445,7 @@ void App_SetMode(void)
   			//耳套系数
 			case Set_Earcap25:
                 Disp_Temp(0,0,0,(uint16)250);
-				Delay10ms(5);
+				Delay10ms(50);
                 lcd_pc_en();
 				Disp_Temp(0,0,0,(uint16)g_Earcap25*10);
 				break;
@@ -453,7 +453,7 @@ void App_SetMode(void)
   			//耳套系数
 			case Set_Earcap30:
 			    Disp_Temp(0,0,0,(uint16)300);
-				Delay10ms(5);
+				Delay10ms(50);
                 lcd_pc_en();
 				Disp_Temp(0,0,0,(uint16)g_Earcap30*10);
 				break;
@@ -461,7 +461,7 @@ void App_SetMode(void)
   			//耳套系数
 			case Set_Earcap35:
                 Disp_Temp(0,0,0,(uint16)350);
-				Delay10ms(5);
+				Delay10ms(50);
                 lcd_pc_en();
 				Disp_Temp(0,0,0,(uint16)g_Earcap35*10);
 				break;
@@ -469,7 +469,7 @@ void App_SetMode(void)
   			//耳套系数
 			case Set_Earcap40:
 			    Disp_Temp(0,0,0,(uint16)400);
-				Delay10ms(5);
+				Delay10ms(50);
                 lcd_pc_en();
 				Disp_Temp(0,0,0,(uint16)g_Earcap40*10);
 				break;
