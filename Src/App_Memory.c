@@ -285,6 +285,7 @@ static int16 Disp_Mem(void)
 		m_AgeSelectNum = (g_DayMem & 0xC0)>>6;
 		g_DayMem &= 0x3F;
 		I2C_Disable();
+#if Func_Age
 	    if(m_mode == Insptectmode || m_mode == Objectmode || m_mode == Blackbodymode)
 		{
 			Clr_Age_Select();
@@ -304,6 +305,9 @@ static int16 Disp_Mem(void)
 			}
 		}
 
+#else
+        Clr_Age_Select();
+#endif
 		//显示记忆值
 		g_50ms_Count = DispTime_Init;	//循环显示时间、日期、ntc计时器赋初值
 		if( eTestmode_num != Insptectmode )

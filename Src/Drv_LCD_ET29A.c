@@ -576,6 +576,9 @@ void Disp_All(void)
     lcd15 = 0xff;
     lcd16 = 0xff;
 	lcd17 = 0xff;
+#if !Func_Age
+    Clr_Age_Select();
+#endif
 	if( uSetFlag.bits.Unit_Change )
 	{
 		Disp_Unit();
@@ -1243,6 +1246,7 @@ void LVD_Display(void)
 **************************************************************************/
 void Disp_Age_Select(uint8 num)
 {
+#if Func_Age
     if(eTestmode_num != Objectmode && eTestmode_num != Insptectmode && eTestmode_num != Airmode)
     {
         //lcd_age_en(); //ƒÍ¡‰∑÷∂ŒÕ‚øÚ
@@ -1262,6 +1266,9 @@ void Disp_Age_Select(uint8 num)
     {
         Clr_Age_Select();
     }
+#else
+	Clr_Age_Select();
+#endif
 
 }
 

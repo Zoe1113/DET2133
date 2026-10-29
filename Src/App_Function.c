@@ -73,9 +73,14 @@ void Tone_Init(void)
 **************************************************************************/
 void Fever_alarm(int16 Temp , uint8 Age_Selcet)
 {
+#if !Func_Age
+	int16 SlightTemp = Temp_Resolution_Adjust(CToF(3730));
+	int16 FeverTemp = Temp_Resolution_Adjust(CToF(3780));
+#endif
 	LED_CloseAll();
 	uStaFlag.bits.Fever = 0;
 
+#if Func_Age
     if(Age_Selcet == Age_0)
     {
         Select_Age0_alarm(Temp);
@@ -84,6 +89,24 @@ void Fever_alarm(int16 Temp , uint8 Age_Selcet)
     {
 		Select_Age36_alarm(Temp);
     }
+#else
+	if(Temp < SlightTemp)
+	{
+		LED_Green_En();
+		Disp_SmileFace();
+	}
+	else if(Temp < FeverTemp)
+	{
+		LED_Yellow_En();
+		Disp_SmileFace();
+	}
+	else
+	{
+		LED_Red_En();
+		Disp_BadFace();
+		uStaFlag.bits.Fever = 1;
+	}
+#endif
 }
 
 /**************************************************************************

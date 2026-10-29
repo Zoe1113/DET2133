@@ -46,6 +46,7 @@
 #define Check_Parameter		1	//绑定显示校验参数 1：开启，0：关闭
 #define Distence_En 0     			//1:开启测距功能   0:关闭测距功能
 #define No_Time 0 
+#define Func_Age 0 //1: 有年龄分段 0: 无年龄分段
 #define Func_Probecover 0 //耳套功能
 
 #define Soft_Code 000	//软件代码
