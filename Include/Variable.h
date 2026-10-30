@@ -49,7 +49,7 @@
 #define Func_Age 0 //1: 有年龄分段 0: 无年龄分段
 #define Func_Probecover 0 //耳套功能
 
-#define Soft_Code 000	//软件代码
+#define Soft_Code 699	//软件代码
 
 //请仔细核对基础特性编码表！！！！！！
  
@@ -135,7 +135,7 @@
 #endif
 
 //定规
-#if Soft_Code == 000
+#if Soft_Code == 699
 	#define OffsetTable2open 		0 	//0:关闭第二张黑体表格   1:打开第二张黑体表格
 	#define ParamModif         		0	//0:关闭后门调参节约空间   1:打开后门调参
 	#define Check_Parameter			1	//绑定显示校验参数 1：开启，0：关闭
