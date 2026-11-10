@@ -18,7 +18,7 @@
 **************************************************************************/
 void __interrupt[0x08] Interrupt_pro(void)
 {
-	#if Func_Ble		
+	#if Func_Ble || Func_TakeCoverAutoOn		
 		uint8 L_Rx_Data;
 
     if(FT0IRQ)

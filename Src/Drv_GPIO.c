@@ -32,6 +32,10 @@ void Cal_Inspect_Detect(void)
 		}
 		else
 		{
+			#if Func_Ble
+				F_Ble_En = Disable;
+				Port_Ble_En = 0;		//进入绑定检测时关闭模块，停止广播和连接
+			#endif
 			F_FirstEnter_SetMode = 0;
 			eMain_Task = Task_BondTestmode;	//用户模式下短路debug进入绑定检测模式
 		}

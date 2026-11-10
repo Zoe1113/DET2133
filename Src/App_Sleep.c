@@ -134,7 +134,7 @@ void App_Sleep(void)
 			INTEN0 = 0;			//所有中断除能
 			INTEN1 = 0;			//所有中断除能
 			FGIE = 0 ;			//关总中断
-			#if Func_Ble
+			#if Func_Ble || Func_TakeCoverAutoOn
 			FCPUM1 = 1;		    //绿色模式
 			#else
 			FCPUM0= 1;		    //睡眠模式
@@ -143,7 +143,7 @@ void App_Sleep(void)
 
 			//无按键按下
 			l_buf = 1;
-			#if Func_Ble
+			#if Func_Ble || Func_TakeCoverAutoOn
 			while(l_buf)
 			{
 				#if  Func_TakeCoverAutoOn

@@ -104,7 +104,7 @@ void main(void)
 
 	Parm_AutoCheck();//程序参数校验
 	TC1Init();	//TC1设置（10ms）
-	#if Func_Ble
+	#if Func_Ble || Func_TakeCoverAutoOn
 	T0Init();	//开启RTC中断
 	#endif
 	FGIE = 1;	//使能总中断等

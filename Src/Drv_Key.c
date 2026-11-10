@@ -299,6 +299,12 @@ void App_SetKeyProcess(void)
 		uKeyRelease.bits.SetKeyRelease = 0;
 		ModeFlag ++;
 		F_Disp_Temp_Status = 0;
+#if !Func_Age
+		if(ModeFlag == Mode_Human_Age0)
+		{
+			ModeFlag = Mode_Object;
+		}
+#endif
 		if(ModeFlag > Mode_Air)
 		{
 			ModeFlag = Mode_Human_Age36;
@@ -347,7 +353,11 @@ void App_SetKeyProcess(void)
 				eReadyTask_Sta = Ready_DisAir;
 				break;
 			default:
+#if Func_Age
 				ModeFlag = Mode_Human_Age0;
+#else
+                ModeFlag = Mode_Human_Age36;
+#endif
 				break;
 		}
 
@@ -505,11 +515,15 @@ void App_PCKeyProcess(void)
 ****************************************************************************/
 void  Select_Age(void)
 {
+#if Func_Age
     g_AgeSelectNum ++;
     if(g_AgeSelectNum > Age_36)
     {
         g_AgeSelectNum = Age_0;
     }
+#else
+	g_AgeSelectNum = Age_36;
+#endif
 
 }
 
